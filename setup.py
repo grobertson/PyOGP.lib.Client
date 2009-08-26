@@ -23,9 +23,9 @@ import os
 
 version = '0.1'
 
-setup(name='pyogp.lib.base',
+setup(name='pyogp.lib.client',
      version=version,
-     description="basic pyogp library package",
+     description="client layer of the pyogp library package",
      long_description="skipping",
      # Get more strings from http://www.python.org/pypi?%3Aaction=list_classifiers
      classifiers=[
@@ -44,12 +44,7 @@ setup(name='pyogp.lib.base',
      install_requires=[
          'setuptools',
          # -*- Extra requirements: -*-
-         'uuid',
-         'elementtree',
-         'indra.base',
-         'WebOb',
-         'wsgiref',
-         'eventlet'
+         'pyogp.lib.base'
 
      ]
      )
