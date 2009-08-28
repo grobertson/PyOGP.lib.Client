@@ -24,7 +24,7 @@ from logging import getLogger, CRITICAL, ERROR, WARNING, INFO, DEBUG
 # pyogp messaging
 
 # initialize logging
-logger = getLogger('pyogp.lib.base.permissions')
+logger = getLogger('pyogp.lib.client.permissions')
 log = logger.log
 
 class PermissionsMask(object):

@@ -26,11 +26,11 @@ from indra.base import llsd
 # pyogp
 from pyogp.lib.base.network.stdlib_client import StdLibClient, HTTPError
 from pyogp.lib.base.caps import SeedCapability
-import pyogp.lib.base.exc
-from pyogp.lib.base.settings import Settings
+import pyogp.lib.client.exc
+from pyogp.lib.client.settings import Settings
 
 # initialize logging
-logger = getLogger('pyogp.lib.base.agentdomain')
+logger = getLogger('pyogp.lib.client.agentdomain')
 log = logger.log
 
 class AgentDomain(object):

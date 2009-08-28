@@ -24,7 +24,7 @@ from eventlet import api
 
 # pyogp
 from pyogp.lib.base.datatypes import UUID
-from pyogp.lib.base.exc import NotImplemented
+from pyogp.lib.client.exc import NotImplemented
 from pyogp.lib.base.datamanager import DataManager
 
 # pyogp messaging
@@ -35,7 +35,7 @@ from pyogp.lib.base.message.message_handler import MessageHandler
 from pyogp.lib.base.utilities.helpers import Helpers
 
 # initialize logging
-logger = getLogger('pyogp.lib.base.parcel')
+logger = getLogger('pyogp.lib.client.parcel')
 log = logger.log
 
 # ToDo: unhandled related messages

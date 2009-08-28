@@ -36,7 +36,7 @@ from pyogp.lib.base.message.message import Message, Block, Variable
 from pyogp.lib.base.message.template_dict import TemplateDictionary
 
 # initialize logging
-logger = getLogger('pyogp.lib.base.event_queue')
+logger = getLogger('pyogp.lib.client.event_queue')
 log = logger.log
 
 class EventQueueClient(object):

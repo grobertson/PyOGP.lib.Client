@@ -32,14 +32,14 @@ from pyogp.lib.base.utilities.enums import TransferChannelType, TransferSourceTy
 from pyogp.lib.base.message.message_handler import MessageHandler
 from pyogp.lib.base.message.message import Message, Block
 from pyogp.lib.base.utilities.helpers import Helpers
-from pyogp.lib.base.exc import NotImplemented, ResourceError, ResourceNotFound
-from pyogp.lib.base.objects import Object
+from pyogp.lib.client.exc import NotImplemented, ResourceError, ResourceNotFound
+from pyogp.lib.client.objects import Object
 from pyogp.lib.base.datatypes import Vector3, UUID
 from pyogp.lib.base.caps import Capability
 
 
 # initialize logging
-logger = getLogger('pyogp.lib.base.assets')
+logger = getLogger('pyogp.lib.client.assets')
 log = logger.log
 
 class AssetManager(DataManager):

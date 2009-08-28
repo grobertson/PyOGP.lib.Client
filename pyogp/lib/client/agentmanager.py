@@ -26,11 +26,11 @@ from eventlet import api
 
 # pyogp
 from pyogp.lib.base.datatypes import UUID
-from pyogp.lib.base.exc import LoginError
+from pyogp.lib.client.exc import LoginError
 from pyogp.lib.base.utilities.helpers import Wait
 
 # initialize logging
-logger = getLogger('pyogp.lib.base.agentmanager')
+logger = getLogger('pyogp.lib.client.agentmanager')
 log = logger.log
 
 class AgentManager(object):
@@ -47,7 +47,7 @@ class AgentManager(object):
         if settings != None:
             self.settings = settings
         else:
-            from pyogp.lib.base.settings import Settings
+            from pyogp.lib.client.settings import Settings
             self.settings = Settings()
 
         # store the agents in a dictionary keyed by a uuid

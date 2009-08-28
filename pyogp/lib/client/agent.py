@@ -28,15 +28,15 @@ import struct
 from eventlet import api
 
 # pyogp
-from pyogp.lib.base.login import Login, LegacyLoginParams, OGPLoginParams
+from pyogp.lib.client.login import Login, LegacyLoginParams, OGPLoginParams
 from pyogp.lib.base.datatypes import  Quaternion, Vector3, UUID
-from pyogp.lib.base.exc import LoginError
-from pyogp.lib.base.region import Region
-from pyogp.lib.base.inventory import AIS, UDP_Inventory
-from pyogp.lib.base.groups import GroupManager, Group
-from pyogp.lib.base.event_system import AppEventsHandler, AppEvent
-from pyogp.lib.base.appearance import AppearanceManager
-from pyogp.lib.base.assets import AssetManager
+from pyogp.lib.client.exc import LoginError
+from pyogp.lib.client.region import Region
+from pyogp.lib.client.inventory import AIS, UDP_Inventory
+from pyogp.lib.client.groups import GroupManager, Group
+from pyogp.lib.client.event_system import AppEventsHandler, AppEvent
+from pyogp.lib.client.appearance import AppearanceManager
+from pyogp.lib.client.assets import AssetManager
 
 # pyogp messaging
 from pyogp.lib.base.message.message import Message, Block
@@ -46,7 +46,7 @@ from pyogp.lib.base.utilities.helpers import Helpers
 from pyogp.lib.base.utilities.enums import ImprovedIMDialogue, MoneyTransactionType, TransactionFlags, AgentState, AgentUpdateFlags, AgentControlFlags
 
 # initialize logging
-logger = getLogger('pyogp.lib.base.agent')
+logger = getLogger('pyogp.lib.client.agent')
 log = logger.log
 
 class Agent(object):
@@ -71,7 +71,7 @@ class Agent(object):
         if settings != None:
             self.settings = settings
         else:
-            from pyogp.lib.base.settings import Settings
+            from pyogp.lib.client.settings import Settings
             self.settings = Settings()
 
         # allow the eventhandler to be passed in

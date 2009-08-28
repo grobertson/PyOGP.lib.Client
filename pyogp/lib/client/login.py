@@ -74,7 +74,7 @@ class Login(object):
         if settings != None:
             self.settings = settings
         else:
-            from pyogp.lib.base.settings import Settings
+            from pyogp.lib.client.settings import Settings
             self.settings = Settings()
 
         # this can be either 'legacy' or 'ogp'
@@ -218,6 +218,8 @@ class Login(object):
         # This handles the standard 'login_to_simulator' case
         # plus, all the transforms that may need to be followed
         login_handler = self.handler.__getattr__(login_method)
+        
+        self.response = login_handler(self.login_params)
 
         try:
             self.response = login_handler(self.login_params)

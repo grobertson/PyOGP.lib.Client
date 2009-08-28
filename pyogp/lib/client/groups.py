@@ -31,7 +31,7 @@ import termios
 
 # pyogp
 from pyogp.lib.base.datatypes import UUID, Vector3
-from pyogp.lib.base.exc import DataParsingError
+from pyogp.lib.client.exc import DataParsingError
 from pyogp.lib.base.utilities.helpers import Wait
 from pyogp.lib.base.datamanager import DataManager
 
@@ -42,7 +42,7 @@ from pyogp.lib.base.message.message import Message, Block
 from pyogp.lib.base.utilities.enums import ImprovedIMDialogue
 
 # initialize logging
-logger = getLogger('pyogp.lib.base.groups')
+logger = getLogger('pyogp.lib.client.groups')
 log = logger.log
 
 class GroupManager(DataManager):

@@ -26,7 +26,7 @@ import struct
 
 # pyogp
 from pyogp.lib.base.datatypes import UUID
-from pyogp.lib.base.exc import ResourceError, ResourceNotFound, DataParsingError
+from pyogp.lib.client.exc import ResourceError, ResourceNotFound, DataParsingError
 from pyogp.lib.base.datamanager import DataManager
 
 # pyogp.message
@@ -36,7 +36,7 @@ from pyogp.lib.base.message.message import Message, Block
 from pyogp.lib.base.utilities.enums import ImprovedIMDialogue
 
 # initialize logging
-logger = getLogger('pyogp.lib.base.inventory')
+logger = getLogger('pyogp.lib.client.inventory')
 log = logger.log
 
 # ToDo: handle library inventory properly. right now, it's treated as regular inv. store it in self.library_folders

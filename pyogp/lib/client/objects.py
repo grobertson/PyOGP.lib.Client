@@ -27,11 +27,10 @@ import math
 
 
 # pyogp
-from pyogp.lib.base import *
 from pyogp.lib.base.datamanager import DataManager
-from pyogp.lib.base.permissions import PermissionsTarget, PermissionsMask
+from pyogp.lib.client.permissions import PermissionsTarget, PermissionsMask
 from pyogp.lib.base.datatypes import UUID, Vector3, Quaternion
-from pyogp.lib.base.event_system import AppEvent
+from pyogp.lib.client.event_system import AppEvent
 
 # pyogp message
 from pyogp.lib.base.message.message_handler import MessageHandler
@@ -44,7 +43,7 @@ from pyogp.lib.base.utilities.enums import PCodeEnum, CompressedUpdateFlags, \
      Permissions, AssetType
 
 # initialize logging
-logger = getLogger('pyogp.lib.base.objects')
+logger = getLogger('pyogp.lib.client.objects')
 log = logger.log
 
 class ObjectManager(DataManager):

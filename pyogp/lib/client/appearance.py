@@ -30,15 +30,15 @@ from pyogp.lib.base.message.message_handler import MessageHandler
 from pyogp.lib.base.message.message import Message, Block
 
 from pyogp.lib.base.utilities.helpers import Helpers
-from pyogp.lib.base.exc import NotImplemented
-from pyogp.lib.base.objects import Object
-from pyogp.lib.base.visualparams import VisualParams
+from pyogp.lib.client.exc import NotImplemented
+from pyogp.lib.client.objects import Object
+from pyogp.lib.client.visualparams import VisualParams
 from pyogp.lib.base.datatypes import UUID, Vector3
 from pyogp.lib.base.utilities.enums import BakedIndex, TextureIndex, \
      WearableMap, AssetType, WearablesIndex
 
 # initialize logging
-logger = getLogger('pyogp.lib.base.appearance')
+logger = getLogger('pyogp.lib.client.appearance')
 log = logger.log
 
 class AppearanceManager(DataManager):

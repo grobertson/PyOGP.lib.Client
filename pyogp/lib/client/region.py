@@ -27,14 +27,14 @@ from eventlet import api
 # pyogp
 from pyogp.lib.base.caps import Capability
 from pyogp.lib.base.network.stdlib_client import StdLibClient, HTTPError
-from pyogp.lib.base.exc import ResourceNotFound, ResourceError, RegionSeedCapNotAvailable, RegionMessageError
-from pyogp.lib.base.settings import Settings
+from pyogp.lib.client.exc import ResourceNotFound, ResourceError, RegionSeedCapNotAvailable, RegionMessageError
+from pyogp.lib.client.settings import Settings
 from pyogp.lib.base.utilities.helpers import Helpers
-from pyogp.lib.base.event_queue import EventQueueClient
-from pyogp.lib.base.objects import ObjectManager
+from pyogp.lib.client.event_queue import EventQueueClient
+from pyogp.lib.client.objects import ObjectManager
 from pyogp.lib.base.datatypes import UUID
-from pyogp.lib.base.event_system import AppEventsHandler
-from pyogp.lib.base.parcel import ParcelManager
+from pyogp.lib.client.event_system import AppEventsHandler
+from pyogp.lib.client.parcel import ParcelManager
 
 # messaging
 from pyogp.lib.base.message.udpdispatcher import UDPDispatcher
@@ -46,7 +46,7 @@ from pyogp.lib.base.message.message_handler import MessageHandler
 from pyogp.lib.base.utilities.helpers import Wait
 
 # initialize logging
-logger = getLogger('pyogp.lib.base.region')
+logger = getLogger('pyogp.lib.client.region')
 log = logger.log
 
 class Region(object):

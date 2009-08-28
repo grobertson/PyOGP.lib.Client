@@ -25,7 +25,7 @@ from eventlet import api
 
 # pyogp
 from pyogp.lib.base.utilities.events import Event
-from pyogp.lib.base.settings import Settings
+from pyogp.lib.client.settings import Settings
 from pyogp.lib.base.exc import DataParsingError
 
 # initialize logging
@@ -43,7 +43,7 @@ class AppEventsHandler(object):
         if settings != None:
             self.settings = settings
         else:
-            from pyogp.lib.base.settings import Settings
+            from pyogp.lib.client.settings import Settings
             self.settings = Settings()
 
         self.handlers = {}
