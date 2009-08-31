@@ -23,10 +23,10 @@ from binascii import unhexlify
 #related
 
 # pyogp
-from pyogp.lib.base.appearance import *
+from pyogp.lib.client.appearance import *
 from pyogp.lib.base.settings import Settings
-from pyogp.lib.base.agent import Agent
-from pyogp.lib.base.region import Region
+from pyogp.lib.client.agent import Agent
+from pyogp.lib.client.region import Region
 from pyogp.lib.base.datatypes import *
 # pyogp messaging
 from pyogp.lib.base.message.udpdeserializer import UDPMessageDeserializer

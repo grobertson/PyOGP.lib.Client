@@ -20,7 +20,7 @@ $/LicenseInfo$
 import unittest
 
 # pyogp
-from pyogp.lib.base.event_system import AppEventsHandler, AppEvent
+from pyogp.lib.client.event_system import AppEventsHandler, AppEvent
 from pyogp.lib.base.utilities.helpers import Wait
 from pyogp.lib.base.exc import DataParsingError
 

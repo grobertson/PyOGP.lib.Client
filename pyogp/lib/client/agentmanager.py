@@ -75,7 +75,7 @@ class AgentManager(object):
     def store_agent(self, agent):
         """ adds an agent to the store """
 
-        if str(type(agent)) != '<class \'pyogp.lib.base.agent.Agent\'>':
+        if str(type(agent)) != '<class \'pyogp.lib.client.agent.Agent\'>':
             log(WARNING, "The AgentManager stores only Agent instances to initialize. Stopping.")
             return False
 

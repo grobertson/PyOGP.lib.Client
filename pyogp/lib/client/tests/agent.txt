@@ -24,7 +24,7 @@ The 'agent' login case
 
 First, initialize the agent
 
-    >>> from pyogp.lib.base.agent import Agent
+    >>> from pyogp.lib.client.agent import Agent
     >>> client = Agent()
 
 For testing, we need to set up the loginhandler and the loginuri

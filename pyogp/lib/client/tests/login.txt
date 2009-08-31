@@ -24,7 +24,7 @@ First the 'legacy' login case
 
 First, initialize login and the loginuri
 
-    >>> from pyogp.lib.base.login import Login
+    >>> from pyogp.lib.client.login import Login
     >>> login = Login()
     >>> loginuri = 'http://localhost:12345/login.cgi'
 
@@ -36,7 +36,7 @@ Setup test: import of the mock network client handler
 
 Now, set up the login parameters:
 
-    >>> from pyogp.lib.base.login import LegacyLoginParams
+    >>> from pyogp.lib.client.login import LegacyLoginParams
     >>> login_params = LegacyLoginParams('first', 'last', 'secret')
 
 Now, login to the legacy login endpoint (using the mock test object as the endpoint).
@@ -58,7 +58,7 @@ Next, LegacyLoginParams
 
 This is easy, just test it
 
-    >>> from pyogp.lib.base.login import LegacyLoginParams
+    >>> from pyogp.lib.client.login import LegacyLoginParams
     >>> login_params = LegacyLoginParams('first', 'last', 'pass')
     >>> login_params = login_params.serialize()
 
@@ -70,7 +70,7 @@ Now, how about testing the 'ogp' case
 
 First, initialize login and the loginuri
 
-    >>> from pyogp.lib.base.login import Login
+    >>> from pyogp.lib.client.login import Login
     >>> login = Login()
     >>> loginuri = 'http://localhost:12345/auth.cgi'
 
@@ -82,7 +82,7 @@ Setup test: import of the mock network client handler
 
 Now, set up the login parameters:
 
-    >>> from pyogp.lib.base.login import OGPLoginParams
+    >>> from pyogp.lib.client.login import OGPLoginParams
     >>> login_params = OGPLoginParams('first', 'last', 'secret')
 
 Now, login to the ogp login endpoint aka agent domain (using the mock test object as the endpoint).
@@ -104,7 +104,7 @@ Next, OGPLoginParams
 
 This is easy, just test it
 
-    >>> from pyogp.lib.base.login import OGPLoginParams
+    >>> from pyogp.lib.client.login import OGPLoginParams
     >>> login_params = OGPLoginParams('first', 'last', 'pass')
 
     >>> login_params.content_type

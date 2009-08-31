@@ -20,9 +20,9 @@ $/LicenseInfo$
 import unittest
 
 # pyogp
-from pyogp.lib.base.agent import Agent, Home
-from pyogp.lib.base.login import LegacyLoginParams, OGPLoginParams
-from pyogp.lib.base.exc import *
+from pyogp.lib.client.agent import Agent, Home
+from pyogp.lib.client.login import LegacyLoginParams, OGPLoginParams
+from pyogp.lib.client.exc import LoginError
 
 # pyogp tests
 from pyogp.lib.base.tests.mock_xmlrpc import MockXMLRPC

@@ -23,11 +23,11 @@ import unittest
 import uuid
 
 # pyogp
-from pyogp.lib.base.inventory import InventoryManager, InventoryFolder, \
+from pyogp.lib.client.inventory import InventoryManager, InventoryFolder, \
      InventoryItem
 from pyogp.lib.base.datatypes import UUID
-from pyogp.lib.base.agent import Agent
-from pyogp.lib.base.region import Region
+from pyogp.lib.client.agent import Agent
+from pyogp.lib.client.region import Region
 from pyogp.lib.base.utilities.enums import AssetType, InventoryType, \
      WearablesIndex, Permissions
 from pyogp.lib.base.message.message import Message, Block

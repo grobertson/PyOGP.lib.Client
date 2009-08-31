@@ -23,10 +23,10 @@ from binascii import unhexlify
 #related
 
 # pyogp
-from pyogp.lib.base.objects import *
+from pyogp.lib.client.objects import *
 from pyogp.lib.base.settings import Settings
-from pyogp.lib.base.region import Region
-from pyogp.lib.base.agent import Agent
+from pyogp.lib.client.region import Region
+from pyogp.lib.client.agent import Agent
 from pyogp.lib.base.datatypes import UUID, Vector3
 
 # pyogp messaging

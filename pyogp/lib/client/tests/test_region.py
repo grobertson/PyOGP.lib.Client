@@ -21,7 +21,7 @@ import unittest
 
 # pyogp
 from pyogp.lib.base.exc import *
-from pyogp.lib.base.region import Region
+from pyogp.lib.client.region import Region
 from pyogp.lib.base.message.message import Message, Block
 
 # pyogp tests

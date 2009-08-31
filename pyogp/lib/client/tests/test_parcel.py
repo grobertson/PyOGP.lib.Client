@@ -22,7 +22,7 @@ import unittest
 #related
 
 # pyogp
-from pyogp.lib.base.parcel import *
+from pyogp.lib.client.parcel import *
 from pyogp.lib.base.settings import Settings
 
 # pyogp tests

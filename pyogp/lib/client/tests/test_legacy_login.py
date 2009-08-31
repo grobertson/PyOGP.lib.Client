@@ -20,7 +20,7 @@ $/LicenseInfo$
 import unittest
 
 # pyogp
-from pyogp.lib.base.login import Login, LegacyLoginParams
+from pyogp.lib.client.login import Login, LegacyLoginParams
 from pyogp.lib.base.exc import *
 
 # pyogp tests
