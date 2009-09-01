@@ -25,7 +25,7 @@ from eventlet import api, coros
 
 # pyogp
 from pyogp.lib.client.region import Region
-from pyogp.lib.base.event_queue import EventQueueClient
+from pyogp.lib.client.event_queue import EventQueueClient
 from pyogp.lib.base.exc import *
 from pyogp.lib.base.caps import Capability
 

@@ -136,6 +136,3 @@ def test_suite():
     suite = TestSuite()
     suite.addTest(makeSuite(TestAgent))
     return suite
-
-
-

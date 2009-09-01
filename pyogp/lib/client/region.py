@@ -445,7 +445,7 @@ class Region(object):
                                 ControlFlags = ControlFlags,
                                 Flags = Flags))
 
-        self.send_message(packet)
+        self.enqueue_message(packet)
 
     def sendRegionHandshakeReply(self, AgentID, SessionID, Flags = 00):
         """ sends a RegionHandshake packet """
@@ -504,7 +504,7 @@ class Region(object):
                 # we are currently facing east, so pull back on the x axis
                     CameraCenter = (self.agent.Position.X - 20.0, self.agent.Position.Y, self.agent.Position.Z)
 
-                    self.sendAgentUpdate(self.agent.agent_id, self.agent.session_id, CameraCenter = CameraCenter, CameraAtAxis = self.settings.DEFAULT_CAMERA_AT_AXIS, CameraLeftAxis = self.settings.DEFAULT_CAMERA_AT_AXIS, CameraUpAxis = self.settings.DEFAULT_CAMERA_UP_AXIS, Far = self.settings.DEFAULT_CAMERA_DRAW_DISTANCE)
+                    self.sendAgentUpdate(self.agent.agent_id, self.agent.session_id, ControlFlags=self.agent.control_flags, CameraCenter = CameraCenter, CameraAtAxis = self.settings.DEFAULT_CAMERA_AT_AXIS, CameraLeftAxis = self.settings.DEFAULT_CAMERA_AT_AXIS, CameraUpAxis = self.settings.DEFAULT_CAMERA_UP_AXIS, Far = self.settings.DEFAULT_CAMERA_DRAW_DISTANCE)
 
             # send pending messages in the queue
             for (packet, reliable) in self.packet_queue:

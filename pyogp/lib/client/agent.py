@@ -95,6 +95,7 @@ class Agent(object):
         self.password = password
         self.agent_id = None
         self.session_id = None
+        self.local_id = None
         self.secure_session_id = None
         self.name = self.Name()
         self.active_group_powers = None
@@ -861,6 +862,7 @@ class Agent(object):
                 lambda handle: self.teleport(region_handle=handle, position=position, look_at=look_at))
 
 
+        
     def send_MapNameRequest(self, region_name, callback):
         """ sends a MapNameRequest message to the host simulator """
 
@@ -1057,7 +1059,7 @@ class Agent(object):
         """Sit on the ground at the agent's current location"""
 
         self.control_flags |= AgentControlFlags.SitOnGround
-        self._send_update()
+        #self._send_update()
 
     def stand(self):
         """Stand up from sitting"""
@@ -1071,17 +1073,32 @@ class Agent(object):
         self.control_flags &= ~AgentControlFlags.StandUp
         self._send_update()
 
-
+    def walk(self, walking=True):
+        """Walk forward"""
+        if walking:
+            self.control_flags |= AgentControlFlags.AtPos
+        else:
+            self.control_flags &= ~AgentControlFlags.AtPos
+        #self._send_update()
+ 
     def fly(self, flying=True):
         """Start or stop flying"""
-
         if flying:
             self.control_flags |= AgentControlFlags.Fly
         else:            
             self.control_flags &= ~AgentControlFlags.Fly
+        #self._send_update()
 
-        self._send_update()
+    def stop(self):
+        self.control_flags = AgentControlFlags.Stop
 
+    def up(self, going_up=True):
+        """Start or stop going up"""
+        if going_up:
+            self.control_flags |= AgentControlFlags.UpPos
+        else:
+            self.control_flags &= ~AgentControlFlags.UpPos
+    
     def _send_update(self):
         """ force a send of an AgentUpdate message to the host simulator """
 
