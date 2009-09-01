@@ -808,6 +808,7 @@ class Agent(object):
                  region_name=None,
                  region_handle=None,
                  region_id=None,
+                 landmark_id=None,
                  position=Vector3(X=128, Y=128, Z=128),
                  look_at=Vector3(X=128, Y=128, Z=128)):
         """Initiate a teleport to the specified location. When passing a region name
@@ -815,6 +816,17 @@ class Agent(object):
         before the teleport can start."""
 
         logger.info('teleport name=%s handle=%s id=%s', str(region_name), str(region_handle), str(region_id))
+
+        # Landmarks are easy, get those out of the way
+        if landmark_id:
+            logger.info('sending landmark TP request packet')
+            packet = Message('TeleportLandmarkRequest',
+                             Block('Info',
+                                   AgentID = self.agent_id,
+                                   SessionID = self.session_id,
+                                   LandmarkID = UUID(landmark_id)))
+            self.region.enqueue_message(packet)
+            return
 
         # Handle intra-region teleports even by name
         if not region_id and region_name and region_name.lower() == self.region.SimName.lower():
