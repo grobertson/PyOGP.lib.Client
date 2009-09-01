@@ -44,7 +44,6 @@ from pyogp.lib.base.utilities.enums import PCodeEnum, CompressedUpdateFlags, \
 
 # initialize logging
 logger = getLogger('pyogp.lib.client.objects')
-log = logger.log
 
 class ObjectManager(DataManager):
     """ is an Object Manager
@@ -71,10 +70,10 @@ class ObjectManager(DataManager):
 
         # other useful things
         self.helpers = Helpers()
-       
+
         self.message_handler = message_handler
-        
-        if self.settings.LOG_VERBOSE: log(INFO, "Initializing object storage")
+
+        if self.settings.LOG_VERBOSE: logger.info("Initializing object storage")
 
     def enable_callbacks(self):
         """enables the callback handlers for this ObjectManager"""
@@ -127,7 +126,7 @@ class ObjectManager(DataManager):
         else:
 
             if self.settings.LOG_VERBOSE:
-                log(DEBUG, "Not processing object update of type %s" % (PCodeEnum(_object.PCode)))
+                logger.debug("Not processing object update of type %s" % (PCodeEnum(_object.PCode)))
 
     def store_object(self, _object):
         """ store a representation of an object that has been transformed from data off the wire """
@@ -140,13 +139,13 @@ class ObjectManager(DataManager):
 
             self.object_store[index[0]] = _object
 
-            #if self.settings.LOG_VERBOSE: log(DEBUG, 'Updating a stored object: %s in region \'%s\'' % (_object.FullID, self.region.SimName))
+            #if self.settings.LOG_VERBOSE: logger.debug('Updating a stored object: %s in region \'%s\'' % (_object.FullID, self.region.SimName))
 
         else:
 
             self.object_store.append(_object)
 
-            #if self.settings.LOG_VERBOSE: log(DEBUG, 'Stored a new object: %s in region \'%s\'' % (_object.LocalID, self.region.SimName))
+            #if self.settings.LOG_VERBOSE: logger.debug('Stored a new object: %s in region \'%s\'' % (_object.LocalID, self.region.SimName))
 
     def store_avatar(self, _objectdata):
         """ store a representation of an avatar (Object() instance) that has been transformed from data off the wire  """
@@ -171,22 +170,22 @@ class ObjectManager(DataManager):
 
             if self.settings.ENABLE_APPEARANCE_MANAGEMENT:
                 self.agent.appearance.TextureEntry = _objectdata.TextureEntry
-                                
+
             self.agent.sendDynamicsUpdate()
-            
+
         index = [self.avatar_store.index(_avatar_) for _avatar_ in self.avatar_store if _avatar_.LocalID == _objectdata.LocalID]
 
         if index != []:
 
             self.avatar_store[index[0]] = _objectdata
 
-            #if self.settings.LOG_VERBOSE: log(DEBUG, 'Replacing a stored avatar: %s in region \'%s\'' % (_objectdata.LocalID, self.region.SimName))
+            #if self.settings.LOG_VERBOSE: logger.debug('Replacing a stored avatar: %s in region \'%s\'' % (_objectdata.LocalID, self.region.SimName))
 
         else:
 
             self.avatar_store.append(_objectdata)
 
-            #if self.settings.LOG_VERBOSE: log(DEBUG, 'Stored a new avatar: %s in region \'%s\'' % (_objectdata.LocalID, self.region.SimName))
+            #if self.settings.LOG_VERBOSE: logger.debug('Stored a new avatar: %s in region \'%s\'' % (_objectdata.LocalID, self.region.SimName))
 
     def get_object_from_store(self, LocalID = None, FullID = None):
         """ searches the store and returns object if stored, None otherwise """
@@ -278,7 +277,7 @@ class ObjectManager(DataManager):
         else:
 
             if self.settings.LOG_VERBOSE and self.settings.ENABLE_OBJECT_LOGGING:
-                log(DEBUG, "Not processing kill of unstored object type %s" % (PCodeEnum(victim.PCode)))
+                logger.debug("Not processing kill of unstored object type %s" % (PCodeEnum(victim.PCode)))
 
     def kill_stored_avatar(self, ID):
         """ removes a stored avatar (Object() instance) from our list """
@@ -288,7 +287,7 @@ class ObjectManager(DataManager):
         if index != []:
             del self.avatar_store[index[0]]
             if self.settings.LOG_VERBOSE and self.settings.ENABLE_OBJECT_LOGGING:
-                log(DEBUG, "Kill on object data for avatar tracked as local id %s" % (ID))
+                logger.debug("Kill on object data for avatar tracked as local id %s" % (ID))
 
     def kill_stored_object(self, ID):
 
@@ -297,12 +296,12 @@ class ObjectManager(DataManager):
         if index != []:
             del self.object_store[index[0]]
             if self.settings.LOG_VERBOSE and self.settings.ENABLE_OBJECT_LOGGING:
-                log(DEBUG, "Kill on object data for object tracked as local id %s" % (ID))
+                logger.debug("Kill on object data for object tracked as local id %s" % (ID))
 
     def update_multiple_objects_properties(self, object_list):
         """ update the attributes of objects """
 
-        #if self.settings.LOG_VERBOSE and self.settings.ENABLE_OBJECT_LOGGING: log(DEBUG, "Processing multiple object properties updates: %s" % (len(object_list)))
+        #if self.settings.LOG_VERBOSE and self.settings.ENABLE_OBJECT_LOGGING: logger.debug("Processing multiple object properties updates: %s" % (len(object_list)))
 
         for object_properties in object_list:
 
@@ -310,18 +309,18 @@ class ObjectManager(DataManager):
 
     def update_object_properties(self, object_properties):
         """ update the attributes of an object
-        
+
         If the object is known, we update the properties. 
         If not, we create a new object
         """
 
-        #if self.settings.LOG_VERBOSE and self.settings.ENABLE_OBJECT_LOGGING: log(DEBUG, "Processing object properties update for FullID: %s" % (object_properties['FullID']))
+        #if self.settings.LOG_VERBOSE and self.settings.ENABLE_OBJECT_LOGGING: logger.debug("Processing object properties update for FullID: %s" % (object_properties['FullID']))
 
         if object_properties.has_key('PCode'):
             # this is an avatar
             if object_properties['PCode'] == PCodeEnum.Avatar:
 
-                #if self.settings.LOG_VERBOSE and self.settings.ENABLE_OBJECT_LOGGING: log(DEBUG, "Creating a new avatar and storing their attributes. LocalID = %s" % (object_properties['LocalID']))
+                #if self.settings.LOG_VERBOSE and self.settings.ENABLE_OBJECT_LOGGING: logger.debug("Creating a new avatar and storing their attributes. LocalID = %s" % (object_properties['LocalID']))
 
                 _object = Object()
                 _object._update_properties(object_properties)
@@ -342,18 +341,18 @@ class ObjectManager(DataManager):
         _object = self.get_object_from_store(FullID = prim_properties['FullID'])
 
         if _object == None:
-            #if self.settings.LOG_VERBOSE and self.settings.ENABLE_OBJECT_LOGGING: log(DEBUG, "Creating a new object and storing it's attributes. LocalID = %s" % (object_properties['LocalID']))
+            #if self.settings.LOG_VERBOSE and self.settings.ENABLE_OBJECT_LOGGING: logger.debug("Creating a new object and storing it's attributes. LocalID = %s" % (object_properties['LocalID']))
             _object = Object()
             _object._update_properties(prim_properties)
             self.store_object(_object)
         else:
-            #if self.settings.LOG_VERBOSE and self.settings.ENABLE_OBJECT_LOGGING: log(DEBUG, "Updating an object's attributes. LocalID = %s" % (object_properties['LocalID']))
+            #if self.settings.LOG_VERBOSE and self.settings.ENABLE_OBJECT_LOGGING: logger.debug("Updating an object's attributes. LocalID = %s" % (object_properties['LocalID']))
             _object._update_properties(prim_properties)
         if _object.UpdateFlags & 2 != 0 and self.agent != None:
-            
+
             self.agent.events_handler.handle(AppEvent("ObjectSelected",
                                                       payload = {'object':_object}))
-          
+
 
     def request_object_update(self, AgentID, SessionID, ID_CacheMissType_list = None):
         """ requests object updates from the simulator
@@ -543,7 +542,7 @@ class ObjectManager(DataManager):
                     pos += 16
 
                 # 32 bit precision update.
-                
+
                 object_properties['Position'] = Vector3(objdata, pos+0)
                 object_properties['Velocity'] = Vector3(objdata, pos+12)
                 object_properties['Acceleration'] = Vector3(objdata, pos+24)
@@ -624,7 +623,7 @@ class ObjectManager(DataManager):
                     X=Helpers.packed_u8_to_float(objdata, 13, -REGION_SIZE, REGION_SIZE),
                     Y=Helpers.packed_u8_to_float(objdata, 14, -REGION_SIZE, REGION_SIZE),
                     Z=Helpers.packed_u8_to_float(objdata, 15, -REGION_SIZE, REGION_SIZE))
-            
+
             object_list.append(object_properties)
 
         self.update_multiple_objects_properties(object_list)
@@ -685,7 +684,7 @@ class ObjectManager(DataManager):
             pos += 1
 
             if object_properties['PCode'] != 9:         # if it is not a prim, stop.
-                log(WARNING, 'Fix Me!! Skipping parsing of ObjectUpdateCompressed packet when it is not a prim.')
+                logger.warning('Fix Me!! Skipping parsing of ObjectUpdateCompressed packet when it is not a prim.')
                 # we ought to parse it and make sense of the data...
                 continue
 
@@ -723,7 +722,7 @@ class ObjectManager(DataManager):
 
             if object_properties['Flags'] != 0:
 
-                log(WARNING, "FixMe! Quiting parsing an ObjectUpdateCompressed packet with flags due to incomplete implemention. Storing a partial representation of an object with uuid of %s" % (object_properties['FullID']))
+                logger.warning("FixMe! Quiting parsing an ObjectUpdateCompressed packet with flags due to incomplete implemention. Storing a partial representation of an object with uuid of %s" % (object_properties['FullID']))
 
                 # the commented code is not working right, we need to figure out why!
                 # ExtraParams in particular seemed troublesome
@@ -805,7 +804,7 @@ class ObjectManager(DataManager):
                     pos += int(datalength)
 
                 # ToDo: Deal with extra parameters
-                #log(WARNING, "Incomplete implementation in onObjectUpdateCompressed when flags are present. Skipping parsing this object...")
+                #logger.warning("Incomplete implementation in onObjectUpdateCompressed when flags are present. Skipping parsing this object...")
                 #continue
 
                 if (Flags & CompressedUpdateFlags.contains_Sound) != 0:
@@ -1009,7 +1008,7 @@ class ObjectManager(DataManager):
                                CreationDate = CreationDate,
                                CRC = CRC))
         agent.region.enqueue_message(packet)
-    
+
 
 
 class Object(object):
@@ -1296,7 +1295,7 @@ class Object(object):
 
     def send_ObjectSelect(self, agent, AgentID, SessionID, ObjectLocalIDs):
         """ send an ObjectSelect message to the agent's host simulator
-        
+
         expects a list of ObjectLocalIDs """
 
         packet = Message('ObjectSelect',
@@ -1329,7 +1328,7 @@ class Object(object):
 
         agent.region.enqueue_message(packet)
 
-        
+
     def _update_properties(self, properties):
         """ takes a dictionary of attribute:value and makes it so """
 
@@ -1337,6 +1336,6 @@ class Object(object):
 
             setattr(self, attribute, properties[attribute])
 
-        
+
 
 

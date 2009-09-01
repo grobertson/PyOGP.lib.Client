@@ -86,7 +86,7 @@ class TestObjects(unittest.TestCase):
 
         for _object in  self.object_store.object_store:
             known_objects.append((str(_object.FullID), _object.LocalID))
-        
+
         self.assertEquals(known_objects, [(str(uuid.UUID('e2ba7ac7-db28-24e3-484d-f418b045e62d')), 159536), (str(uuid.UUID('6cbafc4a-9758-9481-cd74-c7ccc89e7440')), 171059), (str(uuid.UUID('d2b300c3-71f1-6887-2750-6d48da05e2f5')), 171036), (str(uuid.UUID('dbb7d110-3f65-0859-d494-3dc40ffb2b61')), 171037), (str(uuid.UUID('1f389eb9-8639-28ff-c37b-a3e4f39a7fed')), 171038)])
 
     def test_onObjectUpdate_selected(self):
@@ -134,14 +134,14 @@ class TestObjects(unittest.TestCase):
                                Text='',
                                TextColor=0x0,
                                MedialURL=''))
-        
+
         def callback(payload):
             self.data.append("foo")
         object_handler = self.object_store.agent.events_handler.register("ObjectSelected")
         object_handler.subscribe(callback)
         self.object_store.region.message_handler.handle(packet)
         self.assertTrue(self.data.pop, "foo")
-    
+
 def test_suite():
     from unittest import TestSuite, makeSuite
     suite = TestSuite()

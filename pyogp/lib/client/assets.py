@@ -40,7 +40,6 @@ from pyogp.lib.base.caps import Capability
 
 # initialize logging
 logger = getLogger('pyogp.lib.client.assets')
-log = logger.log
 
 class AssetManager(DataManager):
     """
@@ -54,7 +53,7 @@ class AssetManager(DataManager):
         super(AssetManager, self).__init__(agent, settings)
         #indexed by assetID
         self.assets = {} 
-                
+
     def enable_callbacks(self):
         pass
 
@@ -78,30 +77,30 @@ class AssetManager(DataManager):
             """
             # fill in data for Asset in the requests queue and pop it off and story in assets dict
             if str(transferID) == str(packet.blocks['TransferData'][0].get_variable('TransferID').data):
-                
+
                 self.assets[str(assetID)] = AssetWearable(assetID, assetType,
                                                          packet.blocks['TransferData'][0].get_variable('Data').data)
                 if callback != None:
                     callback(assetID, True)
                 transferPacketHandler.unsubscribe(onTransferPacket)
-        
+
         def onTransferInfo(packet):
             """
             Status of TransferRequest
             Account for size and multiple packets
             TODO set packet count
             """
-            
+
             if str(transferID) == str(packet.blocks['TransferInfo'][0].get_variable('TransferID')):
                 status = packet.blocks['TransferInfo'][0].get_variable("Status").data
                 if status != TransferStatus.OK:
-                    log(WARNING, "Request for asset %s failed with status %s" \
+                    logger.warning("Request for asset %s failed with status %s" \
                         % (assetID, status))
                     if callback != None:
                         callback(assetID, False)
                     transferPacketHandler.unsubscribe(onTransferPacket)
                 transferInfoHandler.unsubscribe(onTransferInfo)
-            
+
         transferInfoHandler.subscribe(onTransferInfo)
         transferPacketHandler.subscribe(onTransferPacket)
 
@@ -117,10 +116,10 @@ class AssetManager(DataManager):
                       self.agent.agent_id.get_bytes() + \
                       UUID().get_bytes() + \
                       itemID.get_bytes()
-                      
+
         params += assetID.get_bytes() + \
                   Helpers().int_to_bytes(assetType) 
-        
+
         self.send_TransferRequest(transferID,
                                   TransferChannelType.Asset,
                                   TransferSourceType.Asset,
@@ -131,29 +130,29 @@ class AssetManager(DataManager):
     """
     def upload_asset(self, transaction_id, type_, tempfile, store_local,
                      asset_data=None):
-        
+
         assetUploadCompleteHandler = self.agent.region.message_handler.register('AssetUploadComplete')
         def onAssetUploadComplete(packet):
-            log(INFO, "AssetUploadComplete: %s" % packet)
-            
+            logger.info("AssetUploadComplete: %s" % packet)
+
         assetUploadCompleteHandler.subscribe(onAssetUploadComplete)
-        
+
         self.send_AssetUploadRequest(transaction_id, type_, tempfile,
                                      store_local)
     """
     def upload_script_via_caps(self, item_id, script):
 
         def upload_script_via_caps_responder(response):
-        
+
             if response['state'] == 'upload':
                 cap = Capability('UpdateScriptAgentResponse', response['uploader'])
                 response = cap.POST_FILE(script)
                 upload_script_via_caps_responder(response)
             elif response['state'] == 'complete':
-                log(DEBUG, "Upload of script Successful")
+                logger.debug("Upload of script Successful")
             else:
-                log(WARNING, "Upload failed")
-        
+                logger.warning("Upload failed")
+
         cap = self.agent.region.capabilities['UpdateScriptAgent']
         post_body = {'item_id' : str(item_id), 'target': 'lsl2'}
         custom_headers = {'Accept' : 'application/llsd+xml'}
@@ -161,19 +160,19 @@ class AssetManager(DataManager):
         try:
             response = cap.POST(post_body, custom_headers)
         except ResourceError, error:
-            log(ERROR, error)
+            logger.error(error)
             return
         except ResourceNotFound, error:
-            log(ERROR, "404 calling: %s" % (error))
+            logger.error("404 calling: %s" % (error))
             return
         upload_script_via_caps_responder(response)
-        
-    
-        
-        
+
+
+
+
     def upload_via_udp(self):
         pass
-    
+
     def get_asset(self, assetID):
         return self.assets[str(assetID)]
 
@@ -192,7 +191,7 @@ class AssetManager(DataManager):
                                AssetData = AssetData))
         self.agent.region.enqueue_message(packet)
 
-    
+
     def send_TransferRequest(self, TransferID, ChannelType, SourceType,
                              Priority, Params):
         """
@@ -208,9 +207,9 @@ class AssetManager(DataManager):
                                Priority = Priority,
                                Params = Params))
 
-        
+
         self.agent.region.enqueue_message(packet)
-        
+
 class Asset(object):
     def __init__(self, assetID, assetType, data):
         self.assetID = assetID
@@ -218,7 +217,7 @@ class Asset(object):
         self.data = data
 
 class AssetWearable(Asset):
-    
+
     def __init__(self, assetID, assetType, data):
         super(AssetWearable, self).__init__(assetID, assetType, data)
         self.Version = -1

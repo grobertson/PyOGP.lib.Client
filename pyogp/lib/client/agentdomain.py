@@ -31,7 +31,6 @@ from pyogp.lib.client.settings import Settings
 
 # initialize logging
 logger = getLogger('pyogp.lib.client.agentdomain')
-log = logger.log
 
 class AgentDomain(object):
     """an agent domain endpoint"""
@@ -56,7 +55,7 @@ class AgentDomain(object):
         self._isEventQueueRunning = False
 
         self.seed_cap = None
-        log(DEBUG, 'initializing agent domain: %s' %self)
+        logger.debug('initializing agent domain: %s' %self)
 
     def login(self, credentials):
         """ login to the agent domain """
@@ -69,7 +68,7 @@ class AgentDomain(object):
         """ post to login_uri and return response """
 
         self.credentials = credentials
-        log(INFO, 'Logging in to %s as %s %s' % (self.login_uri, self.credentials.firstname, self.credentials.lastname))
+        logger.info('Logging in to %s as %s %s' % (self.login_uri, self.credentials.firstname, self.credentials.lastname))
 
         payload = credentials.serialize()
         content_type = credentials.content_type
@@ -97,7 +96,7 @@ class AgentDomain(object):
             seed_cap_url = seed_cap_url_data['agent_seed_capability']
             self.seed_cap = SeedCapability('seed_cap', seed_cap_url, self.restclient)
             self.connectedStatus = True
-            log(INFO, 'logged in to %s' % (self.login_uri))
+            logger.info('logged in to %s' % (self.login_uri))
         except KeyError:
             raise UserNotAuthorized(self.credentials)
 
@@ -106,7 +105,7 @@ class AgentDomain(object):
 
         data = llsd.parse(response.body)
 
-        log(DEBUG, 'deserialized login response body = %s' % (data))
+        logger.debug('deserialized login response body = %s' % (data))
 
         return data
 
@@ -124,9 +123,9 @@ class AgentDomain(object):
         if result['region_seed_capability'] is None:
             raise UserRezFailed(region)
         else:
-            log(INFO, 'Region_uri %s returned a seed_cap of %s' % (region_uri, result['region_seed_capability']))
+            logger.info('Region_uri %s returned a seed_cap of %s' % (region_uri, result['region_seed_capability']))
 
-        log(DEBUG, 'Full rez_avatar/place response is: %s' % (result))
+        logger.debug('Full rez_avatar/place response is: %s' % (result))
 
         return result
 
@@ -139,7 +138,7 @@ class AgentDomain(object):
             # return something?
         else:
 
-            log(INFO, 'Getting caps from agent domain seed cap %s' % (self.seed_cap))
+            logger.info('Getting caps from agent domain seed cap %s' % (self.seed_cap))
 
             # use self.region_caps.keys() to pass a list to be parsed into LLSD            
             self.capabilities = self.seed_cap.get(self.agentdomain_caps_list)
@@ -166,9 +165,9 @@ class AgentDomain(object):
 
                 self.last_id = result['id']
 
-                #log(DEBUG, 'region event queue cap called, returned id: %s' % (self.last_id))
+                #logger.debug('region event queue cap called, returned id: %s' % (self.last_id))
 
-                log(DEBUG, 'AgentDomain EventQueueGet result: %s' % (result))
+                logger.debug('AgentDomain EventQueueGet result: %s' % (result))
 
 
 

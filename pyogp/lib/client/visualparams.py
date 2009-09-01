@@ -22,7 +22,7 @@ class Param(object):
     """
     def __init__(self, id, group, name, wearable, value_default, value_min,
                  value_max, value, label, label_min, label_max):
-        
+
         self.id = id
         self.group = group
         self.name = name
@@ -34,7 +34,7 @@ class Param(object):
         self.label = label
         self.label_min = label_min
         self.label_max = label_max
-                   
+
     def floatToByte(self):
         """
         Converts value from a float to a byte

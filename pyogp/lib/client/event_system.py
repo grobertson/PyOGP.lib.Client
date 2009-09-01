@@ -30,7 +30,6 @@ from pyogp.lib.base.exc import DataParsingError
 
 # initialize logging
 logger = getLogger('event_system')
-log = logger.log
 
 class AppEventsHandler(object):
     """ general class handling individual events """
@@ -51,7 +50,7 @@ class AppEventsHandler(object):
     def register(self, event_name, timeout = 0):
         """ create a watcher for a specific event in this event system. the timeout is optional, and defaults to no timeout """
 
-        if self.settings.LOG_VERBOSE: log(DEBUG, 'Creating a monitor for %s' % (event_name))
+        if self.settings.LOG_VERBOSE: logger.debug('Creating a monitor for %s' % (event_name))
 
         return self.handlers.setdefault(event_name, AppEventNotifier(event_name, self.settings, timeout))
 
@@ -76,12 +75,12 @@ class AppEventsHandler(object):
 
             # Handle the packet if we have subscribers
             if len(handler) > 0:
-                if self.settings.LOG_VERBOSE: log(DEBUG, 'Handling event: %s' % (event.name))
+                if self.settings.LOG_VERBOSE: logger.debug('Handling event: %s' % (event.name))
 
                 handler(event)
 
         except KeyError:
-            #log(INFO, "Received an unhandled packet: %s" % (packet.name))
+            #logger.info("Received an unhandled packet: %s" % (packet.name))
             pass
 
 class AppEventNotifier(object):
@@ -120,7 +119,7 @@ class AppEventNotifier(object):
 
         self.event.unsubscribe(*args, **kwdargs)
 
-        if self.settings.LOG_VERBOSE: log(DEBUG, "Removed the monitor for %s by %s" % (args, kwdargs))
+        if self.settings.LOG_VERBOSE: logger.debug("Removed the monitor for %s by %s" % (args, kwdargs))
 
     def _start_timer(self):
         """ begins the timer when a timeout value is specified. returns None when the timer expires, then unsubscribes """
@@ -135,7 +134,7 @@ class AppEventNotifier(object):
             now = time.time()
 
         # once the timeout has expired...
-        if self.settings.LOG_VERBOSE: log(DEBUG, "Timing out the monitor for %s by %s" % (self.args, self.kwdargs))
+        if self.settings.LOG_VERBOSE: logger.debug("Timing out the monitor for %s by %s" % (self.args, self.kwdargs))
 
         # return None to the callback handler
         self.received(None)
@@ -155,11 +154,11 @@ class AppEventNotifier(object):
 
 class AppEvent(object):
     """ container for an event payload. 
-    
+
     name = name of the event, to which applications will subscribe. 
     payload = dict of the contents of the event (key:value)
     **kwdargs = key:value pairs
-    
+
     either payload or **kwdargs should be used, not both
     """
 
@@ -170,21 +169,21 @@ class AppEvent(object):
         self.payload = {}
 
         if payload != None and len(kwargs) > 0 and llsd != None:
-            
+
             raise DataParsingError("AppEvent cannot parse both an explicit payload and a kwdargs representation of a payload")
             return
 
         if payload != None:
-            
+
             if type(payload) == dict:
-                
+
                 self.payload = payload
-                
+
             else:
-                
+
                 raise DataParsingError("AppEvent payload must be a dict. A %s was passed in." % (type(payload)))
                 return
-                
+
         elif len(kwargs) > 0:
 
             for key in kwargs.keys():

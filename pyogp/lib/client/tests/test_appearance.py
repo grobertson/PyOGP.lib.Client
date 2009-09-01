@@ -43,7 +43,7 @@ class TestAppearance(unittest.TestCase):
         self.agent.agent_id = UUID("01234567-89ab-cdef-0123-456789abcdef")
         self.agent.session_id = UUID("fedcba98-7654-3210-fedc-ba9876543210")
         self.agent.region = DummyRegion()
-        
+
     def tearDown(self):
         pass
 
@@ -70,16 +70,16 @@ class TestAppearance(unittest.TestCase):
         self.agent.session_id = UUID()
         self.agent.appearance.request_agent_wearables()
         self.assertEquals(len(packet_list), 0)
-        
-   
+
+
     def test_send_AgentIsNowWearing(self):
         pass
-    
+
 class DummyRegion(Region):
     dummy_packet_holder = []
     def enqueue_message(self, packet, reliable = False):
         self.dummy_packet_holder.append(packet)
-        
+
 def test_suite():
     from unittest import TestSuite, makeSuite
     suite = TestSuite()

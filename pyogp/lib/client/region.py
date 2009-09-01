@@ -47,7 +47,6 @@ from pyogp.lib.base.utilities.helpers import Wait
 
 # initialize logging
 logger = getLogger('pyogp.lib.client.region')
-log = logger.log
 
 class Region(object):
     """ a region container
@@ -58,11 +57,11 @@ class Region(object):
     Example, of initializing a region class:
 
     Initialize the login class
-    
+
     >>> region = Region(256, 256, 'https://somesim.cap/uuid', 'EnableSimulator,TeleportFinish,CrossedRegion', '127.0.0.1', 13000, 650000000, {'agent_id':'00000000-0000-0000-0000-000000000000', 'session_id':'00000000-0000-0000-0000-000000000000', 'secure_session_id:'00000000-0000-0000-0000-000000000000'})
 
     Start the udp and event queue connections to the region
-    
+
     >>> region.connect()
 
     Sample implementations: examples/sample_region_connect.py
@@ -87,7 +86,7 @@ class Region(object):
         #elif self.settings.HANDLE_PACKETS:
         else:
             self.message_handler = MessageHandler()
-        
+
         # allow the eventhandler to be passed in
         # so that applications running multiple avatars
         # may use the same eventhandler
@@ -135,9 +134,9 @@ class Region(object):
         self.packet_queue = []
 
         self.objects = ObjectManager(agent = self.agent, region = self, settings = self.settings, message_handler = self.message_handler, events_handler = self.events_handler)
-        
+
         self.parcel_manager = ParcelManager(agent = self.agent, region = self, settings = self.settings, message_handler = self.message_handler, events_handler = self.events_handler)
-        
+
 
         # required packet handlers
         onPacketAck_received = self.message_handler.register('PacketAck')
@@ -182,7 +181,7 @@ class Region(object):
                             'ViewerStats'
         ]
         if self.settings.LOG_VERBOSE:
-            log(DEBUG, 'initializing region domain: %s' %self)
+            logger.debug('initializing region domain: %s' %self)
 
     def enable_callbacks(self):
         '''enables the callback handles for this Region'''
@@ -191,13 +190,13 @@ class Region(object):
             self.objects.enable_callbacks()
         if self.settings.ENABLE_PARCEL_TRACKING:
             self.parcel_manager.enable_callbacks()
-            
+
         if self.settings.HANDLE_PACKETS:
             pass
 
     def enable_child_simulator(self, IP, Port, Handle):
 
-        log(INFO, "Would enable a simulator at %s:%s with a handle of %s" % (IP, Port, Handle))
+        logger.info("Would enable a simulator at %s:%s with a handle of %s" % (IP, Port, Handle))
 
     def send_message_next(self, packet, reliable = False):
         """ inserts this packet at the fron of the queue """
@@ -248,13 +247,13 @@ class Region(object):
         self.seed_cap = RegionSeedCapability('seed_cap', self.seed_capability_url, settings = self.settings)
 
         if self.settings.LOG_VERBOSE:
-            log(DEBUG, 'setting region domain seed cap: %s' % (self.seed_capability_url))
+            logger.debug('setting region domain seed cap: %s' % (self.seed_capability_url))
 
     def _get_region_public_seed(self, custom_headers={'Accept' : 'application/llsd+xml'}):
         """ call this capability, return the parsed result """
 
         if self.settings.ENABLE_CAPS_LOGGING:
-            log(DEBUG, 'Getting region public_seed %s' %(self.region_uri))
+            logger.debug('Getting region public_seed %s' %(self.region_uri))
 
         try:
             restclient = StdLibClient()
@@ -268,7 +267,7 @@ class Region(object):
         data = llsd.parse(response.body)
 
         if self.settings.ENABLE_CAPS_LOGGING:
-            log(DEBUG, 'Get of cap %s response is: %s' % (self.region_uri, data))        
+            logger.debug('Get of cap %s response is: %s' % (self.region_uri, data))        
 
         return data
 
@@ -280,7 +279,7 @@ class Region(object):
         else:
 
             if self.settings.ENABLE_CAPS_LOGGING:
-                log(INFO, 'Getting caps from region seed cap %s' % (self.seed_cap))
+                logger.info('Getting caps from region seed cap %s' % (self.seed_cap))
 
             # use self.region_caps.keys() to pass a list to be parsed into LLSD            
             self.capabilities = self.seed_cap.get(self.region_caps_list, self.settings)
@@ -298,7 +297,7 @@ class Region(object):
             # grab the agent's capabilities from the sim
             self._get_region_capabilities()
 
-            log(DEBUG, 'Spawning region event queue connection')
+            logger.debug('Spawning region event queue connection')
             self._startEventQueue()
 
 
@@ -308,12 +307,12 @@ class Region(object):
         self.last_ping = 0
 
         # spawn an eventlet api instance that runs the UDP connection
-        log(DEBUG, 'Spawning region UDP connection')
+        logger.debug('Spawning region UDP connection')
         if self.settings.LOG_COROUTINE_SPAWNS:
-            log(INFO, "Spawning a coroutine for udp connection to the agent's host region %s" % (str(self.sim_ip) + ":" + str(self.sim_port)))
+            logger.info("Spawning a coroutine for udp connection to the agent's host region %s" % (str(self.sim_ip) + ":" + str(self.sim_port)))
         api.spawn(self._processUDP)
 
-        log(DEBUG, "Spawned region data connections")
+        logger.debug("Spawned region data connections")
 
     def connect_child(self):
         """ connect to the a child region udp circuit code """
@@ -324,17 +323,17 @@ class Region(object):
         self.last_ping = 0
 
         # spawn an eventlet api instance that runs the UDP connection
-        log(DEBUG, 'Spawning region UDP connection for child region %s' % (str(self.sim_ip) + ":" + str(self.sim_port)))
+        logger.debug('Spawning region UDP connection for child region %s' % (str(self.sim_ip) + ":" + str(self.sim_port)))
 
         if self.settings.LOG_COROUTINE_SPAWNS:
-            log(INFO, "Spawning a coroutine for udp connection to the agent's child region %s" % (str(self.sim_ip) + ":" + str(self.sim_port)))
+            logger.info("Spawning a coroutine for udp connection to the agent's child region %s" % (str(self.sim_ip) + ":" + str(self.sim_port)))
 
         api.spawn(self._processUDP)
 
     def logout(self):
         """ send a logout packet """
 
-        log(INFO, "Disconnecting from region %s" % (self.SimName))
+        logger.info("Disconnecting from region %s" % (self.SimName))
 
         try:
 
@@ -348,7 +347,7 @@ class Region(object):
 
             return True
         except Exception, error:
-            log(ERROR, "Error logging out from region.")
+            logger.error("Error logging out from region.")
             return False
 
     def send_LogoutRequest(self, agent_id, session_id):
@@ -512,7 +511,7 @@ class Region(object):
                 self.send_message(packet, reliable)
                 self.packet_queue.remove((packet, reliable))
 
-        log(DEBUG, "Stopped the UDP connection for %s" % (self.SimName))
+        logger.debug("Stopped the UDP connection for %s" % (self.SimName))
 
     def _startEventQueue(self):
         """ polls the event queue capability and parses the results  """
@@ -563,7 +562,7 @@ class Region(object):
         # we are connected
         self.connected = True
 
-        log(INFO, "Connected agent \'%s %s\' to region %s" % (self.agent.firstname, self.agent.lastname, self.SimName))
+        logger.info("Connected agent \'%s %s\' to region %s" % (self.agent.firstname, self.agent.lastname, self.SimName))
 
     def onStartPingCheck(self, packet):
         """ sends the CompletePingCheck packet """
@@ -581,7 +580,7 @@ class Region(object):
         import struct
         if isinstance(handle, str):
             handle =  struct.unpack('Q', handle)[0]
-            
+
         x = int((handle >> 32)/256)
         y = int((handle & 0xffffffff)/256)
         return x, y
@@ -601,12 +600,12 @@ class RegionSeedCapability(Capability):
             from pyogp.lib.base.settings import Settings
             self.settings = Settings()
 
-        #log(INFO, 'requesting from the region domain the following caps: %s' % (names))
+        #logger.info('requesting from the region domain the following caps: %s' % (names))
 
         payload = names
         parsed_result = self.POST(payload)  #['caps']
         if self.settings.ENABLE_CAPS_LOGGING:
-            log(INFO, 'Request for caps returned: %s' % (parsed_result.keys()))
+            logger.info('Request for caps returned: %s' % (parsed_result.keys()))
 
         caps = {}
         for name in names:
@@ -615,8 +614,8 @@ class RegionSeedCapability(Capability):
                 caps[name] = Capability(name, parsed_result[name], settings = self.settings)
             else:
                 if self.settings.ENABLE_CAPS_LOGGING:
-                    log(DEBUG, 'Requested capability \'%s\' is not available' %  (name))
-            #log(INFO, 'got cap: %s' % (name))
+                    logger.debug('Requested capability \'%s\' is not available' %  (name))
+            #logger.info('got cap: %s' % (name))
 
         return caps
 

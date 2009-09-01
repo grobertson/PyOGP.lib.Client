@@ -37,7 +37,6 @@ from pyogp.lib.base.message.template_dict import TemplateDictionary
 
 # initialize logging
 logger = getLogger('pyogp.lib.client.event_queue')
-log = logger.log
 
 class EventQueueClient(object):
     """ handles an event queue of either an agent domain or a simulator 
@@ -80,7 +79,7 @@ class EventQueueClient(object):
         self.cap = capability
         #self.type = eq_type    # specify 'agentdomain' or 'region'
         self.type = 'typeNotSpecified'
-        
+
         self._running = False     # this class controls this value
         self.stopped = False     # client can pause the event queue
         self.last_id = -1
@@ -103,7 +102,7 @@ class EventQueueClient(object):
             if self.cap.name == 'event_queue':
 
                 if self.settings.LOG_COROUTINE_SPAWNS:
-                    log(INFO, "Spawning a coroutine for event queue in the agent domain context.")
+                    logger.info("Spawning a coroutine for event queue in the agent domain context.")
 
                 self._processADEventQueue()
 
@@ -112,7 +111,7 @@ class EventQueueClient(object):
             elif self.cap.name == 'EventQueueGet':
 
                 if self.settings.LOG_COROUTINE_SPAWNS:
-                    log(INFO, "Spawning a coroutine for event queue in the simulator context for %s." % (str(self.region.sim_ip) + ':' + str(self.region.sim_port)))
+                    logger.info("Spawning a coroutine for event queue in the simulator context for %s." % (str(self.region.sim_ip) + ':' + str(self.region.sim_port)))
 
                 self._processRegionEventQueue()
 
@@ -122,19 +121,19 @@ class EventQueueClient(object):
 
                 # ToDo handle this as an exception
 
-                log(WARNING, 'Unable to start event queue polling due to %s' % ('unknown queue type'))
+                logger.warning('Unable to start event queue polling due to %s' % ('unknown queue type'))
                 return False
 
         except Exception, error:
 
-            log(ERROR, "Problem starting event queue for %s with cap of %s, with an error of: %s" % (str(self.region.sim_ip) + ':' + str(self.region.sim_port), str(self.cap), error))
+            logger.error("Problem starting event queue for %s with cap of %s, with an error of: %s" % (str(self.region.sim_ip) + ':' + str(self.region.sim_port), str(self.cap), error))
 
             return False
 
     def stop(self):
         """ trigger the event queue to stop communicating with the simulator """
 
-        log(INFO, "Stopping event queue.")
+        logger.info("Stopping event queue.")
 
         self.stopped = True
 
@@ -152,7 +151,7 @@ class EventQueueClient(object):
                 "Failed to stop event queue for %s after %s seconds",
                 self.region.SimName,
                 str(interval * times))
-            
+
         api.spawn(stop_monitor, self, self.settings.REGION_EVENT_QUEUE_POLL_INTERVAL, 10)
 
     def _processRegionEventQueue(self):
@@ -178,7 +177,7 @@ class EventQueueClient(object):
                             host_string = ' to (%s)' % (str(self.region.sim_ip) + ':' + str(self.region.sim_port))
                         else:
                             host_string = ''
-                        log(DEBUG, 'Posting to the event queue%s: %s' % (host_string, self.data))
+                        logger.debug('Posting to the event queue%s: %s' % (host_string, self.data))
 
                     try:
                         self.result = self.cap.POST(self.data)
@@ -187,7 +186,7 @@ class EventQueueClient(object):
                             host_string = ' from (%s)' % (str(self.region.sim_ip) + ':' + str(self.region.sim_port))
                         else:
                             host_string = ''
-                        log(INFO, "Received an error we ought not care about%s: %s" % (host_string, error))
+                        logger.info("Received an error we ought not care about%s: %s" % (host_string, error))
 
                     if self.result != None: 
                         self.last_id = self.result['id']
@@ -197,8 +196,8 @@ class EventQueueClient(object):
                     self._parse_result(self.result)
 
                 except Exception, error:
-                    log(WARNING, "Error in a post to the event queue. Error was: %s" % (error))
-                    
+                    logger.warning("Error in a post to the event queue. Error was: %s" % (error))
+
             if self.last_id != -1:
                 # Need to ack the last message received, otherwise it will be
                 # resent if we re-connect to the same queue
@@ -213,7 +212,7 @@ class EventQueueClient(object):
 
             self._running = False
 
-            log(DEBUG, "Stopped event queue processing for %s" % (self.region.SimName))
+            logger.debug("Stopped event queue processing for %s" % (self.region.SimName))
 
     def _processADEventQueue(self):
         """ connects to an agent domain's event queue """
@@ -251,7 +250,7 @@ class EventQueueClient(object):
                             host_string = ' from (%s)' % (str(self.region.sim_ip) + ':' + str(self.region.sim_port))
                         else:
                             host_string = ''
-                        log(DEBUG, 'Event Queue result%s: %s' % (host_string, data))
+                        logger.debug('Event Queue result%s: %s' % (host_string, data))
 
                     # if we are handling packets, handle the packet so any subscribers can get the data
                     if self.settings.HANDLE_PACKETS:
@@ -271,7 +270,7 @@ class EventQueueClient(object):
                 else:
                     host_string = ''
 
-                log(WARNING, "Error parsing even queue results%s. Error: %s. Data was: %s" % (host_string, error, data))
+                logger.warning("Error parsing even queue results%s. Error: %s. Data was: %s" % (host_string, error, data))
 
     def _decode_eq_result(self, data=None):
         """ parse the event queue data, return a list of packets
@@ -301,10 +300,10 @@ class EventQueueClient(object):
                             # or some dict mapping name to action to take
 
                             in_template = self.template_dict.get_template(message['message'])
-                            
+
                             if in_template:
                                 # this is a message found in the message_template
-                                
+
                                 #self.current_template = self.template_dict.get_template(message['message'])
                                 new_message = Message(message['message'])
                                 new_message.event_queue_id = self.last_id
@@ -338,12 +337,12 @@ class EventQueueClient(object):
                                 # faux block with a name of Message_Data
                                 block = Block('Message_Data')
                                 new_message.add_block(block)
-                                
+
                                 for var in message['body']:
 
                                     var_data = Variable(var, message['body'][var], -1)
                                     block.add_variable(var_data)
- 
+
                                 messages.append(new_message)                                   
 
             return messages

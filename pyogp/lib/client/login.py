@@ -33,7 +33,6 @@ from pyogp.lib.base.network.stdlib_client import StdLibClient
 
 # initialize globals
 logger = getLogger('login')
-log = logger.log
 
 class Login(object):
     """ logs into a login endpoint 
@@ -95,7 +94,7 @@ class Login(object):
         # if we are testing, we can initialize a mock handler 
         self.handler = None
 
-        if self.settings.LOG_VERBOSE: log(INFO, 'Initializing login')
+        if self.settings.LOG_VERBOSE: logger.info('Initializing login')
 
     def login(self, loginuri = None, login_params = None, start_location = None, handler = None):
         """ high level login initiator, returns the login response as a dict"""
@@ -136,7 +135,7 @@ class Login(object):
             self._post_to_legacy_loginuri()
 
         else:
-            log(WARNING, 'Unknown loginuri type: %s' % (self.loginuri))
+            logger.warning('Unknown loginuri type: %s' % (self.loginuri))
             raise LoginError('Unknown loginuri type: %s' % (self.loginuri))
 
         return self.response
@@ -212,13 +211,13 @@ class Login(object):
 
         self._init_legacy_login_handler(loginuri)
 
-        log(INFO, 'Logging \'%s %s\' into %s with method: %s' % (self.login_params['first'], self.login_params['last'], self.loginuri, login_method))
-        if self.settings.LOG_VERBOSE: log(DEBUG, '\'%s %s\' has the following login parameters: %s' % (self.login_params['first'], self.login_params['last'], self.login_params))
+        logger.info('Logging \'%s %s\' into %s with method: %s' % (self.login_params['first'], self.login_params['last'], self.loginuri, login_method))
+        if self.settings.LOG_VERBOSE: logger.debug('\'%s %s\' has the following login parameters: %s' % (self.login_params['first'], self.login_params['last'], self.login_params))
 
         # This handles the standard 'login_to_simulator' case
         # plus, all the transforms that may need to be followed
         login_handler = self.handler.__getattr__(login_method)
-        
+
         self.response = login_handler(self.login_params)
 
         try:
@@ -237,12 +236,12 @@ class Login(object):
     def _handle_transform(self, transform):
         """ follows a transform """
 
-        if self.settings.LOG_VERBOSE: log(DEBUG, 'Login response for \'%s %s\' is: %s' % (self.input_params['firstname'], self.input_params['lastname'], transform))
+        if self.settings.LOG_VERBOSE: logger.debug('Login response for \'%s %s\' is: %s' % (self.input_params['firstname'], self.input_params['lastname'], transform))
 
         # store the response in the transform response attribute
         self.transform_response = transform
 
-        log(INFO, 'Following a login redirect to %s with method: %s. Message: %s' % (transform['next_url'], transform['next_method'], transform['message']))
+        logger.info('Following a login redirect to %s with method: %s. Message: %s' % (transform['next_url'], transform['next_method'], transform['message']))
 
         self._post_to_legacy_loginuri(loginuri = transform['next_url'], login_method = transform['next_method'])
 
@@ -260,7 +259,7 @@ class Login(object):
         if not self.login_params.has_key('id0'): self.login_params['id0'] = default_login_params['id0']
         if not self.login_params.has_key('options'): self.login_params['options'] = default_login_params['options']
 
-        log(DEBUG, 'Initializing login parameters for \'%s %s\'' % (self.login_params['first'], self.login_params['last']))
+        logger.debug('Initializing login parameters for \'%s %s\'' % (self.login_params['first'], self.login_params['last']))
 
     def _parse_response(self):
         """ evaluates the data contained in the login response 
@@ -269,23 +268,23 @@ class Login(object):
 
         if self.type == 'legacy':
 
-            if self.settings.LOG_VERBOSE: log(DEBUG, 'Login response for \'%s %s\' is: %s' % (self.input_params['firstname'], self.input_params['lastname'], self.response))
+            if self.settings.LOG_VERBOSE: logger.debug('Login response for \'%s %s\' is: %s' % (self.input_params['firstname'], self.input_params['lastname'], self.response))
 
             if self.response['login'] == 'true':
 
-                log(INFO, 'Logged in \'%s %s\'' % (self.input_params['firstname'], self.input_params['lastname']))
+                logger.info('Logged in \'%s %s\'' % (self.input_params['firstname'], self.input_params['lastname']))
 
-                if self.response.has_key('message'): log(INFO, 'Login message: %s' % (self.response['message']))
+                if self.response.has_key('message'): logger.info('Login message: %s' % (self.response['message']))
 
             elif self.response == None:
 
-                log(WARNING, 'Failed to login \'%s %s\' due to %s' % (self.input_params['firstname'], self.input_params['lastname'], 'empty response from loginuri'))
+                logger.warning('Failed to login \'%s %s\' due to %s' % (self.input_params['firstname'], self.input_params['lastname'], 'empty response from loginuri'))
 
                 raise LoginError('Failed login due to empty response from loginuri')
 
             elif self.response['login'] == 'false':
 
-                log(WARNING, 'Failed login for \'%s %s\', Reason: %s' % (self.input_params['firstname'], self.input_params['lastname'], self.response['message']))
+                logger.warning('Failed login for \'%s %s\', Reason: %s' % (self.input_params['firstname'], self.input_params['lastname'], self.response['message']))
 
                 raise LoginError('Failed login due to: %s' % (self.response['message']))
 
@@ -295,19 +294,19 @@ class Login(object):
 
         elif self.type == 'ogp':
 
-            if self.settings.LOG_VERBOSE: log(DEBUG, 'Login response for \'%s %s\' is: %s' % (self.input_params['firstname'], self.input_params['lastname'], self.response.body))
+            if self.settings.LOG_VERBOSE: logger.debug('Login response for \'%s %s\' is: %s' % (self.input_params['firstname'], self.input_params['lastname'], self.response.body))
 
             if self.response == None:
-                log(WARNING, 'Failed to login \'%s %s\' due to %s' % (self.input_params['firstname'], self.input_params['lastname'], 'empty response from loginuri'))
+                logger.warning('Failed to login \'%s %s\' due to %s' % (self.input_params['firstname'], self.input_params['lastname'], 'empty response from loginuri'))
                 raise LoginError('Failed login due to empty response from loginuri')
             elif self.response._status == '200 OK':
 
                 self.response = llsd.parse(self.response.body)
 
                 if self.response['authenticated']:
-                    log(INFO, 'Logged in \'%s %s\'' % (self.input_params['firstname'], self.input_params['lastname']))
+                    logger.info('Logged in \'%s %s\'' % (self.input_params['firstname'], self.input_params['lastname']))
                 elif not self.response['authenticated']:
-                    log(WARNING, 'Failed login for \'%s %s\', Reason: %s' % (self.input_params['firstname'], self.input_params['lastname'], self.response['message']))
+                    logger.warning('Failed login for \'%s %s\', Reason: %s' % (self.input_params['firstname'], self.input_params['lastname'], self.response['message']))
                     raise LoginError('Failed login due to: %s' % (self.response['message']))
             else:
 
@@ -327,10 +326,10 @@ class Login(object):
             try:
                 return 'uri:%s&%i&%i&%i' % (start_location[0], start_location[1], start_location[2], start_location[3])
             except IndexError, error:
-                log(WARNING, 'Invalid start_location specified (%s), using default of \'%s\'' % (start_location, self.settings.DEFAULT_START_LOCATION))
+                logger.warning('Invalid start_location specified (%s), using default of \'%s\'' % (start_location, self.settings.DEFAULT_START_LOCATION))
                 return self.settings.DEFAULT_START_LOCATION
             except TypeError, error:
-                log(WARNING, 'Invalid start_location specified (%s), using default of \'%s\'' % (start_location, self.settings.DEFAULT_START_LOCATION))
+                logger.warning('Invalid start_location specified (%s), using default of \'%s\'' % (start_location, self.settings.DEFAULT_START_LOCATION))
                 return self.settings.DEFAULT_START_LOCATION
         elif type(start_location) == str and re.match("uri:", start_location[0:4].lower()):
             location = start_location.split(":")[1]
@@ -379,8 +378,8 @@ class Login(object):
 
         headers = {'Content-Type': self.content_type}
 
-        log(INFO, 'Logging in to %s as %s %s' % (self.loginuri, self.input_params['firstname'], self.input_params['lastname']))
-        if self.settings.LOG_VERBOSE: log(DEBUG, '\'%s %s\' has the following login parameters: %s with headers of: %s' % (self.input_params['firstname'], self.input_params['lastname'], self.login_params, headers))
+        logger.info('Logging in to %s as %s %s' % (self.loginuri, self.input_params['firstname'], self.input_params['lastname']))
+        if self.settings.LOG_VERBOSE: logger.debug('\'%s %s\' has the following login parameters: %s with headers of: %s' % (self.input_params['firstname'], self.input_params['lastname'], self.login_params, headers))
 
         try:
             self.response = self.handler.POST(self.loginuri, self.login_params, headers=headers)

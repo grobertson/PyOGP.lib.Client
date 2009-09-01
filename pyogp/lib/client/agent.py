@@ -47,7 +47,6 @@ from pyogp.lib.base.utilities.enums import ImprovedIMDialogue, MoneyTransactionT
 
 # initialize logging
 logger = getLogger('pyogp.lib.client.agent')
-log = logger.log
 
 class Agent(object):
     """ The Agent class is a container for agent specific data.
@@ -157,7 +156,7 @@ class Agent(object):
         self.agent_id_map = {}
 
         if self.settings.LOG_VERBOSE: 
-            log(DEBUG, 'Initializing agent: %s' % (self))
+            logger.debug('Initializing agent: %s' % (self))
 
     def Name(self):
         """ returns a concatenated firstname + ' ' + lastname"""
@@ -176,7 +175,7 @@ class Agent(object):
             self.grid_type = 'Legacy'
 
         else:
-            log(WARNING, 'Unable to identify the loginuri schema. Stopping')
+            logger.warning('Unable to identify the loginuri schema. Stopping')
             sys.exit(-1)
 
         if firstname != None:
@@ -220,7 +219,7 @@ class Agent(object):
         """ logs an agent out of the current region. calls Region()._kill_coroutines() for all child regions, and Region().logout() for the host region """
 
         if not self.connected:
-            log(INFO, 'Agent is not logged into the grid. Stopping.')
+            logger.info('Agent is not logged into the grid. Stopping.')
             sys.exit()
 
         self.running = False
@@ -296,7 +295,7 @@ class Agent(object):
 
         # start the simulator udp and event queue connections
         if self.settings.LOG_COROUTINE_SPAWNS: 
-            log(INFO, "Spawning a coroutine for connecting to the agent's host region.")
+            logger.info("Spawning a coroutine for connecting to the agent's host region.")
 
         api.spawn(self.region.connect)
 
@@ -310,7 +309,7 @@ class Agent(object):
         # if this is the sim we are already connected to, skip it
         if self.region.sim_ip == region_params['IP'] and self.region.sim_port == region_params['Port']:
             #self.region.sendCompleteAgentMovement()
-            log(DEBUG, "Not enabling a region we are already connected to: %s" % (str(region_params['IP']) + ":" + str(region_params['Port'])))
+            logger.debug("Not enabling a region we are already connected to: %s" % (str(region_params['IP']) + ":" + str(region_params['Port'])))
             return
 
         child_region = Region(circuit_code = self.circuit_code, 
@@ -323,10 +322,10 @@ class Agent(object):
 
         self.child_regions.append(child_region)
 
-        log(INFO, "Enabling a child region with ip:port of %s" % (str(region_params['IP']) + ":" + str(region_params['Port'])))
+        logger.info("Enabling a child region with ip:port of %s" % (str(region_params['IP']) + ":" + str(region_params['Port'])))
 
         if self.settings.LOG_COROUTINE_SPAWNS: 
-            log(INFO, "Spawning a coroutine for connecting to a neighboring region.")
+            logger.info("Spawning a coroutine for connecting to a neighboring region.")
 
         api.spawn(child_region.connect_child)
 
@@ -355,7 +354,7 @@ class Agent(object):
 
             region[0]._get_region_capabilities()
 
-            log(DEBUG, 'Spawning neighboring region event queue connection')
+            logger.debug('Spawning neighboring region event queue connection')
             region[0]._startEventQueue()
 
     def enable_callbacks(self):
@@ -373,13 +372,13 @@ class Agent(object):
 
                 caps = dict([(capname, self.region.capabilities[capname]) for capname in inventory_caps])
 
-                log(INFO, "Using the capability based inventory management mechanism")
+                logger.info("Using the capability based inventory management mechanism")
 
                 self.inventory = AIS(self, caps)
 
             else:
 
-                log(INFO, "Using the UDP based inventory management mechanism")
+                logger.info("Using the UDP based inventory management mechanism")
 
                 self.inventory = UDP_Inventory(self)
 
@@ -530,7 +529,7 @@ class Agent(object):
 
         else:
 
-            log(INFO, "Please specify an agentid and message to send in agent.instant_message")
+            logger.info("Please specify an agentid and message to send in agent.instant_message")
 
     def send_ImprovedInstantMessage(self, 
                                     AgentID = None, 
@@ -583,7 +582,7 @@ class Agent(object):
     def sigint_handler(self, signal_sent, frame):
         """ catches terminal signals (Ctrl-C) to kill running client instances """
 
-        log(INFO, "Caught signal... %d. Stopping" % signal_sent)
+        logger.info("Caught signal... %d. Stopping" % signal_sent)
         self.logout()
 
     def __repr__(self):
@@ -619,7 +618,7 @@ class Agent(object):
 
         self.Position = packet.blocks['Data'][0].get_variable('Position').data
         if self.Position == None:
-            log(WARNING, "agent.position is None agent.py")
+            logger.warning("agent.position is None agent.py")
         self.LookAt = packet.blocks['Data'][0].get_variable('LookAt').data
 
         self.region.RegionHandle = packet.blocks['Data'][0].get_variable('RegionHandle').data
@@ -695,7 +694,7 @@ class Agent(object):
                             Position = Position, 
                             Message = _Message)
 
-        log(INFO, "Received chat from %s: %s" % (FromName, _Message))
+        logger.info("Received chat from %s: %s" % (FromName, _Message))
 
         self.events_handler.handle(message)
 
@@ -716,7 +715,7 @@ class Agent(object):
                 FromAgentName = packet.blocks['MessageBlock'][0].get_variable('FromAgentName').data
                 InventoryName = packet.blocks['MessageBlock'][0].get_variable('Message').data
 
-                log(INFO, "Agent %s accepted the inventory offer." % (FromAgentName))
+                logger.info("Agent %s accepted the inventory offer." % (FromAgentName))
 
         elif Dialog == ImprovedIMDialogue.InventoryDeclined:
 
@@ -725,7 +724,7 @@ class Agent(object):
                 FromAgentName = packet.blocks['MessageBlock'][0].get_variable('FromAgentName').data
                 InventoryName = packet.blocks['MessageBlock'][0].get_variable('Message').data
 
-                log(INFO, "Agent %s declined the inventory offer." % (FromAgentName))
+                logger.info("Agent %s declined the inventory offer." % (FromAgentName))
 
         elif Dialog == ImprovedIMDialogue.FromAgent:
 
@@ -737,7 +736,7 @@ class Agent(object):
 
             message = AppEvent('InstantMessageReceived', FromAgentID = FromAgentID, RegionID = RegionID, Position = Position, ID = ID, FromAgentName = FromAgentName, Message = _Message)
 
-            log(INFO, "Received instant message from %s: %s" % (FromAgentName, _Message))
+            logger.info("Received instant message from %s: %s" % (FromAgentName, _Message))
 
             self.events_handler.handle(message)
 
@@ -752,7 +751,7 @@ class Agent(object):
 
         message = AppEvent('AlertMessage', AlertMessage = AlertMessage)
 
-        log(WARNING, "AlertMessage from simulator: %s" % (AlertMessage))
+        logger.warning("AlertMessage from simulator: %s" % (AlertMessage))
 
         self.events_handler.handle(message)
 
@@ -769,7 +768,7 @@ class Agent(object):
 
         region_params = {'IP': IP, 'Port': Port, 'Handle': Handle}
 
-        log(INFO, 'Received EnableSimulator for %s' % (str(IP) + ":" + str(Port)))
+        logger.info('Received EnableSimulator for %s' % (str(IP) + ":" + str(Port)))
 
         # are we already prepping to connect to the sim?
         if region_params not in self._pending_child_regions:
@@ -789,7 +788,7 @@ class Agent(object):
     def onEstablishAgentCommunication(self, message):
         """ callback handler for received EstablishAgentCommunication messages. try to enable the event queue for a neighboring region based on the data received """
 
-        log(INFO, 'Received EstablishAgentCommunication for %s' % (message.blocks['Message_Data'][0].get_variable('sim-ip-and-port').data))
+        logger.info('Received EstablishAgentCommunication for %s' % (message.blocks['Message_Data'][0].get_variable('sim-ip-and-port').data))
 
         is_running = False
 
@@ -814,7 +813,7 @@ class Agent(object):
         it may be necessary to request the destination region handle from the current sim
         before the teleport can start."""
 
-        log(INFO, 'teleport name=%s handle=%s id=%s', str(region_name), str(region_handle), str(region_id))
+        logger.info('teleport name=%s handle=%s id=%s', str(region_name), str(region_handle), str(region_id))
 
         # Handle intra-region teleports even by name
         if not region_id and region_name and region_name.lower() == self.region.SimName.lower():
@@ -826,7 +825,7 @@ class Agent(object):
 
         if region_id:
 
-            log(INFO, 'sending TP request packet')
+            logger.info('sending TP request packet')
 
             packet = Message('TeleportRequest', 
                             Block('AgentData', 
@@ -841,7 +840,7 @@ class Agent(object):
 
         elif region_handle:
 
-            log(INFO, 'sending TP location request packet')
+            logger.info('sending TP location request packet')
 
             packet = Message('TeleportLocationRequest', 
                             Block('AgentData', 
@@ -855,7 +854,7 @@ class Agent(object):
             self.region.enqueue_message(packet)
 
         else:
-            log(INFO, "Target region's handle not known, sending map name request")
+            logger.info("Target region's handle not known, sending map name request")
             # do a region_name to region_id lookup and then request the teleport
             self.send_MapNameRequest(
                 region_name,
@@ -870,7 +869,7 @@ class Agent(object):
         def onMapBlockReplyPacket(packet):
             """ handles the MapBlockReply message from a simulator """
 
-            log(INFO, 'MapBlockReplyPacket received')
+            logger.info('MapBlockReplyPacket received')
 
             for block in packet.blocks['Data']:
 
@@ -888,7 +887,7 @@ class Agent(object):
                     else:
                         # *TODO: May get a region_handle of 0 if region
                         # is offline/unknown. Should callback handle it?
-                        log(WARNING, 'Got null region_handle for %s', region_name)
+                        logger.warning('Got null region_handle for %s', region_name)
                     return
 
             # Leave it registered, as the event may come later
@@ -897,7 +896,7 @@ class Agent(object):
         handler.subscribe(onMapBlockReplyPacket)
 
         # ...and make the request
-        log(INFO, 'sending MapNameRequestPacket')
+        logger.info('sending MapNameRequestPacket')
 
         packet = Message('MapNameRequest', 
                         Block('AgentData', 
@@ -914,7 +913,7 @@ class Agent(object):
     def onTeleportFinish(self, packet):
         """Handle the end of a successful teleport"""
 
-        log(INFO, "Teleport finished, taking care of details...")
+        logger.info("Teleport finished, taking care of details...")
 
         # Raise a plain-vanilla AppEvent for the Info block
         self.simple_callback('Info')(packet)
@@ -928,7 +927,7 @@ class Agent(object):
         sim_ip = '.'.join(map(str, struct.unpack('BBBB', sim_ip))) 
 
         # *TODO: Make this more graceful
-        log(INFO, "Disconnecting from old region")
+        logger.info("Disconnecting from old region")
         [region.kill_coroutines() for region in self.child_regions]
         self.region.kill_coroutines()
 
@@ -936,7 +935,7 @@ class Agent(object):
         self.child_regions = []
         self._pending_child_regions = []
 
-        log(INFO, "Enabling new region")
+        logger.info("Enabling new region")
         self._enable_current_region(
             region_x = region_x,
             region_y = region_y,
@@ -974,7 +973,7 @@ class Agent(object):
 
         def onUUIDNameReply(packet):
             """ handles the UUIDNameReply message from a simulator """
-            log(INFO, 'UUIDNameReplyPacket received')
+            logger.info('UUIDNameReplyPacket received')
 
             cbdata = []
             for block in packet.blocks['UUIDNameBlock']:
@@ -992,11 +991,11 @@ class Agent(object):
                 handler.unsubscribe(onUUIDNameReply)
                 callback(cbdata)
             else:
-                log(INFO, 'Still waiting on %d names in send_UUIDNameRequest', len(missing))
+                logger.info('Still waiting on %d names in send_UUIDNameRequest', len(missing))
 
         handler.subscribe(onUUIDNameReply)
 
-        log(INFO, 'sending UUIDNameRequest')
+        logger.info('sending UUIDNameRequest')
 
         packet = Message('UUIDNameRequest', 
                         [Block('UUIDNameBlock', ID = UUID(agent_id)) for agent_id in agent_ids])
@@ -1012,14 +1011,14 @@ class Agent(object):
 
         def onMoneyBalanceReply(packet):
             """ handles the MoneyBalanceReply message from a simulator """
-            log(INFO, 'MoneyBalanceReply received')
+            logger.info('MoneyBalanceReply received')
             handler.unsubscribe(onMoneyBalanceReply) # One-shot handler
             balance = packet.blocks['MoneyData'][0].get_variable('MoneyBalance').data
             callback(balance)
 
         handler.subscribe(onMoneyBalanceReply)
 
-        log(INFO, 'sending MoneyBalanceRequest')
+        logger.info('sending MoneyBalanceRequest')
 
         packet = Message('MoneyBalanceRequest',
                         Block('AgentData',
@@ -1036,7 +1035,7 @@ class Agent(object):
                    flags=TransactionFlags.Null):
         """Give money to another agent"""
 
-        log(INFO, 'sending MoneyTransferRequest')
+        logger.info('sending MoneyTransferRequest')
 
         packet = Message('MoneyTransferRequest',
                         Block('AgentData',
@@ -1086,7 +1085,7 @@ class Agent(object):
     def _send_update(self):
         """ force a send of an AgentUpdate message to the host simulator """
 
-        log(INFO, 'sending AgentUpdate')
+        logger.info('sending AgentUpdate')
 
         self.region.sendAgentUpdate(self.agent_id, self.session_id,
             State=self.state,

@@ -106,11 +106,11 @@ class TestInventory(unittest.TestCase):
                                        0,
                                        0)
         self.inventory._store_inventory_item(inventory_item)
- 
+
     def tearDown(self):
         self.inventory = None
         self.folder_data = None
-        
+
     def test_display_folder_contents_by_id(self):
 
         self.assertEquals(len(self.inventory.display_folder_contents(folder_id = uuid.UUID('52aaafe8-7c5e-8fe0-b47e-097198648c9b'))), 18)
@@ -146,14 +146,14 @@ class TestInventory(unittest.TestCase):
         self.assertTrue(len(matches), 1)
         item = matches.pop()
         self.assertEqual(str(item.ItemID), '12345678-1234-1234-1234-123456789abc') 
-    
+
     def test_create_new_item(self):
 
         self.inventory.agent = Agent()
         agent_id = UUID()
         agent_id.random()
         self.inventory.agent.agent_id = agent_id
-        
+
         self.inventory.agent.region = DummyRegion()
 
         matches = self.inventory.search_inventory(self.inventory.folders,

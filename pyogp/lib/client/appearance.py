@@ -39,7 +39,6 @@ from pyogp.lib.base.utilities.enums import BakedIndex, TextureIndex, \
 
 # initialize logging
 logger = getLogger('pyogp.lib.client.appearance')
-log = logger.log
 
 class AppearanceManager(DataManager):
     """The AppearanceManager class handles appearance of an Agent() instance
@@ -67,7 +66,7 @@ class AppearanceManager(DataManager):
         self.visualParams[32].value = 1.0
         self.TextureEntry = ""
         self.Size = Vector3(X = 0.45, Y = 0.60, Z = 1.14 ) # Z which is Height needs to be calculated using params
-        
+
         self.requests = [] 
     def enable_callbacks(self):
         """
@@ -93,7 +92,7 @@ class AppearanceManager(DataManager):
         if self.agent.agent_id == None or self.agent.session_id == None or \
               str(self.agent.agent_id) == str(UUID()) or \
               str(self.agent.session_id) == str(UUID()):
-           log(WARNING, "Agent has either no agent_id or session_id, message not sent")
+           logger.warning("Agent has either no agent_id or session_id, message not sent")
            return
 
         self.send_AgentWearablesRequest(self.agent.agent_id,
@@ -103,21 +102,21 @@ class AppearanceManager(DataManager):
         """
         callback for wearables request
         """
-        
+
 
         self.requests.remove(str(assetID))
         if isSuccess:
             asset = self.agent.asset_manager.get_asset(assetID)
-            #log(INFO, "wearable data\n, %s" % asset.data )
+            #logger.info("wearable data\n, %s" % asset.data )
             for paramID in asset.params.keys():
                 #log (INFO, 'Changing param %d from %f to %f' %(paramID,
                 #                                               self.visualParams[paramID].value,
                 #                                               asset.params[paramID]))
-                                                               
+
                 self.visualParams[paramID].value = asset.params[paramID]
-            
+
         if len(self.requests) == 0:
-            #log(INFO, "YAY!! Got all requested assets")
+            #logger.info("YAY!! Got all requested assets")
             self.send_AgentCachedTexture(self.agent.agent_id,
                                          self.agent.session_id,
                                          self.bakedTextures,
@@ -125,20 +124,20 @@ class AppearanceManager(DataManager):
             self.send_AgentIsNowWearing(self.agent.agent_id,
                                     self.agent.session_id,
                                     self.wearables)
-        
+
     def onAgentWearablesUpdate(self, packet):
         """
         Automatically tells simulator avatar is wearing the wearables from
         the AgentWearables update packet.
         This message should only be received once.
-        
+
         Error Checking: make sure agent and session id are correct
         make sure this method is only called once.
 
         """
-        
+
         #self.verifyAgentData(packet)
-        log(INFO, "Got AgentWearablesUpdate: %s" % packet)
+        logger.info("Got AgentWearablesUpdate: %s" % packet)
         for wearableData in packet.blocks['WearableData']:
             wearableType = wearableData.get_variable('WearableType').data
             itemID = wearableData.get_variable('ItemID').data
@@ -150,7 +149,7 @@ class AppearanceManager(DataManager):
                 self.agent.asset_manager.request_asset(assetID, wearable.getAssetType(),
                                                        True, self.wearableArrived)
                 self.requests.append(str(assetID))
-        
+
     def onAvatarTextureUpdate(self, packet):
         raise NotImplemented("onAvatarTextureUpdate")
 
@@ -159,13 +158,13 @@ class AppearanceManager(DataManager):
         Informs viewer how other avatars look
         """
         raise NotImplemented("onAvatarAppearance")
-            
+
     def onAgentCachedTextureResponse(self, packet):
         """
         Update the bakedTextures with their TextureIDs and HostNames and call
         send_AgentSetAppearance
         """
-        #log(INFO, "AgentCachedTextureRespose received: %s" % packet)
+        #logger.info("AgentCachedTextureRespose received: %s" % packet)
         for bakedTexture in packet.blocks['WearableData']:
             bakedIndex = bakedTexture.get_variable('TextureIndex').data
             self.bakedTextures[bakedIndex].TextureID = bakedTexture.get_variable('TextureID').data
@@ -184,9 +183,9 @@ class AppearanceManager(DataManager):
         pAgentID = packet.blocks['AgentData'][0].get_variable("AgentID").data
         pSessionID = packet.blocks['AgentData'][0].get_variable("SessionID").data
         if  str(pAgentID) != str(self.agent.agent_id):
-            log(WARNING, "%s packet does not have an AgentID", packet.name)
+            logger.warning("%s packet does not have an AgentID", packet.name)
         if str(pSessionID) != str(self.agent.session_id):
-            log(WARNING, "%s packet does not have a SessionID" % packet.name)
+            logger.warning("%s packet does not have a SessionID" % packet.name)
 
     def send_AgentWearablesRequest(self, AgentID, SessionID):
         """
@@ -196,9 +195,9 @@ class AppearanceManager(DataManager):
                          Block('AgentData',
                                AgentID = AgentID,
                                SessionID = SessionID))
-        
+
         self.agent.region.enqueue_message(packet)
-    
+
     def send_AgentIsNowWearing(self, AgentID, SessionID, wearables):
         """
         Tell the simulator that avatar is wearing initial items
@@ -210,9 +209,9 @@ class AppearanceManager(DataManager):
                        ItemID = wearable.ItemID,
                        WearableType = wearable.WearableType) \
                  for wearable in wearables]
-                
+
         packet = Message('AgentIsNowWearing', *args)
-                
+
         self.agent.region.enqueue_message(packet, True)
 
     def send_AgentCachedTexture(self, AgentID, SessionID, bakedTextures,
@@ -230,14 +229,14 @@ class AppearanceManager(DataManager):
                        ID = bakedTextures[i].get_hash(wearables),
                        TextureIndex = i) \
                  for i in range(BakedIndex.BAKED_COUNT)]
-        
-        packet = Message('AgentCachedTexture', *args)
-        
 
-        
+        packet = Message('AgentCachedTexture', *args)
+
+
+
         self.AgentCachedSerialNum += 1
         self.agent.region.enqueue_message(packet, True)
-        
+
 
     def send_AgentSetAppearance(self, AgentID, SessionID, Size, bakedTextures,
                                 TextureEntry, visualParams):
@@ -263,14 +262,14 @@ class AppearanceManager(DataManager):
         args += [Block('VisualParam',
                        ParamValue = visualParams[key].floatToByte()) \
                  for key in paramkeys]
-        
+
         packet =  Message('AgentSetAppearance', *args)
-        
+
         self.AgentSetSerialNum += 1
         self.agent.region.enqueue_message(packet)
-       
 
-    
+
+
 class Wearable(object):
     """
     Represents 1 of the 13 wearables an avatar can wear
@@ -308,7 +307,7 @@ class BakedTexture(object):
         self.bakedIndex = bakedIndex
         self.TextureID = TextureID
         self.HostName = None
-            
+
         if bakedIndex == BakedIndex.BAKED_HEAD:
             self.secret_hash = UUID("18ded8d6-bcfc-e415-8539-944c0f5ea7a6")
         elif bakedIndex == BakedIndex.BAKED_UPPER:
@@ -335,7 +334,7 @@ class BakedTexture(object):
         if str(hash) != '00000000-0000-0000-0000-000000000000':
             hash ^= self.secret_hash
         return hash
-    
+
 class AvatarTexture(object):
     """
     Represents 1 of the 21 baked and not baked textures of an avatar.

@@ -43,7 +43,6 @@ from pyogp.lib.base.utilities.enums import ImprovedIMDialogue
 
 # initialize logging
 logger = getLogger('pyogp.lib.client.groups')
-log = logger.log
 
 class GroupManager(DataManager):
     """ a storage bin for groups
@@ -59,7 +58,7 @@ class GroupManager(DataManager):
         self.group_store = []
 
         if self.settings.LOG_VERBOSE:
-            log(DEBUG, "Initialized the Group Manager")
+            logger.debug("Initialized the Group Manager")
 
     def enable_callbacks(self):
         """enables the callback handlers for this GroupManager"""
@@ -79,7 +78,7 @@ class GroupManager(DataManager):
             onChatterBoxSessionStartReply_received = self.agent.region.message_handler.register('ChatterBoxSessionStartReply')
             onChatterBoxSessionStartReply_received.subscribe(self.onChatterBoxSessionStartReply)
 
-    
+
     def handle_group_chat(self, message):
         """ process a ChatterBoxInvitation_Message instance"""
 
@@ -88,7 +87,7 @@ class GroupManager(DataManager):
         if group != []:
             group[0].handle_inbound_chat(message)
         else:
-            log(WARNING, "Received group chat message from unknown group. Group: %s. Agent: %s. Message: %s" % (message.blocks['Message_Data'][0].get_variable('session_name').data, message.blocks['Message_Data'][0].get_variable('from_name').data, message.blocks['Message_Data'][0].get_variable('message').data))
+            logger.warning("Received group chat message from unknown group. Group: %s. Agent: %s. Message: %s" % (message.blocks['Message_Data'][0].get_variable('session_name').data, message.blocks['Message_Data'][0].get_variable('from_name').data, message.blocks['Message_Data'][0].get_variable('message').data))
 
     def store_group(self, _group):
         """ append to or replace a group in self.group_store """
@@ -102,14 +101,14 @@ class GroupManager(DataManager):
             self.group_store[index[0]] = _group
 
             if self.settings.LOG_VERBOSE:
-                log(DEBUG, 'Replacing a stored group: \'%s\'' % (_group.GroupID))
+                logger.debug('Replacing a stored group: \'%s\'' % (_group.GroupID))
 
         except:
 
             self.group_store.append(_group)
 
             if self.settings.LOG_VERBOSE:
-                log(DEBUG, 'Stored a new group: \'%s\'' % (_group.GroupID))
+                logger.debug('Stored a new group: \'%s\'' % (_group.GroupID))
 
     def update_group(self, group_data):
         """ accepts a dictionary of group data and creates/updates a group """
@@ -119,7 +118,7 @@ class GroupManager(DataManager):
         if group != []:
             group[0].update_properties(group_data)
             if self.settings.LOG_VERBOSE:
-                log(DEBUG, 'Updating a stored group: \'%s\'' % (group[0].GroupID))
+                logger.debug('Updating a stored group: \'%s\'' % (group[0].GroupID))
         else:
             group = Group(GroupID = group_data['GroupID'], 
                         GroupPowers = group_data['GroupPowers'], 
@@ -140,9 +139,9 @@ class GroupManager(DataManager):
         if group != []:
             group[0].update_properties(group_data)
             if self.settings.LOG_VERBOSE:
-                log(DEBUG, 'Updating a stored group: \'%s\'' % (group[0].GroupName))
+                logger.debug('Updating a stored group: \'%s\'' % (group[0].GroupName))
         else:
-            log(INFO, "Received an update for an unknown group for name: %s" % (name))
+            logger.info("Received an update for an unknown group for name: %s" % (name))
 
     def update_group_by_session_id(self, group_data):
         """ accepts a dictionary of group data and creates/updates a group """
@@ -152,9 +151,9 @@ class GroupManager(DataManager):
         if group != []:
             group[0].update_properties(group_data)
             if self.settings.LOG_VERBOSE:
-                log(DEBUG, 'Updating a stored group: \'%s\'' % (group[0].GroupName))
+                logger.debug('Updating a stored group: \'%s\'' % (group[0].GroupName))
         else:
-            log(INFO, "Received an update for an unknown group with a session id of: %s" % (str(group_data['session_id'])))
+            logger.info("Received an update for an unknown group with a session id of: %s" % (str(group_data['session_id'])))
 
     def create_group(self,
                     AgentID = None,
@@ -174,7 +173,7 @@ class GroupManager(DataManager):
 
         if Name != None:
 
-            log(INFO, "Sending a request to create group with a name of \'%s\'" % (Name))
+            logger.info("Sending a request to create group with a name of \'%s\'" % (Name))
 
             if AgentID == None:
                 AgentID = self.agent.agent_id
@@ -268,10 +267,10 @@ class GroupManager(DataManager):
         _Message = packet.blocks['ReplyData'][0].get_variable('Message').data
 
         if Success:
-            log(INFO, "Created group %s. Message data is: %s" % (GroupID, _Message))
-            log(WARNING, "We now need to request the group data...")
+            logger.info("Created group %s. Message data is: %s" % (GroupID, _Message))
+            logger.warning("We now need to request the group data...")
         else:
-            log(WARNING, "Failed to create group due to: %s" % (_Message))
+            logger.warning("Failed to create group due to: %s" % (_Message))
 
     def onJoinGroupReply(self, packet):
         """ the simulator tells us if joining a group was a success. """
@@ -283,9 +282,9 @@ class GroupManager(DataManager):
         Success = packet.blocks['GroupData'][0].get_variable('Success').data
 
         if Success:
-            log(INFO, "Joined group %s" % (GroupID))
+            logger.info("Joined group %s" % (GroupID))
         else:
-            log(WARNING, "Failed to join group %s" % (GroupID))
+            logger.warning("Failed to join group %s" % (GroupID))
 
     def onAgentGroupDataUpdate(self, packet):
         """ deal with the data that comes in over the event queue """
@@ -385,7 +384,7 @@ class Group(object):
     def request_join_group_chat(self):
         """ sends an ImprovedInstantMessage packet with the atributes necessary to join a group chat """
 
-        log(INFO, "Requesting to join group chat session for \'%s\'" % (self.GroupName))
+        logger.info("Requesting to join group chat session for \'%s\'" % (self.GroupName))
 
         _AgentID = self.agent.agent_id
         _SessionID = self.agent.session_id
@@ -428,7 +427,7 @@ class Group(object):
             Wait(5)
 
         if self.session_id == None:
-            log(WARNING, "Failed to start chat session with group %s. Please try again later." % (self.GroupName))
+            logger.warning("Failed to start chat session with group %s. Please try again later." % (self.GroupName))
             return
 
         if Message != None:
@@ -475,7 +474,7 @@ class Group(object):
         self.chat_history.append(message)
 
         # Todo: raise an app level event
-        log(INFO, "Group chat received. Group: %s From: %s Message: %s" % (session_name, from_name, _message))
+        logger.info("Group chat received. Group: %s From: %s Message: %s" % (session_name, from_name, _message))
 
 class MockChatInterface(object):
     """ a super simple chat interface for testing group chat in a console """
@@ -594,12 +593,12 @@ class ChatterBoxInvitation_Message(object):
 class ChatterBoxSessionEventReply_Message(object):
 
     def __init__(self, message_data):
-        
+
         self.success = message_data['success']
         self.event = message_data['event']
         self.session_id = UUID(string = str(message_data['session_id']))
         self.error = message_data['error']
-        
+
         self.name = 'ChatterBoxSessionEventReply'
 
 class ChatterBoxSessionAgentListUpdates_Message(object):

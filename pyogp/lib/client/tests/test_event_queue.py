@@ -90,9 +90,9 @@ class TestEventQueue(unittest.TestCase):
         self.assertTrue(True)
 
     def test_processRegionEventQueue_exception(self):
-        
+
         self.eq.cap = Capability('foo', 'http://127.0.0.1')
-    
+
         self.assertRaises(RegionCapNotAvailable, self.eq._processRegionEventQueue) 
 
     def test_start_and_stop(self):
@@ -107,7 +107,7 @@ class TestEventQueue(unittest.TestCase):
         self.assertTrue(self.eq.stopped)
         api.sleep(1)
         self.assertFalse(self.eq._running)
-        
+
 def test_suite():
     from unittest import TestSuite, makeSuite
     suite = TestSuite()

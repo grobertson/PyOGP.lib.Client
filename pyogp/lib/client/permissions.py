@@ -25,7 +25,6 @@ from logging import getLogger, CRITICAL, ERROR, WARNING, INFO, DEBUG
 
 # initialize logging
 logger = getLogger('pyogp.lib.client.permissions')
-log = logger.log
 
 class PermissionsMask(object):
     """ permissions flags mappings """

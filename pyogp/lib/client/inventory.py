@@ -37,7 +37,6 @@ from pyogp.lib.base.utilities.enums import ImprovedIMDialogue
 
 # initialize logging
 logger = getLogger('pyogp.lib.client.inventory')
-log = logger.log
 
 # ToDo: handle library inventory properly. right now, it's treated as regular inv. store it in self.library_folders
 
@@ -66,7 +65,7 @@ class InventoryManager(DataManager):
         self.library_root = None
 
         if self.settings.LOG_VERBOSE:
-            log(INFO, "Initializing inventory storage")
+            logger.info("Initializing inventory storage")
 
     def enable_callbacks(self):
         """ enable monitors for certain inventory related packet events """
@@ -156,7 +155,7 @@ class InventoryManager(DataManager):
         """ the login response may contain inventory information, append data to our folders list """
 
         if self.settings.LOG_VERBOSE:
-            log(DEBUG, 'Parsing the login response for inventory folders')
+            logger.debug('Parsing the login response for inventory folders')
 
         if self.agent.login_response.has_key('inventory-skeleton'):
             [self._store_inventory_folder(folder, 'inventory') for folder in self.agent.login_response['inventory-skeleton']]
@@ -177,7 +176,7 @@ class InventoryManager(DataManager):
 
         else:
 
-            log(WARNING, 'Not storing folder data, as it\'s not bound for a valid destination.')
+            logger.warning('Not storing folder data, as it\'s not bound for a valid destination.')
             return
 
         # replace an existing list member, else, append
@@ -190,7 +189,7 @@ class InventoryManager(DataManager):
         # this is probably a case we are not handling correctly
         if len(index) == 0:
             if self.settings.LOG_VERBOSE:
-                log(DEBUG, 'Did not find parent folder %s for Inventory Item %s: %s' % (inventory_item.ItemID, inventory_item.FolderID, inventory_item.Name))
+                logger.debug('Did not find parent folder %s for Inventory Item %s: %s' % (inventory_item.ItemID, inventory_item.FolderID, inventory_item.Name))
             return
 
         try:
@@ -200,14 +199,14 @@ class InventoryManager(DataManager):
             container[index[0]].inventory[inventory_index[0]] = inventory_item
 
             if self.settings.LOG_VERBOSE:
-                log(DEBUG, 'Replacing a stored inventory item: %s' % (inventory_item.ItemID))
+                logger.debug('Replacing a stored inventory item: %s' % (inventory_item.ItemID))
 
         except:
 
             container[index[0]].inventory.append(inventory_item)
 
             if self.settings.LOG_VERBOSE:
-                log(DEBUG, 'Storing a new inventory item: %s ' % (inventory_item.ItemID))
+                logger.debug('Storing a new inventory item: %s ' % (inventory_item.ItemID))
 
     def search_inventory(self, folder_list = [], item_id = None, name = None,
                          match_list = []):
@@ -219,7 +218,7 @@ class InventoryManager(DataManager):
 
         This does not request inventory from the grid. It could, were we to go about enabling this...
         """ 
-        
+
         def match():
             _match = lambda arg : False
             if item_id != None:
@@ -254,17 +253,17 @@ class InventoryManager(DataManager):
                                                        name=name)
                 match_list.extend(matches)
         return match_list
-        
+
     def search_inventory_folder(self, folder_id, _id = None, name = None):
         """ search an inventory folder for _id or name
 
         return a list of matches
         """ 
-        
+
         match_list = []
-        
+
         search_folder = [folder for folder in self.folders if str(folder.FolderID) == str(folder_id)][0]
-        
+
         for item in search_folder.inventory:
 
             if _id != None:
@@ -298,7 +297,7 @@ class InventoryManager(DataManager):
 
         else:
 
-            log(WARNING, 'Not storing folder data, as it\'s not bound for a valid destination.')
+            logger.warning('Not storing folder data, as it\'s not bound for a valid destination.')
             return
 
         # if it's a dict, we are parsing login response data or a caps response
@@ -312,9 +311,9 @@ class InventoryManager(DataManager):
                 folder = InventoryFolder(folder_data['name'], folder_data['category_id'], folder_data['parent_id'], folder_data['version'], folder_data['type_default'], folder_data['agent_id'])
 
             else:
- 
+
                 # this is from login inv skeleton
-    
+
                 folder = InventoryFolder(folder_data['name'], folder_data['folder_id'], folder_data['parent_id'], folder_data['version'], folder_data['type_default'])
 
         elif isinstance(folder_data, InventoryFolder):
@@ -329,7 +328,7 @@ class InventoryManager(DataManager):
 
             # we may be receiving an update to the folder attributes, if so, save off the contents, swap in the new representation, then append the contents
 
-            if self.settings.LOG_VERBOSE: log(DEBUG, 'Replacing a stored inventory folder: %s for agent \'%s\'' % (folder.FolderID, self.agent.agent_id))
+            if self.settings.LOG_VERBOSE: logger.debug('Replacing a stored inventory folder: %s for agent \'%s\'' % (folder.FolderID, self.agent.agent_id))
 
             contents = container[index[0]].inventory
 
@@ -339,7 +338,7 @@ class InventoryManager(DataManager):
 
         else:
 
-            if self.settings.LOG_VERBOSE: log(DEBUG, "Storing inventory folder %s" % (folder.Name))
+            if self.settings.LOG_VERBOSE: logger.debug("Storing inventory folder %s" % (folder.Name))
 
             if folder_data['parent_id'] == '00000000-0000-0000-0000-000000000000' and folder_data['name'] == 'My Inventory':
 
@@ -409,22 +408,22 @@ class InventoryManager(DataManager):
 
     def give_inventory(self, ItemID = None, agent_id = None):
         """ offers another agent the specified inventory item 
-        
+
         searches the local inventory for the specified ItemID
         given a match, sends an ImprovedInventoryMessage packet to the specified AgentID
         """
 
         if not (ItemID or agent_id):
-            log(WARNING, "ItemID and agent_id are required in InventoryManager().give_inventory()")
+            logger.warning("ItemID and agent_id are required in InventoryManager().give_inventory()")
             return
 
         item_id = self.search_inventory(item_id = ItemID)
 
         if item_id == []:
-            log(WARNING, "ItemID %s not found in inventory of %s" % (ItemID, self.agent.Name()))
+            logger.warning("ItemID %s not found in inventory of %s" % (ItemID, self.agent.Name()))
             return
         elif len(item_id) > 1:
-            log(WARNING, "Multiple matches in inventory for ItemID %s, using the first one in InventoryManager().give_inventory()" % (ItemID))
+            logger.warning("Multiple matches in inventory for ItemID %s, using the first one in InventoryManager().give_inventory()" % (ItemID))
 
         inv_item = item_id[0]
 
@@ -448,14 +447,14 @@ class InventoryManager(DataManager):
 
         if str(FromAgentID) == str(self.agent.agent_id):
 
-            log(INFO, "%s offered inventory to %s" % (self.agent.Name(), ToAgentID))
+            logger.info("%s offered inventory to %s" % (self.agent.Name(), ToAgentID))
 
         else:
 
-            log(INFO, "%s received an inventory offer from %s for %s." % (self.agent.Name(), FromAgentName, InventoryName))
+            logger.info("%s received an inventory offer from %s for %s." % (self.agent.Name(), FromAgentName, InventoryName))
 
             if self.settings.LOG_VERBOSE:
-                log(DEBUG, "Inventory offer data. \n\tFromAgentID: %s \n\tFromAgentName: %s \n\tInventoryName: %s \n\tID: %s \n\tAssetType: %s \n\tItemID: %s \n\tMessage: %s" % (FromAgentID, FromAgentName, InventoryName, ID, AssetType, ItemID, Message))
+                logger.debug("Inventory offer data. \n\tFromAgentID: %s \n\tFromAgentName: %s \n\tInventoryName: %s \n\tID: %s \n\tAssetType: %s \n\tItemID: %s \n\tMessage: %s" % (FromAgentID, FromAgentName, InventoryName, ID, AssetType, ItemID, Message))
 
         if self.agent.settings.ACCEPT_INVENTORY_OFFERS:
 
@@ -472,10 +471,10 @@ class InventoryManager(DataManager):
 
         if accept:
             accept_key = ImprovedIMDialogue.InventoryAccepted
-            log(INFO, "Sending an inventory accepted message to %s for item %s(%s)" % (FromAgentName, InventoryName, ID))
+            logger.info("Sending an inventory accepted message to %s for item %s(%s)" % (FromAgentName, InventoryName, ID))
         else:
             accept_key = ImprovedIMDialogue.InventoryDeclined
-            log(INFO, "Sending an inventory declined message to %s for item %s(%s)" % (FromAgentName, InventoryName, ID))
+            logger.info("Sending an inventory declined message to %s for item %s(%s)" % (FromAgentName, InventoryName, ID))
 
         self.agent.send_ImprovedInstantMessage(self.agent.agent_id, self.agent.session_id, 0, FromAgentID, 0, UUID(), self.agent.Position, 0, accept_key, ID, 0, self.agent.Name(), '', '')
 
@@ -486,7 +485,7 @@ class InventoryManager(DataManager):
         """
         transaction_id = UUID()
         transaction_id.random()
-        
+
         updateCreateInventoryHandler = self.agent.region.message_handler.register('UpdateCreateInventoryItem')
 
         def onUpdateCreateInventoryItem(packet):
@@ -515,14 +514,14 @@ class InventoryManager(DataManager):
                                      inv_data.get_variable('Description').data,
                                      inv_data.get_variable('CreationDate').data,
                                      inv_data.get_variable('CRC').data)
-                                                                 
+
                 self._store_inventory_item(item)
                 updateCreateInventoryHandler.unsubscribe(onUpdateCreateInventoryItem)
                 if callback != None:
                     callback(item)
-                
+
         updateCreateInventoryHandler.subscribe(onUpdateCreateInventoryItem) 
-        
+
         self.send_CreateInventoryItem(self.agent.agent_id,
                                       self.agent.session_id,
                                       0,
@@ -534,7 +533,7 @@ class InventoryManager(DataManager):
                                       wearable_type,
                                       name,
                                       desc)
-                
+
     def send_CreateInventoryItem(self, agent_id, session_id, callback_id,
                                  folder_id, transaction_id, next_owner_mask,
                                  type_, inv_type, wearable_type, name, desc):
@@ -553,7 +552,7 @@ class InventoryManager(DataManager):
                        Name = name,
                        Description = desc)]
         self.agent.region.enqueue_message(Message("CreateInventoryItem", *args))
-        
+
     def sendFetchInventoryDescendentsRequest(self, folder_id = None):
         """ send a request to the grid for folder contents """
 
@@ -587,10 +586,10 @@ class AIS(InventoryManager):
         """ send a request to the grid for inventory item attributes """
 
         if len(item_ids) == 0:
-            log(WARNING, "sendFetchInventoryRequest requires > 0 item_ids, 0 passed in")
+            logger.warning("sendFetchInventoryRequest requires > 0 item_ids, 0 passed in")
             return
         elif type(item_ids) != list:
-            log(WARNING, "sendFetchInventoryRequest requires a list of item_ids, %s passed in" % (type(item_ids)))
+            logger.warning("sendFetchInventoryRequest requires a list of item_ids, %s passed in" % (type(item_ids)))
             return            
 
         cap = self.capabilities['FetchInventory']
@@ -602,10 +601,10 @@ class AIS(InventoryManager):
         try:
             result = cap.POST(post_body, custom_headers)
         except ResourceError, error:
-            log(ERROR, error)
+            logger.error(error)
             return
         except ResourceNotFound, error:
-            log(ERROR, "404 calling: %s" % (error))
+            logger.error("404 calling: %s" % (error))
             return
 
         for item in response['folders']:
@@ -616,10 +615,10 @@ class AIS(InventoryManager):
         """ send a request to the grid for library item attributes """
 
         if len(item_ids) == 0:
-            log(WARNING, "sendFetchLibRequest requires > 0 item_ids, 0 passed in")
+            logger.warning("sendFetchLibRequest requires > 0 item_ids, 0 passed in")
             return
         elif type(item_ids) != list:
-            log(WARNING, "sendFetchLibRequest a list of item_ids, %s passed in" % (type(item_ids)))
+            logger.warning("sendFetchLibRequest a list of item_ids, %s passed in" % (type(item_ids)))
             return            
 
         cap = self.capabilities['FetchLib']
@@ -631,10 +630,10 @@ class AIS(InventoryManager):
         try:
             result = cap.POST(post_body, custom_headers)
         except ResourceError, error:
-            log(ERROR, error)
+            logger.error(error)
             return
         except ResourceNotFound, error:
-            log(ERROR, "404 calling: %s" % (error))
+            logger.error("404 calling: %s" % (error))
             return
 
         for item in response['folders']:
@@ -653,20 +652,20 @@ class AIS(InventoryManager):
         try:
             response = cap.POST(post_body, custom_headers)
         except ResourceError, error:
-            log(ERROR, error)
+            logger.error(error)
             return
         except ResourceNotFound, error:
-            log(ERROR, "404 calling: %s" % (error))
+            logger.error("404 calling: %s" % (error))
             return
 
         '''
         Response shape
-        
+
         {'folders':[ {'category': CATEGORY_SHAPE,
                 'categories': [CATEGORY_SHAPE,],
                 'items': [ITEM_SHAPE,] }]}
         '''
-        
+
         for member in response['folders']:
 
             if member.has_key('category'):
@@ -699,10 +698,10 @@ class AIS(InventoryManager):
         try:
             response = cap.POST(post_body, custom_headers)
         except ResourceError, error:
-            log(ERROR, error)
+            logger.error(error)
             return
         except ResourceNotFound, error:
-            log(ERROR, "404 calling: %s" % (error))
+            logger.error("404 calling: %s" % (error))
             return
 
         '''
@@ -726,7 +725,7 @@ class AIS(InventoryManager):
 
 
 class UDP_Inventory(InventoryManager):
-    
+
     def __init__(self, agent, settings = None):
 
         super(UDP_Inventory, self).__init__(agent, settings)
@@ -795,7 +794,7 @@ class UDP_Inventory(InventoryManager):
             self._store_inventory_item(inventory_item)
 
     def onInventoryDescendents(self, packet):
-        
+
         if packet.blocks['AgentData'][0].get_variable('Descendents') > 0:
 
             _agent_id = packet.blocks['AgentData'][0].get_variable('AgentID')
@@ -1011,7 +1010,7 @@ class InventoryItem(object):
 
     def update(self, agent, name = None, value = None):
         """ allow arbitraty update to any data in the inventory item 
-        
+
         accepts a dictionary of key:value pairs which will update the stored inventory items
         and then send an UpdateInventoryItem packet
         """
@@ -1041,7 +1040,7 @@ class InventoryItem(object):
         _Message = self.Name
         _BinaryBucket = struct.pack(">b", self.Type) + self.ItemID.get_bytes() # binary of asset type and id
 
-        log(INFO, "Sending inventory offer of %s from %s to %s" % (self.Name, agent.agent_id, to_agent_id))
+        logger.info("Sending inventory offer of %s from %s to %s" % (self.Name, agent.agent_id, to_agent_id))
 
         agent.send_ImprovedInstantMessage(_AgentID, _SessionID, _FromGroup, _ToAgentID, _ParentEstateID, _RegionID, _Position, _Offline, _Dialog, _ID, _Timestamp, _FromAgentName, _Message, _BinaryBucket)
 
@@ -1133,6 +1132,6 @@ def sendRezObject(agent, inventory_item, RayStart, RayEnd, FromTaskID = UUID(), 
     agent.region.enqueue_message(packet)
 
 
-    
+
 
 

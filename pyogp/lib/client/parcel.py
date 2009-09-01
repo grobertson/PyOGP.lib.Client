@@ -36,7 +36,6 @@ from pyogp.lib.base.utilities.helpers import Helpers
 
 # initialize logging
 logger = getLogger('pyogp.lib.client.parcel')
-log = logger.log
 
 # ToDo: unhandled related messages
 #   ForceObjectSelect
@@ -70,11 +69,11 @@ class ParcelManager(DataManager):
     def __init__(self, agent = None, region = None, settings = None, message_handler = None, events_handler = None):
         """ initialize the parcel manager """
         super(ParcelManager, self).__init__(agent, settings)
-        
+
         self.region = region
 
         self.message_handler = message_handler
-        
+
         # otherwise, let's just use our own
         # unused atm
         #if events_handler != None:
@@ -92,8 +91,8 @@ class ParcelManager(DataManager):
         # initialize map (x, y) with 0; filled in as parcel properties are received
         self.parcel_map = [[0 for _ in range(64)] for _ in range(64)]
         self.parcel_map_full = False
-        
-        if self.settings.LOG_VERBOSE: log(DEBUG, "Initializing the parcel manager in region %s." % (self.region.SimName))
+
+        if self.settings.LOG_VERBOSE: logger.debug("Initializing the parcel manager in region %s." % (self.region.SimName))
 
     def enable_callbacks(self):
         """enable the callback handlers for this ParcelManager"""
@@ -223,7 +222,7 @@ class ParcelManager(DataManager):
 
             self._update_parcel_properties(parcel_info)
 
-            if self.settings.LOG_VERBOSE: log(DEBUG, 'Updating a stored parcel: %s in region \'%s\'' % (parcel_info['LocalID'], self.region.SimName))
+            if self.settings.LOG_VERBOSE: logger.debug('Updating a stored parcel: %s in region \'%s\'' % (parcel_info['LocalID'], self.region.SimName))
 
         else:
 
@@ -232,7 +231,7 @@ class ParcelManager(DataManager):
             self.parcels.append(new_parcel)
             self._update_parcel_map(new_parcel)
 
-            if self.settings.LOG_VERBOSE: log(DEBUG, 'Stored a new parcel: %s in region \'%s\'' % (new_parcel.LocalID, self.region.SimName))
+            if self.settings.LOG_VERBOSE: logger.debug('Stored a new parcel: %s in region \'%s\'' % (new_parcel.LocalID, self.region.SimName))
 
     def _update_parcel_properties(self, parcel_properties):
         """ update a stored parcel's properties. finds the stored parcel and passes it a dictionary to process """
@@ -247,7 +246,7 @@ class ParcelManager(DataManager):
 
             if len(parcels_found) == 0:
 
-                log(INFO, "Received ParcelPropertiesUpdate for parcel we do not know about yet. Storing a partial representation.")
+                logger.info("Received ParcelPropertiesUpdate for parcel we do not know about yet. Storing a partial representation.")
 
                 new_parcel = Parcel(self.region, self.agent, LocalID = parcel_properties['LocalID'], Flags = parcel_properties['Flags'], ParcelFlags = parcel_properties['ParcelFlags'], SalePrice = parcel_properties['SalePrice'], Name = parcel_properties['Name'], Desc = parcel_properties['Desc'], MusicURL = parcel_properties['MusicURL'], MediaURL = parcel_properties['MediaURL'], MediaID = parcel_properties['MediaID'], MediaAutoScale = parcel_properties['MediaAutoScale'], GroupID = parcel_properties['GroupID'], PassPrice = parcel_properties['PassPrice'], PassHours = parcel_properties['PassHours'], Category = parcel_properties['Category'], AuthBuyerID = parcel_properties['AuthBuyerID'], SnapshotID = parcel_properties['SnapshotID'], UserLocation = parcel_properties['UserLocation'], UserLookAt = parcel_properties['UserLookAt'], LandingType = parcel_properties['LandingType'], settings = self.settings)
 
@@ -267,7 +266,7 @@ class ParcelManager(DataManager):
 
             if len(parcels_found) == 0:
 
-                log(INFO, "Received ParcelPropertiesUpdate for parcel we do not know about yet. Storing a partial representation.")
+                logger.info("Received ParcelPropertiesUpdate for parcel we do not know about yet. Storing a partial representation.")
 
                 new_parcel = Parcel(self.region, self.agent, LocalID = parcel_properties['LocalID'], Flags = parcel_properties['Flags'], ParcelFlags = parcel_properties['ParcelFlags'], SalePrice = parcel_properties['SalePrice'], Name = parcel_properties['Name'], Desc = parcel_properties['Desc'], MusicURL = parcel_properties['MusicURL'], MediaURL = parcel_properties['MediaURL'], MediaID = parcel_properties['MediaID'], MediaAutoScale = parcel_properties['MediaAutoScale'], GroupID = parcel_properties['GroupID'], PassPrice = parcel_properties['PassPrice'], PassHours = parcel_properties['PassHours'], Category = parcel_properties['Category'], AuthBuyerID = parcel_properties['AuthBuyerID'], SnapshotID = parcel_properties['SnapshotID'], UserLocation = parcel_properties['UserLocation'], UserLookAt = parcel_properties['UserLookAt'], LandingType = parcel_properties['LandingType'], settings = self.settings)
 
@@ -283,7 +282,7 @@ class ParcelManager(DataManager):
         """Use the parcel's bitmap to update the manager's (x,y) to LocalID mapping"""
 
         full = True
-        
+
         for x in range(64):
             for y in range(64):
 
@@ -354,7 +353,7 @@ class ParcelManager(DataManager):
         EstateName =  packet.blocks['Data'][0].get_variable('EstateName').data
         EstateOwnerID =  packet.blocks['Data'][0].get_variable('EstateOwnerID').data
 
-        log(INFO, "Received EstateCovenantReply for estate name %s with a CovenantID of %s." % (EstateName, CovenantID))
+        logger.info("Received EstateCovenantReply for estate name %s with a CovenantID of %s." % (EstateName, CovenantID))
 
         # storing this data as a dict in the parcel manager until we have something better to do with it
         self.estatecovenantreply = {'CovenantID': CovenantID, 'CovenantTimestamp': CovenantTimestamp, 'EstateName': EstateName, 'EstateOwnerID': EstateOwnerID}
@@ -400,13 +399,13 @@ class ParcelManager(DataManager):
 
             except ValueError:
 
-                log(WARNING, 'Parcel_id passed to request_parcel_info must but a valid UUID or string representation of a uuid. %s was passed in' % (parcel_id))
+                logger.warning('Parcel_id passed to request_parcel_info must but a valid UUID or string representation of a uuid. %s was passed in' % (parcel_id))
 
                 return
 
         elif not isinstance(parcel_id, UUID):
 
-            log(WARNING, 'Parcel_id passed to request_parcel_info must but a valid UUID or string representation of a uuid. %s was passed in' % (parcel_id))
+            logger.warning('Parcel_id passed to request_parcel_info must but a valid UUID or string representation of a uuid. %s was passed in' % (parcel_id))
 
             return
 
@@ -455,7 +454,7 @@ class ParcelManager(DataManager):
 
         if refresh or self.get_parcel_id_by_location(x, y) == 0:
             self.sendParcelPropertiesRequest(self.agent.agent_id, self.agent.session_id, -50000, x, y, x, y, False)
-            
+
     def request_all_parcel_properties(self, delay = 0.5, refresh = False):
         """ request the properties of all of the parcels on the current region. The delay parameter is a sleep between the send of each packet request; if refresh, current data will be discarded before requesting. If refresh is not True, data will not be re-requested for region locations already queried. """
 
@@ -605,7 +604,7 @@ class ParcelManager(DataManager):
         		{	North		F32		}
         	}
         }
-        
+
         '''
 
     def sendParcelJoin(self, ):
@@ -772,7 +771,7 @@ class ParcelManager(DataManager):
         # ToDo: should we raise an event in this case? yes.... later
         if str(AgentID) != str(self.agent.agent_id):
 
-            log(WARNING, "%s received a packet for the wrong agent_id. Expected: %s Received: %s" % (self.agent.Name(), self.agent.agent_id, AgentID))
+            logger.warning("%s received a packet for the wrong agent_id. Expected: %s Received: %s" % (self.agent.Name(), self.agent.agent_id, AgentID))
 
         # get the body of the message
         parcel_info = {}
@@ -878,7 +877,7 @@ class Parcel(object):
 
         for attribute in parcel_properties:
 
-            # if self.settings.LOG_VERBOSE: log(DEBUG, "Updating parcel data for %s. %s = %s" % (self, attribute, parcel_properties[attribute]))
+            # if self.settings.LOG_VERBOSE: logger.debug("Updating parcel data for %s. %s = %s" % (self, attribute, parcel_properties[attribute]))
 
             setattr(self, attribute, parcel_properties[attribute])
 
