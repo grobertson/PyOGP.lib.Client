@@ -687,8 +687,8 @@ class ObjectManager(DataManager):
             object_properties['PCode'] = struct.unpack(">B", _Data[pos:pos+1])[0]
             pos += 1
 
-            if object_properties['PCode'] != 9:         # if it is not a prim, stop.
-                logger.warning('Fix Me!! Skipping parsing of ObjectUpdateCompressed packet when it is not a prim.')
+            if object_properties['PCode'] != PCodeEnum.Primitive:         # if it is not a prim, stop.
+                logger.warning('Fix Me!! Skipping parsing of ObjectUpdateCompressed packet when it is not a prim (PCode=%s)', object_properties['PCode'])
                 # we ought to parse it and make sense of the data...
                 continue
 
