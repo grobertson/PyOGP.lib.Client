@@ -16,14 +16,20 @@ or in
 $/LicenseInfo$
 """
 
-class Settings(object):
+from pyogp.lib.base.settings import Settings as BaseSettings
+
+class Settings(BaseSettings):
 
     def __init__(self, quiet_logging = False):
         """ some lovely configurable settings 
 
-        These are applied application wide, and can be
+        These are applied package wide, and can be
         overridden at any time in a specific instance
+
+        This Settings instance inherits from pyogp.lib.base's settings
         """
+
+        super(Settings, self).__init__(quiet_logging)
 
         self.quiet_logging = quiet_logging
 
@@ -33,9 +39,6 @@ class Settings(object):
 
         # default start location to use in login
         self.DEFAULT_START_LOCATION = 'last'
-
-        # toggle handling udp packets
-        self.HANDLE_PACKETS = True
 
         # Inventory related
 
@@ -118,41 +121,6 @@ class Settings(object):
         # how many seconds to wait between polling
         # a agent doamins's event queue
         self.AGENT_DOMAIN_EVENT_QUEUE_POLL_INTERVAL = 15
-
-        #~~~~~~~~~~~~~~~~~~
-        # Logging behaviors
-        #~~~~~~~~~~~~~~~~~~
-        # being a test tool, and an immature one at that,
-        # enable fine granularity in the logging, but
-        # make sure we can tone it down as well
-
-        self.LOG_VERBOSE = True
-        self.ENABLE_BYTES_TO_HEX_LOGGING = False
-        self.ENABLE_CAPS_LOGGING = True
-        self.ENABLE_CAPS_LLSD_LOGGING = False
-        self.ENABLE_EQ_LOGGING = True
-        self.ENABLE_UDP_LOGGING = True
-        self.ENABLE_OBJECT_LOGGING = True
-        self.LOG_SKIPPED_PACKETS = True
-        self.ENABLE_HOST_LOGGING = True
-        self.LOG_COROUTINE_SPAWNS = True
-
-        # allow disabling logging of certain packets
-        self.DISABLE_SPAMMERS = True
-        self.UDP_SPAMMERS = ['PacketAck', 'AgentUpdate']
-
-        # override the defaults
-        if self.quiet_logging:
-            self.LOG_VERBOSE = False
-            self.ENABLE_BYTES_TO_HEX_LOGGING = False
-            self.ENABLE_CAPS_LOGGING = False
-            self.ENABLE_CAPS_LLSD_LOGGING = False
-            self.ENABLE_EQ_LOGGING = False
-            self.ENABLE_UDP_LOGGING = False
-            self.LOG_SKIPPED_PACKETS = False
-            self.ENABLE_OBJECT_LOGGING = False
-            self.ENABLE_HOST_LOGGING = False
-            self.LOG_COROUTINE_SPAWNS = False
 
         #~~~~~~~~~~~~~~~~~~~~~~
         # Test related settings

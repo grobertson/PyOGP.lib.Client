@@ -196,10 +196,10 @@ class GroupManager(DataManager):
 
             self.agent.region.enqueue_message(packet, True)
 
-            if self.settings.HANDLE_PACKETS:
-                # enable the callback to watch for the CreateGroupReply packet
-                self.onCreateGroupReply_received = self.agent.region.message_handler.register('CreateGroupReply')
-                self.onCreateGroupReply_received.subscribe(self.onCreateGroupReply)
+            # enable the callback to watch for the CreateGroupReply packet
+            self.onCreateGroupReply_received = self.agent.region.message_handler.register('CreateGroupReply')
+            self.onCreateGroupReply_received.subscribe(self.onCreateGroupReply)
+
         else:
 
             raise DataParsingError('Failed to create a group, please specify a name')

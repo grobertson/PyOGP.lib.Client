@@ -83,7 +83,6 @@ class Region(object):
         # otherwise, grab the defaults
         if message_handler != None:
             self.message_handler = message_handler
-        #elif self.settings.HANDLE_PACKETS:
         else:
             self.message_handler = MessageHandler()
 
@@ -188,11 +187,9 @@ class Region(object):
 
         if self.settings.ENABLE_OBJECT_TRACKING:
             self.objects.enable_callbacks()
+
         if self.settings.ENABLE_PARCEL_TRACKING:
             self.parcel_manager.enable_callbacks()
-
-        if self.settings.HANDLE_PACKETS:
-            pass
 
     def enable_child_simulator(self, IP, Port, Handle):
 

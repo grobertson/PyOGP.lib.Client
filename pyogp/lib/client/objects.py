@@ -77,32 +77,28 @@ class ObjectManager(DataManager):
 
     def enable_callbacks(self):
         """enables the callback handlers for this ObjectManager"""
-        if self.settings.HANDLE_PACKETS:
-            # supply a MessageHandler if not given one
-            if self.message_handler == None:
-                self.message_handler = MessageHandler()
 
-            onObjectUpdate_received = self.message_handler.register('ObjectUpdate')
-            onObjectUpdate_received.subscribe(self.onObjectUpdate)
+        onObjectUpdate_received = self.message_handler.register('ObjectUpdate')
+        onObjectUpdate_received.subscribe(self.onObjectUpdate)
 
-            onObjectUpdateCached_received = self.message_handler.register('ObjectUpdateCached')
-            onObjectUpdateCached_received.subscribe(self.onObjectUpdateCached)
+        onObjectUpdateCached_received = self.message_handler.register('ObjectUpdateCached')
+        onObjectUpdateCached_received.subscribe(self.onObjectUpdateCached)
 
-            onObjectUpdateCompressed_received = self.message_handler.register('ObjectUpdateCompressed')
-            onObjectUpdateCompressed_received.subscribe(self.onObjectUpdateCompressed)
+        onObjectUpdateCompressed_received = self.message_handler.register('ObjectUpdateCompressed')
+        onObjectUpdateCompressed_received.subscribe(self.onObjectUpdateCompressed)
 
-            onObjectProperties_received = self.message_handler.register('ObjectProperties')
-            onObjectProperties_received.subscribe(self.onObjectProperties)
+        onObjectProperties_received = self.message_handler.register('ObjectProperties')
+        onObjectProperties_received.subscribe(self.onObjectProperties)
 
-            onKillObject_received = self.message_handler.register('KillObject')
-            onKillObject_received.subscribe(self.onKillObject)
+        onKillObject_received = self.message_handler.register('KillObject')
+        onKillObject_received.subscribe(self.onKillObject)
 
-            # uncomment these to view packets sent back to simulator
-            # onObjectName_sent = self.message_handler.register('ObjectName')
-            # onObjectName_sent.subscribe(self.helpers.log_packet, self)
+        # uncomment these to view packets sent back to simulator
+        # onObjectName_sent = self.message_handler.register('ObjectName')
+        # onObjectName_sent.subscribe(self.helpers.log_packet, self)
 
-            # onDeRezObject_sent = self.message_handler.register('DeRezObject')
-            # onDeRezObject_sent.subscribe(self.helpers.log_packet, self)
+        # onDeRezObject_sent = self.message_handler.register('DeRezObject')
+        # onDeRezObject_sent.subscribe(self.helpers.log_packet, self)
 
 
     def process_multiple_object_updates(self, objects):

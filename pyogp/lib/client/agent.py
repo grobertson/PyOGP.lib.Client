@@ -407,35 +407,35 @@ class Agent(object):
     def enable_callbacks(self):
         """ enable callbacks for the agent class to set up handling for related messages"""
 
-            onAlertMessage_received = self.region.message_handler.register('AlertMessage')
-            onAlertMessage_received.subscribe(self.onAlertMessage)
+        onAlertMessage_received = self.region.message_handler.register('AlertMessage')
+        onAlertMessage_received.subscribe(self.onAlertMessage)
 
-            onAgentDataUpdate_received = self.region.message_handler.register('AgentDataUpdate')
-            onAgentDataUpdate_received.subscribe(self.onAgentDataUpdate)
+        onAgentDataUpdate_received = self.region.message_handler.register('AgentDataUpdate')
+        onAgentDataUpdate_received.subscribe(self.onAgentDataUpdate)
 
-            onAgentMovementComplete_received = self.region.message_handler.register('AgentMovementComplete')
-            onAgentMovementComplete_received.subscribe(self.onAgentMovementComplete)
+        onAgentMovementComplete_received = self.region.message_handler.register('AgentMovementComplete')
+        onAgentMovementComplete_received.subscribe(self.onAgentMovementComplete)
 
-            onHealthMessage_received = self.region.message_handler.register('HealthMessage')
-            onHealthMessage_received.subscribe(self.onHealthMessage)
+        onHealthMessage_received = self.region.message_handler.register('HealthMessage')
+        onHealthMessage_received.subscribe(self.onHealthMessage)
 
-            onImprovedInstantMessage_received = self.region.message_handler.register('ImprovedInstantMessage')
-            onImprovedInstantMessage_received.subscribe(self.onImprovedInstantMessage)
+        onImprovedInstantMessage_received = self.region.message_handler.register('ImprovedInstantMessage')
+        onImprovedInstantMessage_received.subscribe(self.onImprovedInstantMessage)
 
-            self.region.message_handler.register('TeleportStart').subscribe(self.simple_callback('Info'))
-            self.region.message_handler.register('TeleportProgress').subscribe(self.simple_callback('Info'))
-            self.region.message_handler.register('TeleportFailed').subscribe(self.simple_callback('Info'))
-            self.region.message_handler.register('TeleportFinish').subscribe(self.onTeleportFinish)
+        self.region.message_handler.register('TeleportStart').subscribe(self.simple_callback('Info'))
+        self.region.message_handler.register('TeleportProgress').subscribe(self.simple_callback('Info'))
+        self.region.message_handler.register('TeleportFailed').subscribe(self.simple_callback('Info'))
+        self.region.message_handler.register('TeleportFinish').subscribe(self.onTeleportFinish)
 
-            self.region.message_handler.register('OfflineNotification').subscribe(self.simple_callback('AgentBlock'))
-            self.region.message_handler.register('OnlineNotification').subscribe(self.simple_callback('AgentBlock'))
+        self.region.message_handler.register('OfflineNotification').subscribe(self.simple_callback('AgentBlock'))
+        self.region.message_handler.register('OnlineNotification').subscribe(self.simple_callback('AgentBlock'))
 
-            self.region.message_handler.register('MoneyBalanceReply').subscribe(self.simple_callback('MoneyData'))
-            self.region.message_handler.register('RoutedMoneyBalanceReply').subscribe(self.simple_callback('MoneyData'))
+        self.region.message_handler.register('MoneyBalanceReply').subscribe(self.simple_callback('MoneyData'))
+        self.region.message_handler.register('RoutedMoneyBalanceReply').subscribe(self.simple_callback('MoneyData'))
 
-            if self.settings.ENABLE_COMMUNICATIONS_TRACKING:
-                onChatFromSimulator_received = self.region.message_handler.register('ChatFromSimulator')
-                onChatFromSimulator_received.subscribe(self.onChatFromSimulator)
+        if self.settings.ENABLE_COMMUNICATIONS_TRACKING:
+            onChatFromSimulator_received = self.region.message_handler.register('ChatFromSimulator')
+            onChatFromSimulator_received.subscribe(self.onChatFromSimulator)
 
 
     def simple_callback(self, blockname):

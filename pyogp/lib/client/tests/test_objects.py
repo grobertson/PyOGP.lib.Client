@@ -32,6 +32,7 @@ from pyogp.lib.base.datatypes import UUID, Vector3
 # pyogp messaging
 from pyogp.lib.base.message.udpdeserializer import UDPMessageDeserializer
 from pyogp.lib.base.message.message import Message, Block
+from pyogp.lib.base.message.message_handler import MessageHandler
 
 # pyogp tests
 import pyogp.lib.base.tests.config 
@@ -48,7 +49,7 @@ class TestObjects(unittest.TestCase):
         self.region = Region()
         self.region.SimName = 'TestMe'
 
-        self.object_store = ObjectManager(region = self.region, settings = self.settings)
+        self.object_store = ObjectManager(region = self.region, settings = self.settings, message_handler = MessageHandler())
         self.object_store.enable_callbacks()
         self.data = []
     def tearDown(self):
