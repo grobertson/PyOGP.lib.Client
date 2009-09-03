@@ -27,7 +27,7 @@ import math
 
 
 # pyogp
-from pyogp.lib.base.datamanager import DataManager
+from pyogp.lib.client.datamanager import DataManager
 from pyogp.lib.client.permissions import PermissionsTarget, PermissionsMask
 from pyogp.lib.base.datatypes import UUID, Vector3, Quaternion
 from pyogp.lib.client.event_system import AppEvent
@@ -91,9 +91,6 @@ class ObjectManager(DataManager):
             onObjectUpdateCompressed_received = self.message_handler.register('ObjectUpdateCompressed')
             onObjectUpdateCompressed_received.subscribe(self.onObjectUpdateCompressed)
 
-            onImprovedTerseObjectUpdate_received = self.message_handler.register('ImprovedTerseObjectUpdate')
-            onImprovedTerseObjectUpdate_received.subscribe(self.onImprovedTerseObjectUpdate)
-            
             onObjectProperties_received = self.message_handler.register('ObjectProperties')
             onObjectProperties_received.subscribe(self.onObjectProperties)
 
@@ -156,8 +153,8 @@ class ObjectManager(DataManager):
         #ToDo: should there be a separate Avatar() class?
 
         # if the object data pertains to us, update our data!
-        if str(_objectdata.FullID) == str(self.agent.agent_id) or \
-               _objectdata.LocalID == self.agent.local_id:
+        if str(_objectdata.FullID) == str(self.agent.agent_id):
+
             if _objectdata.Position:
                 self.agent.Position = _objectdata.Position
             if _objectdata.FootCollisionPlane: 
@@ -170,8 +167,7 @@ class ObjectManager(DataManager):
                 self.agent.Rotation = _objectdata.Rotation
             if _objectdata.AngularVelocity:
                 self.agent.AngularVelocity = _objectdata.AngularVelocity
-            if _objectdata.LocalID:
-                self.agent.local_id = _objectdata.LocalID
+
             if self.settings.ENABLE_APPEARANCE_MANAGEMENT:
                 self.agent.appearance.TextureEntry = _objectdata.TextureEntry
 
@@ -687,8 +683,8 @@ class ObjectManager(DataManager):
             object_properties['PCode'] = struct.unpack(">B", _Data[pos:pos+1])[0]
             pos += 1
 
-            if object_properties['PCode'] != PCodeEnum.Primitive:         # if it is not a prim, stop.
-                logger.warning('Fix Me!! Skipping parsing of ObjectUpdateCompressed packet when it is not a prim (PCode=%s)', object_properties['PCode'])
+            if object_properties['PCode'] != 9:         # if it is not a prim, stop.
+                logger.warning('Fix Me!! Skipping parsing of ObjectUpdateCompressed packet when it is not a prim.')
                 # we ought to parse it and make sense of the data...
                 continue
 
@@ -913,59 +909,6 @@ class ObjectManager(DataManager):
 
         self.update_multiple_objects_properties(object_list)
 
-    def onImprovedTerseObjectUpdate(self, packet):
-        """ handles ImprovedTerseObjectUpdate messages from the simulator """
-        # ToDo: handle these 2 variables properly
-        try:
-            _RegionHandle = packet.blocks['RegionData'][0].get_variable('RegionHandle').data
-            _TimeDilation = packet.blocks['RegionData'][0].get_variable('TimeDilation').data
-
-            object_list = []
-            for ObjectData_block in packet.blocks['ObjectData']:
-
-                object_properties = {}
-                object_properties['Data'] = ObjectData_block.get_variable('Data').data
-                _Data = object_properties['Data']
-
-                pos = 0         # position in the binary string
-                object_properties['LocalID'] = struct.unpack("<I", _Data[pos:pos+4])[0]
-                pos += 4
-                object_properties['State'] = struct.unpack(">B", _Data[pos:pos+1])[0]
-                pos += 1
-                is_avatar = struct.unpack(">B", _Data[pos:pos+1])
-                pos += 1
-                if is_avatar:
-                    object_properties['PCode'] = PCodeEnum.Avatar
-                    object_properties['FootCollisionPlane'] = Quaternion(_Data, pos)
-                    pos += 16
-                else:
-                    object_properties['PCode'] = PCodeEnum.Primitive
-                object_properties['Position'] = Vector3(_Data, pos+0)
-                pos += 12
-                object_properties['Velocity'] = Vector3(X=Helpers().packed_u16_to_float(_Data, pos, -128.0, 128.0), 
-                                                        Y=Helpers().packed_u16_to_float(_Data, pos+2, -128.0, 128.0),
-                                                        Z=Helpers().packed_u16_to_float(_Data, pos+4, -128.0, 128.0))
-                pos += 6
-                object_properties['Acceleration'] = Vector3(X=Helpers().packed_u16_to_float(_Data, pos, -64.0, 64.0),
-                                                            Y=Helpers().packed_u16_to_float(_Data, pos+2, -64.0, 64.0),
-                                                            Z=Helpers().packed_u16_to_float(_Data, pos+4, -64.0, 64.0))
-                pos += 6
-                object_properties['Rotation'] = Quaternion(X=Helpers().packed_u16_to_float(_Data, pos, -1.0, 1.0),
-                                                           Y=Helpers().packed_u16_to_float(_Data, pos+2, -1.0, 1.0),
-                                                           Z=Helpers().packed_u16_to_float(_Data, pos+4, -1.0, 1.0),
-                                                           W=Helpers().packed_u16_to_float(_Data, pos+6, -1.0, 1.0))
-                pos += 8
-                object_properties['AngularVelocity'] = Vector3(X=Helpers().packed_u16_to_float(_Data, pos, -64.0, 64.0),
-                                                               Y=Helpers().packed_u16_to_float(_Data, pos+2, -64.0, 64.0),
-                                                               Z=Helpers().packed_u16_to_float(_Data, pos+4, -64.0, 64.0))
-                pos += 6
-                object_properties['TextureEntry'] = ObjectData_block.get_variable('TextureEntry').data
-                object_list.append(object_properties)
-            
-            self.update_multiple_objects_properties(object_list)
-        except:
-            pass
-        
     def onKillObject(self, packet):
 
         _KillID = packet.blocks['ObjectData'][0].get_variable('ID').data
@@ -1301,12 +1244,12 @@ class Object(object):
     def derez(self, agent, destination, destinationID, transactionID, GroupID, PacketCount = 1, PacketNumber = 0):
         """ derez an object, specifying the destination """
 
-        self.send_DeRezObject(agent, agent.agent_id, agent.session_id, GroupID, destination, destinationID, transactionID, PacketCount, PacketNumber, self.LocalID)
+        self.send_DerezObject(agent, agent.agent_id, agent.session_id, GroupID, destination, destinationID, transactionID, PacketCount, PacketNumber, self.LocalID)
 
-    def send_DeRezObject(self, agent, AgentID, SessionID, GroupID, Destination, DestinationID, TransactionID, PacketCount, PacketNumber, ObjectLocalID):
+    def send_DerezObject(self, agent, AgentID, SessionID, GroupID, Destination, DestinationID, TransactionID, PacketCount, PacketNumber, ObjectLocalID):
         """ send a DerezObject message to the host simulator """
-        
-        packet = Message('DeRezObject',
+
+        packet = Message('DerezObject',
                         Block('AgentData',
                                 AgentID = AgentID,
                                 SessionID = SessionID),
@@ -1319,7 +1262,7 @@ class Object(object):
                                 PacketNumber = PacketNumber),
                         Block('ObjectData',
                                 ObjectLocalID = ObjectLocalID))
-        
+
         agent.region.enqueue_message(packet)
 
     def take(self, agent):

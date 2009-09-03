@@ -20,7 +20,7 @@ $/LicenseInfo$
 import logging
 
 #pyogp
-from pyogp.lib.base.settings import Settings
+from pyogp.lib.client.settings import Settings
 
 settings = Settings()
 debug = settings.ENABLE_LOGGING_IN_TESTS

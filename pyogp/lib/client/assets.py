@@ -24,7 +24,7 @@ import uuid
 from eventlet import api
 
 # pyogp
-from pyogp.lib.base.datamanager import DataManager
+from pyogp.lib.client.datamanager import DataManager
 from pyogp.lib.base.utilities.enums import TransferChannelType, TransferSourceType, \
      TransferTargetType, TransferStatus
 

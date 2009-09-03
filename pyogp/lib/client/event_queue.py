@@ -63,7 +63,7 @@ class EventQueueClient(object):
         if settings != None:
             self.settings = settings
         else:
-            from pyogp.lib.base.settings import Settings
+            from pyogp.lib.client.settings import Settings
             self.settings = Settings()
 
         # allow the packet_handler to be passed in
@@ -238,39 +238,27 @@ class EventQueueClient(object):
         """ tries to parse the llsd response from an event queue request. 
         if successful, the event queue passes messages through the message_handler for evaluation"""
 
-        # if there are subscribers to the event queue and packet handling is enabled
-        if self.settings.HANDLE_PACKETS: # and (len(self.handler) > 0):
+        try:
 
-            try:
+            if data != None:
 
-                if data != None:
+                host_string = ' from (%s)' % (str(self.region.sim_ip) + ':' + str(self.region.sim_port))
 
-                    if self.settings.ENABLE_EQ_LOGGING:
-                        if self.settings.ENABLE_HOST_LOGGING:
-                            host_string = ' from (%s)' % (str(self.region.sim_ip) + ':' + str(self.region.sim_port))
-                        else:
-                            host_string = ''
-                        logger.debug('Event Queue result%s: %s' % (host_string, data))
+                logger.debug('Event Queue result%s: %s' % (host_string, data))
 
-                    # if we are handling packets, handle the packet so any subscribers can get the data
-                    if self.settings.HANDLE_PACKETS:
+                # this returns packets
+                parsed_data = self._decode_eq_result(data)
 
-                        # this returns packets
-                        parsed_data = self._decode_eq_result(data)
+                for packet in parsed_data:
+                    self.message_handler.handle(packet)
 
-                        for packet in parsed_data:
-                            self.message_handler.handle(packet)
+        except Exception, error:
 
-            except Exception, error:
+            traceback.print_exc()
 
-                traceback.print_exc()
+            host_string = ' from (%s)' % (str(self.region.sim_ip) + ':' + str(self.region.sim_port))
 
-                if self.settings.ENABLE_HOST_LOGGING:
-                    host_string = ' from (%s)' % (str(self.region.sim_ip) + ':' + str(self.region.sim_port))
-                else:
-                    host_string = ''
-
-                logger.warning("Error parsing even queue results%s. Error: %s. Data was: %s" % (host_string, error, data))
+            logger.warning("Error parsing even queue results%s. Error: %s. Data was: %s" % (host_string, error, data))
 
     def _decode_eq_result(self, data=None):
         """ parse the event queue data, return a list of packets

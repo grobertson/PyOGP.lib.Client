@@ -25,7 +25,7 @@ from eventlet import api
 # pyogp
 from pyogp.lib.base.datatypes import UUID
 from pyogp.lib.client.exc import NotImplemented
-from pyogp.lib.base.datamanager import DataManager
+from pyogp.lib.client.datamanager import DataManager
 
 # pyogp messaging
 from pyogp.lib.base.message.message import Message, Block
@@ -797,7 +797,7 @@ class Parcel(object):
         if settings != None:
             self.settings = settings
         else:
-            from pyogp.lib.base.settings import Settings
+            from pyogp.lib.client.settings import Settings
             self.settings = Settings()
 
         self.region = region

@@ -597,7 +597,7 @@ class RegionSeedCapability(Capability):
         if settings != None:
             self.settings = settings
         else:
-            from pyogp.lib.base.settings import Settings
+            from pyogp.lib.client.settings import Settings
             self.settings = Settings()
 
         #logger.info('requesting from the region domain the following caps: %s' % (names))

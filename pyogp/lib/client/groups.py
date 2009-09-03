@@ -33,7 +33,7 @@ import termios
 from pyogp.lib.base.datatypes import UUID, Vector3
 from pyogp.lib.client.exc import DataParsingError
 from pyogp.lib.base.utilities.helpers import Wait
-from pyogp.lib.base.datamanager import DataManager
+from pyogp.lib.client.datamanager import DataManager
 
 # pyogp messaging
 from pyogp.lib.base.message.message import Message, Block
@@ -62,21 +62,21 @@ class GroupManager(DataManager):
 
     def enable_callbacks(self):
         """enables the callback handlers for this GroupManager"""
-        if self.settings.HANDLE_PACKETS:
-            onAgentGroupDataUpdate_received = self.agent.region.message_handler.register("AgentGroupDataUpdate")
-            onAgentGroupDataUpdate_received.subscribe(self.onAgentGroupDataUpdate)
 
-            onChatterBoxInvitation_received = self.agent.region.message_handler.register('ChatterBoxInvitation')
-            onChatterBoxInvitation_received.subscribe(self.onChatterBoxInvitation_Message)
+        onAgentGroupDataUpdate_received = self.agent.region.message_handler.register("AgentGroupDataUpdate")
+        onAgentGroupDataUpdate_received.subscribe(self.onAgentGroupDataUpdate)
 
-            onChatterBoxSessionEventReply_received = self.agent.region.message_handler.register('ChatterBoxSessionEventReply')
-            onChatterBoxSessionEventReply_received.subscribe(self.onChatterBoxSessionEventReply)
+        onChatterBoxInvitation_received = self.agent.region.message_handler.register('ChatterBoxInvitation')
+        onChatterBoxInvitation_received.subscribe(self.onChatterBoxInvitation_Message)
 
-            onChatterBoxSessionAgentListUpdates_received = self.agent.region.message_handler.register('ChatterBoxSessionAgentListUpdates')
-            onChatterBoxSessionAgentListUpdates_received.subscribe(self.onChatterBoxSessionAgentListUpdates)
+        onChatterBoxSessionEventReply_received = self.agent.region.message_handler.register('ChatterBoxSessionEventReply')
+        onChatterBoxSessionEventReply_received.subscribe(self.onChatterBoxSessionEventReply)
 
-            onChatterBoxSessionStartReply_received = self.agent.region.message_handler.register('ChatterBoxSessionStartReply')
-            onChatterBoxSessionStartReply_received.subscribe(self.onChatterBoxSessionStartReply)
+        onChatterBoxSessionAgentListUpdates_received = self.agent.region.message_handler.register('ChatterBoxSessionAgentListUpdates')
+        onChatterBoxSessionAgentListUpdates_received.subscribe(self.onChatterBoxSessionAgentListUpdates)
+
+        onChatterBoxSessionStartReply_received = self.agent.region.message_handler.register('ChatterBoxSessionStartReply')
+        onChatterBoxSessionStartReply_received.subscribe(self.onChatterBoxSessionStartReply)
 
 
     def handle_group_chat(self, message):

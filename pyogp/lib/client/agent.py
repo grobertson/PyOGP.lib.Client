@@ -387,9 +387,13 @@ class Agent(object):
             self.inventory.enable_callbacks()
 
         if self.settings.ENABLE_APPEARANCE_MANAGEMENT:
+
             self.appearance.enable_callbacks()
+
         if self.settings.ENABLE_GROUP_CHAT:
+
             self.group_manager.enable_callbacks()
+
         if self.settings.MULTIPLE_SIM_CONNECTIONS:
 
             onEnableSimulator_received = self.region.message_handler.register('EnableSimulator')
@@ -398,7 +402,10 @@ class Agent(object):
             onEstablishAgentCommunication_received = self.region.message_handler.register('EstablishAgentCommunication')
             onEstablishAgentCommunication_received.subscribe(self.onEstablishAgentCommunication)
 
-        if self.settings.HANDLE_PACKETS:
+        self.enable_callbacks()
+
+    def enable_callbacks(self):
+        """ enable callbacks for the agent class to set up handling for related messages"""
 
             onAlertMessage_received = self.region.message_handler.register('AlertMessage')
             onAlertMessage_received.subscribe(self.onAlertMessage)

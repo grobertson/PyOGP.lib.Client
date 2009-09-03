@@ -24,7 +24,7 @@ from binascii import unhexlify
 
 # pyogp
 from pyogp.lib.client.appearance import *
-from pyogp.lib.base.settings import Settings
+from pyogp.lib.client.settings import Settings
 from pyogp.lib.client.agent import Agent
 from pyogp.lib.client.region import Region
 from pyogp.lib.base.datatypes import *
