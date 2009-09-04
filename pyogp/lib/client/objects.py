@@ -39,7 +39,7 @@ from pyogp.lib.base.message.message import Message, Block
 
 # pyogp utilities
 from pyogp.lib.base.utilities.helpers import Helpers
-from pyogp.lib.base.utilities.enums import PCodeEnum, CompressedUpdateFlags, \
+from pyogp.lib.client.enums import PCodeEnum, CompressedUpdateFlags, \
      Permissions, AssetType
 
 # initialize logging

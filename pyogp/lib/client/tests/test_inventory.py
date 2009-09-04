@@ -28,7 +28,7 @@ from pyogp.lib.client.inventory import InventoryManager, InventoryFolder, \
 from pyogp.lib.base.datatypes import UUID
 from pyogp.lib.client.agent import Agent
 from pyogp.lib.client.region import Region
-from pyogp.lib.base.utilities.enums import AssetType, InventoryType, \
+from pyogp.lib.client.enums import AssetType, InventoryType, \
      WearablesIndex, Permissions
 from pyogp.lib.base.message.message import Message, Block
 

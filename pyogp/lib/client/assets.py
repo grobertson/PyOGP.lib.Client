@@ -25,7 +25,7 @@ from eventlet import api
 
 # pyogp
 from pyogp.lib.client.datamanager import DataManager
-from pyogp.lib.base.utilities.enums import TransferChannelType, TransferSourceType, \
+from pyogp.lib.client.enums import TransferChannelType, TransferSourceType, \
      TransferTargetType, TransferStatus
 
 # pyogp messaging

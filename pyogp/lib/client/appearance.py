@@ -34,7 +34,7 @@ from pyogp.lib.client.exc import NotImplemented
 from pyogp.lib.client.objects import Object
 from pyogp.lib.client.visualparams import VisualParams
 from pyogp.lib.base.datatypes import UUID, Vector3
-from pyogp.lib.base.utilities.enums import BakedIndex, TextureIndex, \
+from pyogp.lib.client.enums import BakedIndex, TextureIndex, \
      WearableMap, AssetType, WearablesIndex
 
 # initialize logging

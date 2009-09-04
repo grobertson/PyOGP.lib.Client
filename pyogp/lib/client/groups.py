@@ -39,7 +39,7 @@ from pyogp.lib.client.datamanager import DataManager
 from pyogp.lib.base.message.message import Message, Block
 
 # pyogp utilities
-from pyogp.lib.base.utilities.enums import ImprovedIMDialogue
+from pyogp.lib.client.enums import ImprovedIMDialogue
 
 # initialize logging
 logger = getLogger('pyogp.lib.client.groups')
