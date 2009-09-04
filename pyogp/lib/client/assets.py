@@ -31,7 +31,7 @@ from pyogp.lib.client.enums import TransferChannelType, TransferSourceType, \
 # pyogp messaging
 from pyogp.lib.base.message.message_handler import MessageHandler
 from pyogp.lib.base.message.message import Message, Block
-from pyogp.lib.base.utilities.helpers import Helpers
+from pyogp.lib.base.helpers import Helpers
 from pyogp.lib.client.exc import NotImplemented, ResourceError, ResourceNotFound
 from pyogp.lib.client.objects import Object
 from pyogp.lib.base.datatypes import Vector3, UUID

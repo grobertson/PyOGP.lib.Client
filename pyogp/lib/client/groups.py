@@ -32,7 +32,7 @@ import termios
 # pyogp
 from pyogp.lib.base.datatypes import UUID, Vector3
 from pyogp.lib.client.exc import DataParsingError
-from pyogp.lib.base.utilities.helpers import Wait
+from pyogp.lib.base.helpers import Wait
 from pyogp.lib.client.datamanager import DataManager
 
 # pyogp messaging

@@ -27,7 +27,7 @@ from eventlet import api
 # pyogp
 from pyogp.lib.base.datatypes import UUID
 from pyogp.lib.client.exc import LoginError
-from pyogp.lib.base.utilities.helpers import Wait
+from pyogp.lib.base.helpers import Wait
 
 # initialize logging
 logger = getLogger('pyogp.lib.client.agentmanager')

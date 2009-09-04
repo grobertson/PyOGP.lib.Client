@@ -38,7 +38,7 @@ from pyogp.lib.base.message.message import Message, Block
 
 
 # pyogp utilities
-from pyogp.lib.base.utilities.helpers import Helpers
+from pyogp.lib.base.helpers import Helpers
 from pyogp.lib.client.enums import PCodeEnum, CompressedUpdateFlags, \
      Permissions, AssetType
 

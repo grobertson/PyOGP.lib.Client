@@ -29,7 +29,7 @@ from pyogp.lib.base.caps import Capability
 from pyogp.lib.base.network.stdlib_client import StdLibClient, HTTPError
 from pyogp.lib.client.exc import ResourceNotFound, ResourceError, RegionSeedCapNotAvailable, RegionMessageError
 from pyogp.lib.client.settings import Settings
-from pyogp.lib.base.utilities.helpers import Helpers
+from pyogp.lib.base.helpers import Helpers
 from pyogp.lib.client.event_queue import EventQueueClient
 from pyogp.lib.client.objects import ObjectManager
 from pyogp.lib.base.datatypes import UUID
@@ -43,7 +43,7 @@ from pyogp.lib.base.message.message import Message, Block
 from pyogp.lib.base.message.message_handler import MessageHandler
 
 # utilities
-from pyogp.lib.base.utilities.helpers import Wait
+from pyogp.lib.base.helpers import Wait
 
 # initialize logging
 logger = getLogger('pyogp.lib.client.region')

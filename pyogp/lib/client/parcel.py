@@ -32,7 +32,7 @@ from pyogp.lib.base.message.message import Message, Block
 from pyogp.lib.base.message.message_handler import MessageHandler
 
 # utilities
-from pyogp.lib.base.utilities.helpers import Helpers
+from pyogp.lib.base.helpers import Helpers
 
 # initialize logging
 logger = getLogger('pyogp.lib.client.parcel')

@@ -29,7 +29,7 @@ from pyogp.lib.client.datamanager import DataManager
 from pyogp.lib.base.message.message_handler import MessageHandler
 from pyogp.lib.base.message.message import Message, Block
 
-from pyogp.lib.base.utilities.helpers import Helpers
+from pyogp.lib.base.helpers import Helpers
 from pyogp.lib.client.exc import NotImplemented
 from pyogp.lib.client.objects import Object
 from pyogp.lib.client.visualparams import VisualParams
