@@ -17,7 +17,7 @@ $/LicenseInfo$
 """
 
 # std lib
-from logging import getLogger, ERROR, INFO, DEBUG
+from logging import getLogger
 import time
 
 # related

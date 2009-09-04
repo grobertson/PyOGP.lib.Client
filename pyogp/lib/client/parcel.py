@@ -17,7 +17,7 @@ $/LicenseInfo$
 """
 
 # standard python modules
-from logging import getLogger, WARNING, INFO, DEBUG
+from logging import getLogger
 
 # related
 from eventlet import api

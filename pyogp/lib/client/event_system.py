@@ -17,14 +17,14 @@ $/LicenseInfo$
 """
 
 # standard python libs
-from logging import getLogger, CRITICAL, ERROR, WARNING, INFO, DEBUG
+from logging import getLogger
 import time
 
 # related
 from eventlet import api
 
 # pyogp
-from pyogp.lib.base.utilities.events import Event
+from pyogp.lib.base.events import Event
 from pyogp.lib.client.settings import Settings
 from pyogp.lib.base.exc import DataParsingError
 

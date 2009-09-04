@@ -17,7 +17,7 @@ $/LicenseInfo$
 """
 
 # standard python libs
-from logging import getLogger, ERROR, WARNING, INFO, DEBUG
+from logging import getLogger
 import re
 
 # related

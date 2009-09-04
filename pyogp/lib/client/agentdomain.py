@@ -18,7 +18,7 @@ $/LicenseInfo$
 
 # std lib
 import urllib2
-from logging import getLogger, CRITICAL, ERROR, WARNING, INFO, DEBUG
+from logging import getLogger
 
 # related
 from indra.base import llsd
