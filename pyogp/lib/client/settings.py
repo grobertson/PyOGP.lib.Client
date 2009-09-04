@@ -20,7 +20,7 @@ from pyogp.lib.base.settings import Settings as BaseSettings
 
 class Settings(BaseSettings):
 
-    def __init__(self, quiet_logging = False):
+    def __init__(self, quiet_logging = False, spammy_logging = False, log_tests = True):
         """ some lovely configurable settings 
 
         These are applied package wide, and can be
@@ -29,9 +29,7 @@ class Settings(BaseSettings):
         This Settings instance inherits from pyogp.lib.base's settings
         """
 
-        super(Settings, self).__init__(quiet_logging)
-
-        self.quiet_logging = quiet_logging
+        super(Settings, self).__init__(quiet_logging, spammy_logging, log_tests)
 
         #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
         # Application behavior settings
@@ -126,7 +124,10 @@ class Settings(BaseSettings):
         # Test related settings
         #~~~~~~~~~~~~~~~~~~~~~~
 
-        self.ENABLE_LOGGING_IN_TESTS = True
+        if log_tests:
+            self.ENABLE_LOGGING_IN_TESTS = True
+        else:
+            self.ENABLE_LOGGING_IN_TESTS = False
 
     # parameters for xmplrpc login
     def get_default_xmlrpc_login_parameters(self):
