@@ -55,9 +55,9 @@ class AppearanceManager(DataManager):
         super(AppearanceManager, self).__init__(agent, settings)
         self.AgentSetSerialNum = 1
         self.AgentCachedSerialNum = 1
-        self.wearables = [] #indexed by WearableType
+        self.wearables = {} #indexed by WearableType
         for i in range(TextureIndex.TEX_COUNT):
-            self.wearables.append(Wearable(i))
+            self.wearables[i] = Wearable(i)
         self.helpers = Helpers()
         self.bakedTextures = {} #indexed by TextureIndex
         for i in range(BakedIndex.BAKED_COUNT):
@@ -68,6 +68,7 @@ class AppearanceManager(DataManager):
         self.Size = Vector3(X = 0.45, Y = 0.60, Z = 1.14 ) # Z which is Height needs to be calculated using params
 
         self.requests = [] 
+
     def enable_callbacks(self):
         """
         enables the calback handlers for this AppearanceManager
@@ -84,6 +85,20 @@ class AppearanceManager(DataManager):
         onAgentDataUpdate_received.subscribe(self.helpers.log_packet, self)
         '''
 
+    def wear_item(self, item, wearable_type):
+        self.wearables[wearable_type].ItemID = item.ItemID
+        self.wearables[wearable_type].AssetID = item.AssetID
+        self.send_AgentSetAppearance(self.agent.agent_id,
+                                     self.agent.session_id,
+                                     self.Size,
+                                     self.bakedTextures,
+                                     self.TextureEntry,
+                                     self.visualParams)
+        self.send_AgentIsNowWearing(self.agent.agent_id,
+                                    self.agent.session_id,
+                                    self.wearables)
+
+    
     def request_agent_wearables(self):
         """
         Asks the simulator what the avatar is wearing
@@ -107,12 +122,8 @@ class AppearanceManager(DataManager):
         self.requests.remove(str(assetID))
         if isSuccess:
             asset = self.agent.asset_manager.get_asset(assetID)
-            #logger.info("wearable data\n, %s" % asset.data )
+            logger.debug("wearable data\n, %s" % asset.data )
             for paramID in asset.params.keys():
-                #log (INFO, 'Changing param %d from %f to %f' %(paramID,
-                #                                               self.visualParams[paramID].value,
-                #                                               asset.params[paramID]))
-
                 self.visualParams[paramID].value = asset.params[paramID]
 
         if len(self.requests) == 0:
@@ -206,9 +217,9 @@ class AppearanceManager(DataManager):
                       AgentID = AgentID,
                       SessionID = SessionID)]
         args += [Block('WearableData',
-                       ItemID = wearable.ItemID,
-                       WearableType = wearable.WearableType) \
-                 for wearable in wearables]
+                       ItemID = wearables[key].ItemID,
+                       WearableType = wearables[key].WearableType) \
+                 for key in wearables.keys()]
 
         packet = Message('AgentIsNowWearing', *args)
 
@@ -342,8 +353,4 @@ class AvatarTexture(object):
     def __init__(self, TextureIndex, TextureID = None):
         self.TextureIndex = TextureIndex
         self.TextureID = TextureID
-
-
-
-
 

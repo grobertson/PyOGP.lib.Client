@@ -143,11 +143,11 @@ class EventQueueClient(object):
             for i in range(0, times):
                 api.sleep(interval)
                 if self._running == False:
-                    log(INFO,
+                    logger.info(
                         "Stopped event queue processing for %s",
                         self.region.SimName)
                     return
-            log(WARNING,
+            logger.warning(
                 "Failed to stop event queue for %s after %s seconds",
                 self.region.SimName,
                 str(interval * times))

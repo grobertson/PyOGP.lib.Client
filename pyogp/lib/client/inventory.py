@@ -208,6 +208,7 @@ class InventoryManager(DataManager):
             if self.settings.LOG_VERBOSE:
                 logger.debug('Storing a new inventory item: %s ' % (inventory_item.ItemID))
 
+
     def search_inventory(self, folder_list = [], item_id = None, name = None,
                          match_list = []):
         """ search through all inventory folders for an id(uuid) or Name, and
@@ -248,13 +249,14 @@ class InventoryManager(DataManager):
             if is_match(item):
                 match_list.append(item)
             if isinstance(item, InventoryFolder):
-                matches = self.search_inventory_folder(item.FolderID,
+                matches = self.search_inventory_folder(folder_list,
+                                                       item.FolderID,
                                                        _id=item_id,
                                                        name=name)
                 match_list.extend(matches)
         return match_list
 
-    def search_inventory_folder(self, folder_id, _id = None, name = None):
+    def search_inventory_folder(self, folder_list, folder_id, _id = None, name = None):
         """ search an inventory folder for _id or name
 
         return a list of matches
@@ -262,7 +264,7 @@ class InventoryManager(DataManager):
 
         match_list = []
 
-        search_folder = [folder for folder in self.folders if str(folder.FolderID) == str(folder_id)][0]
+        search_folder = [folder for folder in folder_list if str(folder.FolderID) == str(folder_id)][0]
 
         for item in search_folder.inventory:
 
@@ -553,6 +555,23 @@ class InventoryManager(DataManager):
                        Description = desc)]
         self.agent.region.enqueue_message(Message("CreateInventoryItem", *args))
 
+    def remove_inventory_item(self, item, folder,
+                              folder_list):
+        folder.inventory.remove(item)
+        self.send_RemoveInventoryItem(self.agent.agent_id,
+                                      self.agent.session_id,
+                                      item.ItemID)
+    
+    def send_RemoveInventoryItem(self, agent_id, session_id, item_id):
+        """ sends a RemoveInventoryItem message """
+
+        args = [Block('AgentData',
+                      AgentID = agent_id,
+                      SessionID = session_id)]
+        args += [Block('InventoryData',
+                       ItemID = item_id)]
+        self.agent.region.enqueue_message(Message("RemoveInventoryItem", *args))
+        
     def sendFetchInventoryDescendentsRequest(self, folder_id = None):
         """ send a request to the grid for folder contents """
 
