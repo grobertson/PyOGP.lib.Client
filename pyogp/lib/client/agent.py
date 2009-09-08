@@ -297,13 +297,10 @@ class Agent(object):
         # start the simulator udp and event queue connections
         if self.settings.LOG_COROUTINE_SPAWNS: 
             logger.info("Spawning a coroutine for connecting to the agent's host region.")
-
         api.spawn(self.region.connect)
 
         self.enable_callbacks()
-
-
-
+        
     def _enable_child_region(self, region_params):
         """ enables a child region. eligible simulators are sent in EnableSimulator over the event queue, and routed through the packet handler """
 
@@ -360,8 +357,6 @@ class Agent(object):
 
     def enable_callbacks(self):
         """ enable the Agents() callback handlers for packet received events """
-        # TODO oopify
-
         if self.settings.ENABLE_INVENTORY_MANAGEMENT:
             while self.region.capabilities == {}:
 
@@ -402,10 +397,7 @@ class Agent(object):
             onEstablishAgentCommunication_received = self.region.message_handler.register('EstablishAgentCommunication')
             onEstablishAgentCommunication_received.subscribe(self.onEstablishAgentCommunication)
 
-        self.enable_callbacks()
-
-    def enable_callbacks(self):
-        """ enable callbacks for the agent class to set up handling for related messages"""
+        # enable callbacks for the agent class to set up handling for related messages
 
         onAlertMessage_received = self.region.message_handler.register('AlertMessage')
         onAlertMessage_received.subscribe(self.onAlertMessage)
