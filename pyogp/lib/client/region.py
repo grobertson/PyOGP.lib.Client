@@ -184,7 +184,14 @@ class Region(object):
 
     def enable_callbacks(self):
         '''enables the callback handles for this Region'''
+        # the RegionHandshake packet requires a response
+        onRegionHandshake_received = self.message_handler.register('RegionHandshake')
+        onRegionHandshake_received.subscribe(self.onRegionHandshake)
 
+        # the StartPingCheck packet requires a response
+        onStartPingCheck_received = self.message_handler.register('StartPingCheck')
+        onStartPingCheck_received.subscribe(self.onStartPingCheck)
+        
         if self.settings.ENABLE_OBJECT_TRACKING:
             self.objects.enable_callbacks()
 
@@ -473,13 +480,7 @@ class Region(object):
 
         self._isUDPRunning = True
 
-        # the RegionHandshake packet requires a response
-        onRegionHandshake_received = self.message_handler.register('RegionHandshake')
-        onRegionHandshake_received.subscribe(self.onRegionHandshake)
-
-        # the StartPingCheck packet requires a response
-        onStartPingCheck_received = self.message_handler.register('StartPingCheck')
-        onStartPingCheck_received.subscribe(self.onStartPingCheck)
+        
 
         while self._isUDPRunning:
 
