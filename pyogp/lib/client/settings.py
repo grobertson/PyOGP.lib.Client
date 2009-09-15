@@ -110,6 +110,8 @@ class Settings(BaseSettings):
         # enabled the tracking of region parcels
         self.ENABLE_PARCEL_TRACKING = True
 
+        # how often to send AgentUpdate messags while idling
+        self.AGENT_UPDATES_PER_SECOND = 10
         #~~~~~~~~~~~~~~~~~~~~~~
         # Agent Domain specific
         #~~~~~~~~~~~~~~~~~~~~~~

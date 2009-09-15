@@ -214,7 +214,8 @@ class Agent(object):
 
         if connect_region:
             self._enable_current_region()
-
+            api.spawn(self.agent_updater)
+        
 
     def logout(self):
         """ logs an agent out of the current region. calls Region()._kill_coroutines() for all child regions, and Region().logout() for the host region """
@@ -1066,12 +1067,20 @@ class Agent(object):
 
         self.region.enqueue_message(packet) 
 
+    def agent_updater(self):
+        """
+        Sends AgentUpdate message every so often, for movement purposes.
+        Needs a better name
+        """
+        while self.connected:
+            self._send_update()
+            api.sleep(1.0/self.settings.AGENT_UPDATES_PER_SECOND)
+            
     def sit_on_ground(self):
         """Sit on the ground at the agent's current location"""
 
         self.control_flags |= AgentControlFlags.SitOnGround
-        #self._send_update()
-
+        
     def stand(self):
         """Stand up from sitting"""
 
@@ -1082,24 +1091,21 @@ class Agent(object):
 
         # And finish standing
         self.control_flags &= ~AgentControlFlags.StandUp
-        self._send_update()
-
+        
     def walk(self, walking=True):
         """Walk forward"""
         if walking:
             self.control_flags |= AgentControlFlags.AtPos
         else:
             self.control_flags &= ~AgentControlFlags.AtPos
-        #self._send_update()
- 
+         
     def fly(self, flying=True):
         """Start or stop flying"""
         if flying:
             self.control_flags |= AgentControlFlags.Fly
         else:            
             self.control_flags &= ~AgentControlFlags.Fly
-        #self._send_update()
-
+        
     def stop(self):
         self.control_flags = AgentControlFlags.Stop
 
@@ -1113,7 +1119,7 @@ class Agent(object):
     def _send_update(self):
         """ force a send of an AgentUpdate message to the host simulator """
 
-        logger.info('sending AgentUpdate')
+        #logger.info('sending AgentUpdate')
 
         self.region.sendAgentUpdate(self.agent_id, self.session_id,
             State=self.state,

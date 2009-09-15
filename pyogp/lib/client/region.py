@@ -493,16 +493,7 @@ class Region(object):
                                             msg_buf, msg_size)
 
             if self.messenger.has_unacked():
-
                 self.messenger.process_acks()
-
-                # if this region is the host region, send agent updates
-                if self.is_host_region:
-                # pull the camera back a bit, 20m
-                # we are currently facing east, so pull back on the x axis
-                    CameraCenter = (self.agent.Position.X - 20.0, self.agent.Position.Y, self.agent.Position.Z)
-
-                    self.sendAgentUpdate(self.agent.agent_id, self.agent.session_id, ControlFlags=self.agent.control_flags, CameraCenter = CameraCenter, CameraAtAxis = self.settings.DEFAULT_CAMERA_AT_AXIS, CameraLeftAxis = self.settings.DEFAULT_CAMERA_AT_AXIS, CameraUpAxis = self.settings.DEFAULT_CAMERA_UP_AXIS, Far = self.settings.DEFAULT_CAMERA_DRAW_DISTANCE)
 
             # send pending messages in the queue
             for (packet, reliable) in self.packet_queue:
