@@ -60,8 +60,8 @@ class MessageManager(object):
         
         
         # initialize the manager's base attributes
-        self.builder = MessageBuilder()     # 
-        self.connections = {}               # a connection = {Host():
+        #self.builder = MessageBuilder()     # 
+        #self.connections = {}               # a connection = {Host():
                                             #                       {'udp':UDPDispatcher(),
                                             #                       'event_queue_client':EventQueueClient()}}
         self.incoming_queue = []            # a list of incoming Message() instances
@@ -127,6 +127,7 @@ class MessageManager(object):
         """
         Sends and receives UDP messages.
         """
+        logger.debug('Spawning region UDP connection')
         while self._is_running:
             api.sleep(0)
             msg_buf, msg_size = self.udp_dispatcher.udp_client.receive_packet(self.udp_dispatcher.socket)
@@ -141,8 +142,10 @@ class MessageManager(object):
                 self.send_message(packet, reliable)
                 self.outgoing_udp_queue.remove((packet, reliable))
                 
-        logger.debug("Stopped the UDP connection for %s" % (self.SimName))
+        logger.debug("Stopped the UDP connection for %s" % (self.region.SimName))
     
     def _event_queue_dispatcher(self):
-        self.event_queue.start
+        if self.region.seed_capability_url != None:
+            logger.debug('Spawning region event queue connection')
+            self.event_queue.start
         
