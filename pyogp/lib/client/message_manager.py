@@ -1,7 +1,10 @@
 
 """
-@file filename
-@brief brief description
+message_manager.py
+Implements the MessageManager class which faciliates the sending and receiving
+of messages between a simulator through either the UDP or Capability message
+paths.
+
 Contributors: http://svn.secondlife.com/svn/linden/projects/2008/pyogp/CONTRIBUTORS.txt 
 
 $LicenseInfo:firstyear=2008&license=apachev2$
@@ -21,6 +24,10 @@ from pyogp.lib.base.message.message_handler import MessageHandler
 from pyogp.lib.client.event_queue import EventQueueClient
 
 from eventlet import api
+
+# initialize logging
+logger = getLogger('pyogp.lib.client.message_manager')
+
 
 class MessageManager(object):
     """ 
@@ -90,6 +97,7 @@ class MessageManager(object):
         #api.spawn(self.monitor_incoming_queue)
         
     def stop_monitors(self):
+        """ stops monitoring coroutines """
         #stops udp_dispatcher
         self._running = False
         #stops event_queue
