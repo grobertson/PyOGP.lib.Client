@@ -18,7 +18,7 @@ $/LicenseInfo$
 
 # standard python libs
 from logging import getLogger
-import re
+import re, random
 
 # related
 import uuid
@@ -1081,7 +1081,7 @@ def sendUpdateInventoryItem(agent, inventory_items = [], ):
                     *[Block('InventoryData',
                             ItemID = item.ItemID,
                             FolderID = item.FolderID,
-                            CallbackID = UUID(),
+                            CallbackID = random.randint (0, pow (2, 32)-1),
                             CreatorID = item.CreatorID,
                             OwnerID = item.OwnerID,
                             GroupID = item.GroupID,
