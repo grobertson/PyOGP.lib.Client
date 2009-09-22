@@ -16,13 +16,14 @@ You may obtain a copy of the License at:
     http://svn.secondlife.com/svn/linden/projects/2008/pyogp/LICENSE.txt
 $/LicenseInfo$
 """
+#stdlib
+from logging import getLogger
 
 from pyogp.lib.base.message.udpdispatcher import UDPDispatcher
-from pyogp.lib.base.message.circuit import Host
-from pyogp.lib.base.message.message import Message, Block
 from pyogp.lib.base.message.message_handler import MessageHandler
+from pyogp.lib.base.message.circuit import Host
 from pyogp.lib.client.event_queue import EventQueueClient
-
+from pyogp.lib.client.settings import Settings
 from eventlet import api
 
 # initialize logging
@@ -35,8 +36,8 @@ class MessageManager(object):
     functionality in the base/message directory.
     """
 
-    def __init__(self, region, message_handler = None, settings = None, 
-                 start_monitors = True):
+    def __init__(self, region, message_handler=None, capabilities={},
+                 settings=None, start_monitors=False):
         """ 
         Initialize the MessageManager, applying custom settings and dedicated 
         message_handler if needed 
@@ -56,9 +57,9 @@ class MessageManager(object):
         elif self.settings.HANDLE_PACKETS:
             self.message_handler = MessageHandler()
 
-        log.debug("initializing the Message Manager")
+        logger.debug("initializing the Message Manager")
         
-        
+        self.host = Host((region.sim_ip, region.sim_port))
         # initialize the manager's base attributes
         #self.builder = MessageBuilder()     # 
         #self.connections = {}               # a connection = {Host():
@@ -68,22 +69,25 @@ class MessageManager(object):
         self.outgoing_queue = []            # a list of (Message(), reliable) instances to be sent to an endpoint
 
         self._is_running = False
+        
         #event queue-related attributes
+        self.capabilities = capabilities
+        print self.capabilities
         self.event_queue = EventQueueClient(self.capabilities['EventQueueGet'], 
                                             settings = self.settings, 
                                             message_handler = self.message_handler, 
                                             region = self.region)
+        
         self.incoming_events_queue = []
         self.outgoing_events_queue = []
         
         #UDP-related attributes
-        self.host = host
         self.incoming_udp_queue = []
         self.outgoing_udp_queue = []
         self.udp_dispatcher = UDPDispatcher(settings = self.settings, 
-                                            message_handler = self.message_handler) 
-                                            
-        
+                                            message_handler = self.message_handler,
+                                            region = self.region) 
+                
         # if start parameter = True, kick off the queue monitors
         if start_monitors:
             self.start_monitors()
@@ -92,7 +96,7 @@ class MessageManager(object):
         """ spawn queue monitoring coroutines """
         self._is_running = True
         api.spawn(self._udp_dispatcher)
-        api.spawn(self._event_queue_dispatcher)
+        api.spawn(self.event_queue.start)
         #api.spawn(self.monitor_outgoing_queue)
         #api.spawn(self.monitor_incoming_queue)
         
@@ -107,16 +111,17 @@ class MessageManager(object):
     def monitor_outgoing_queue(self):
         """  """
 
-    def enqueue_message(self, message, endpoint, reliable = False, now = False):
+    def enqueue_message(self, message, endpoint, reliable = False,
+                        now = False):
         """ enqueues a Message() in the outgoing_queue """
 
         # ToDo: should a reliable flag parameter be required here?
         if now:
-            self.outgoing_queue.insert(0, (packet, reliable))
+            self.outgoing_queue.insert(0, (message, reliable))
         else:
             self.outgoing_queue.append((message, reliable))
 
-    def send_message():
+    def send_message(self):
         """  """
         pass
 
@@ -132,20 +137,34 @@ class MessageManager(object):
             api.sleep(0)
             msg_buf, msg_size = self.udp_dispatcher.udp_client.receive_packet(self.udp_dispatcher.socket)
             recv_packet = self.udp_dispatcher.receive_check(self.udp_dispatcher.udp_client.get_sender(),
-                                              msg_buf, 
-                                              sg_size)
+                                                            msg_buf, 
+                                                            msg_size)
             #self.outgoing_udp_queue.append(recv_packet)
             if self.udp_dispatcher.has_unacked():
                 self.udp_dispatcher.process_acks()
                 
-            for (packet, reliable) in self.outgoing_udp_queue:
-                self.send_message(packet, reliable)
-                self.outgoing_udp_queue.remove((packet, reliable))
+            while len(self.outgoing_udp_queue) > 0:                
+                (packet, reliable) = self.outgoing_udp_queue.pop(0)
+                self.send_udp_message(packet, reliable)
                 
         logger.debug("Stopped the UDP connection for %s" % (self.region.SimName))
+
+    def send_udp_message(self, packet, reliable=False):
+        """
+        Immediately sends an udp message to host
+        """
+        if reliable:
+            self.udp_dispatcher.send_reliable(packet, self.host, 0)
+        else:
+            self.udp_dispatcher.send_message(packet, self.host)
     
     def _event_queue_dispatcher(self):
-        if self.region.seed_capability_url != None:
-            logger.debug('Spawning region event queue connection')
-            self.event_queue.start
+        """
+        Sends and receives event queue messages
+        """
+        logger.debug('Spawning region event queue connection')
+        while self._is_running:
+            #proceses outgoing_events_queue
+            pass
+            
         
