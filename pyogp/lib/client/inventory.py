@@ -1035,7 +1035,7 @@ class InventoryItem(object):
         """
 
         if self.__dict__.has_key(name):
-            self.setattr(self, name, value)
+            self.__dict__[name] = value
             sendUpdateInventoryItem(agent, [self])
         else:
             raise DataParsingError('Inventory item attribute update failes, no field named \'%s\'' % (name))
