@@ -82,12 +82,12 @@ class GroupManager(DataManager):
     def handle_group_chat(self, message):
         """ process a ChatterBoxInvitation_Message instance"""
 
-        group = [group for group in self.group_store if str(message.blocks['Message_Data'][0].get_variable('instantmessage').data['message_params']['id']) == str(group.GroupID)]
+        group = [group for group in self.group_store if str(message.blocks['Message_Data'][0].get_variable('session_id').data) == str(group.GroupID)]
 
         if group != []:
             group[0].handle_inbound_chat(message)
         else:
-            logger.warning("Received group chat message from unknown group. Group: %s. Agent: %s. Message: %s" % (message.blocks['Message_Data'][0].get_variable('session_name').data, message.blocks['Message_Data'][0].get_variable('from_name').data, message.blocks['Message_Data'][0].get_variable('message').data))
+            logger.warning("Received group chat message from unknown group. Group: %s. Agent: %s. Message: %s" % (message.blocks['Message_Data'][0].get_variable('session_name').data, message.blocks['Message_Data'][0].get_variable('from_name').data, message.blocks['Message_Data'][0].get_variable('instantmessage').data['message_params']['message']))
 
     def store_group(self, _group):
         """ append to or replace a group in self.group_store """
