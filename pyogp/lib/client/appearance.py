@@ -122,7 +122,7 @@ class AppearanceManager(DataManager):
         self.requests.remove(str(assetID))
         if isSuccess:
             asset = self.agent.asset_manager.get_asset(assetID)
-            logger.debug("wearable data\n, %s" % asset.data )
+            logger.debug("Received wearable data for %s\n" % asset.Name)
             for paramID in asset.params.keys():
                 self.visualParams[paramID].value = asset.params[paramID]
 
@@ -148,7 +148,7 @@ class AppearanceManager(DataManager):
         """
 
         #self.verifyAgentData(packet)
-        logger.info("Got AgentWearablesUpdate: %s" % packet)
+        #logger.debug("AgentWearablesUpdate: %s" % packet)
         for wearableData in packet.blocks['WearableData']:
             wearableType = wearableData.get_variable('WearableType').data
             itemID = wearableData.get_variable('ItemID').data
@@ -175,7 +175,7 @@ class AppearanceManager(DataManager):
         Update the bakedTextures with their TextureIDs and HostNames and call
         send_AgentSetAppearance
         """
-        #logger.info("AgentCachedTextureRespose received: %s" % packet)
+        #logger.debug("AgentCachedTextureRespose received: %s" % packet)
         for bakedTexture in packet.blocks['WearableData']:
             bakedIndex = bakedTexture.get_variable('TextureIndex').data
             self.bakedTextures[bakedIndex].TextureID = bakedTexture.get_variable('TextureID').data
