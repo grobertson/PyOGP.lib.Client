@@ -61,7 +61,7 @@ class AssetManager(DataManager):
     def request_asset(self, assetID, assetType, isPriority, callback=None, itemID=None):
         """
         Sends a TransferRequest to the sim for asset assetID with type assetType,
-        will call back with the assetID and True with asset received or False
+        will call callback with the assetID and True with the asset received or False
         if request failed.  On successful request the asset is store in
         self.assets 
         """
@@ -107,7 +107,7 @@ class AssetManager(DataManager):
         if isPriority:
             priority = 1.0
         else:
-            priortity = 0.0
+            priority = 0.0
 
         params = ''
         if itemID != None:
@@ -140,8 +140,11 @@ class AssetManager(DataManager):
         self.send_AssetUploadRequest(transaction_id, type_, tempfile,
                                      store_local)
     """
-    def upload_script_via_caps(self, item_id, script):
 
+    def upload_script_via_caps(self, item_id, script):
+        """
+        uploads a plaintext LSL file via UploadScriptAgent capability
+        """
         def upload_script_via_caps_responder(response):
 
             if response['state'] == 'upload':
@@ -168,12 +171,10 @@ class AssetManager(DataManager):
         upload_script_via_caps_responder(response)
 
 
-
-
-    def upload_via_udp(self):
-        pass
-
     def get_asset(self, assetID):
+        """
+        returns an asset from the asset store given an assetID
+        """
         return self.assets[str(assetID)]
 
     def send_AssetUploadRequest(self, TransactionID, Type, Tempfile, \
