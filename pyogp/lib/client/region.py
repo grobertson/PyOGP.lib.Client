@@ -22,25 +22,22 @@ import time
 
 # related
 from indra.base import llsd
-from eventlet import api
 
 # pyogp
 from pyogp.lib.base.caps import Capability
 from pyogp.lib.base.network.stdlib_client import StdLibClient, HTTPError
-from pyogp.lib.client.exc import ResourceNotFound, ResourceError, RegionSeedCapNotAvailable, RegionMessageError
+from pyogp.lib.client.exc import ResourceNotFound, ResourceError, RegionSeedCapNotAvailable, \
+     RegionMessageError
 from pyogp.lib.client.settings import Settings
 from pyogp.lib.base.helpers import Helpers
-from pyogp.lib.client.event_queue import EventQueueClient
 from pyogp.lib.client.objects import ObjectManager
-from pyogp.lib.base.datatypes import UUID
 from pyogp.lib.client.event_system import AppEventsHandler
 from pyogp.lib.client.parcel import ParcelManager
 
 # messaging
-from pyogp.lib.base.message.udpdispatcher import UDPDispatcher
-from pyogp.lib.base.message.circuit import Host
 from pyogp.lib.base.message.message import Message, Block
 from pyogp.lib.base.message.message_handler import MessageHandler
+from pyogp.lib.base.message_manager import MessageManager
 
 # utilities
 from pyogp.lib.base.helpers import Wait
@@ -58,7 +55,12 @@ class Region(object):
 
     Initialize the login class
 
-    >>> region = Region(256, 256, 'https://somesim.cap/uuid', 'EnableSimulator,TeleportFinish,CrossedRegion', '127.0.0.1', 13000, 650000000, {'agent_id':'00000000-0000-0000-0000-000000000000', 'session_id':'00000000-0000-0000-0000-000000000000', 'secure_session_id:'00000000-0000-0000-0000-000000000000'})
+    >>> region = Region(256, 256, 'https://somesim.cap/uuid',
+                        'EnableSimulator,TeleportFinish,CrossedRegion',
+                        '127.0.0.1', 13000, 650000000,
+                        {'agent_id':'00000000-0000-0000-0000-000000000000',
+                         'session_id':'00000000-0000-0000-0000-000000000000',
+                         'secure_session_id:'00000000-0000-0000-0000-000000000000'})
 
     Start the udp and event queue connections to the region
 
@@ -69,7 +71,10 @@ class Region(object):
 
     """
 
-    def __init__(self, global_x = 0, global_y = 0, seed_capability_url = None, udp_blacklist = None, sim_ip = None, sim_port = None, circuit_code = None, agent = None, settings = None, message_handler = None, handle = None, events_handler = None):
+    def __init__(self, global_x = 0, global_y = 0, seed_capability_url = None,
+                 udp_blacklist = None, sim_ip = None, sim_port = None,
+                 circuit_code = None, agent = None, settings = None,
+                 message_handler = None, handle = None, events_handler = None):
         """ initialize a region """
 
         # allow the settings to be passed in
@@ -109,81 +114,78 @@ class Region(object):
         self.agent = agent   # an agent object
         self.handle = handle
         self.is_host_region = False
-
-        # UDP connection information
-        if (self.sim_ip != None) and (self.sim_port != None):
-            self.messenger = UDPDispatcher(settings = self.settings, message_handler = self.message_handler, region = self)
-            self.host = Host((self.sim_ip, self.sim_port))
-        else:
-            self.host = None
-
+        self.message_manager = None
+        self.last_ping = 0
+        
         # other attributes
         self.RegionHandle = None    # from AgentMovementComplete
         self.SimName = None
         self.seed_capability = None
         self.capabilities = {}
-        self.event_queue = None
         self.connected = False
         self.helpers = Helpers()
 
-        self._isUDPRunning = False
-        self._isEventQueueRunning = False
-
         # data storage containers
-        self.packet_queue = []
+        
+        self.objects = ObjectManager(agent = self.agent, region = self,
+                                     settings = self.settings,
+                                     message_handler = self.message_handler,
+                                     events_handler = self.events_handler)
 
-        self.objects = ObjectManager(agent = self.agent, region = self, settings = self.settings, message_handler = self.message_handler, events_handler = self.events_handler)
+        self.parcel_manager = ParcelManager(agent = self.agent, region = self,
+                                            settings = self.settings,
+                                            message_handler = self.message_handler,
+                                            events_handler = self.events_handler)
 
-        self.parcel_manager = ParcelManager(agent = self.agent, region = self, settings = self.settings, message_handler = self.message_handler, events_handler = self.events_handler)
 
-
-        # required packet handlers
-        onPacketAck_received = self.message_handler.register('PacketAck')
-        onPacketAck_received.subscribe(self.helpers.null_packet_handler, self)
 
         # data we need
         self.region_caps_list = ['ChatSessionRequest',
-                            'CopyInventoryFromNotecard',
-                            'DispatchRegionInfo',
-                            'EstateChangeInfo',
-                            'EventQueueGet',
-                            'FetchInventory',
-                            'WebFetchInventoryDescendents',
-                            'FetchLib',
-                            'FetchLibDescendents',
-                            'GroupProposalBallot',
-                            'HomeLocation',
-                            'MapLayer',
-                            'MapLayerGod',
-                            'NewFileAgentInventory',
-                            'ParcelPropertiesUpdate',
-                            'ParcelVoiceInfoRequest',
-                            'ProvisionVoiceAccountRequest',
-                            'RemoteParcelRequest',
-                            'RequestTextureDownload',
-                            'SearchStatRequest',
-                            'SearchStatTracking',
-                            'SendPostcard',
-                            'SendUserReport',
-                            'SendUserReportWithScreenshot',
-                            'ServerReleaseNotes',
-                            'StartGroupProposal',
-                            'UpdateAgentLanguage',
-                            'UpdateGestureAgentInventory',
-                            'UpdateNotecardAgentInventory',
-                            'UpdateScriptAgent',
-                            'UpdateGestureTaskInventory',
-                            'UpdateNotecardTaskInventory',
-                            'UpdateScriptTask',
-                            'ViewerStartAuction',
-                            'UntrustedSimulatorMessage',
-                            'ViewerStats'
-        ]
+                                 'CopyInventoryFromNotecard',
+                                 'DispatchRegionInfo',
+                                 'EstateChangeInfo',
+                                 'EventQueueGet',
+                                 'FetchInventory',
+                                 'WebFetchInventoryDescendents',
+                                 'FetchLib',
+                                 'FetchLibDescendents',
+                                 'GroupProposalBallot',
+                                 'HomeLocation',
+                                 'MapLayer',
+                                 'MapLayerGod',
+                                 'NewFileAgentInventory',
+                                 'ParcelPropertiesUpdate',
+                                 'ParcelVoiceInfoRequest',
+                                 'ProvisionVoiceAccountRequest',
+                                 'RemoteParcelRequest',
+                                 'RequestTextureDownload',
+                                 'SearchStatRequest',
+                                 'SearchStatTracking',
+                                 'SendPostcard',
+                                 'SendUserReport',
+                                 'SendUserReportWithScreenshot',
+                                 'ServerReleaseNotes',
+                                 'StartGroupProposal',
+                                 'UpdateAgentLanguage',
+                                 'UpdateGestureAgentInventory',
+                                 'UpdateNotecardAgentInventory',
+                                 'UpdateScriptAgent',
+                                 'UpdateGestureTaskInventory',
+                                 'UpdateNotecardTaskInventory',
+                                 'UpdateScriptTask',
+                                 'ViewerStartAuction',
+                                 'UntrustedSimulatorMessage',
+                                 'ViewerStats'
+                                 ]
         if self.settings.LOG_VERBOSE:
             logger.debug('initializing region domain: %s' %self)
 
     def enable_callbacks(self):
         '''enables the callback handles for this Region'''
+        # required packet handlers
+        onPacketAck_received = self.message_handler.register('PacketAck')
+        onPacketAck_received.subscribe(self.helpers.null_packet_handler, self)
+        
         # the RegionHandshake packet requires a response
         onRegionHandshake_received = self.message_handler.register('RegionHandshake')
         onRegionHandshake_received.subscribe(self.onRegionHandshake)
@@ -202,46 +204,10 @@ class Region(object):
 
         logger.info("Would enable a simulator at %s:%s with a handle of %s" % (IP, Port, Handle))
 
-    def send_message_next(self, packet, reliable = False):
-        """ inserts this packet at the fron of the queue """
-
-        #if str(type(packet)) != '<class \'pyogp.lib.base.message.message.Message\'>':
-            #packet = packet()
-
-        self.packet_queue.insert(0, (packet, reliable))
-
     def enqueue_message(self, packet, reliable = False):
         """ queues packets for the messaging system to send """
 
-        #if str(type(packet)) != '<class \'pyogp.lib.base.message.message.Message\'>':
-            #packet = packet()
-
-        self.packet_queue.append((packet, reliable))
-
-    def send_message(self, packet, reliable = False):
-        """ send a packet to the host """
-
-        #if str(type(packet)) != '<class \'pyogp.lib.base.message.message.Message\'>':
-            #packet = packet()
-
-        if self.host == None or self.messenger == None:
-            raise RegionMessageError(self)
-        else:
-            if reliable == False:
-                self.messenger.send_message(packet, self.host)
-            else:
-                self.messenger.send_reliable(packet, self.host, 0)
-
-    def send_reliable(self, packet):
-        """ send a reliable packet to the host """
-
-        #if str(type(packet)) != '<class \'pyogp.lib.base.message.message.Message\'>':
-            #packet = packet()
-
-        if self.host == None or self.messenger == None:
-            raise RegionMessageError(self)
-        else:
-            self.messenger.send_reliable(packet, self.host, 0)
+        self.message_manager.outgoing_queue.append((packet, reliable))
 
     def _set_seed_capability(self, url = None):
         """ sets the seed_cap attribute as a RegionSeedCapability instance """
@@ -290,7 +256,11 @@ class Region(object):
 
     def connect(self):
         """ connect to the udp circuit code and event queue"""
-        self.enable_callbacks()
+        if (self.sim_ip == None) or (self.sim_port == None):
+            logger.error("sim_ip or sim_port is None")
+            return
+        
+        
         # if this is the agent's host region, spawn the event queue
         # spawn an eventlet api instance that runs the event queue connection
         if self.seed_capability_url != None:
@@ -301,21 +271,14 @@ class Region(object):
             # grab the agent's capabilities from the sim
             self._get_region_capabilities()
 
-            logger.debug('Spawning region event queue connection')
-            self._startEventQueue()
-
-
-        # send the first few packets necessary to establish presence
+            
+        self.message_manager = MessageManager(self, self.message_handler,
+                                              self.capabilities,  self.settings)
+        self.enable_callbacks()
         self._init_agent_in_region()
-
-        self.last_ping = 0
-
-        # spawn an eventlet api instance that runs the UDP connection
-        logger.debug('Spawning region UDP connection')
-        if self.settings.LOG_COROUTINE_SPAWNS:
-            logger.info("Spawning a coroutine for udp connection to the agent's host region %s" % (str(self.sim_ip) + ":" + str(self.sim_port)))
-        api.spawn(self._processUDP)
-
+        self.message_manager.start_monitors()
+        
+                
         logger.debug("Spawned region data connections")
 
     def connect_child(self):
@@ -323,16 +286,7 @@ class Region(object):
 
         # send the UseCircuitCode packet
         self.sendUseCircuitCode(self.circuit_code, self.agent.session_id, self.agent.agent_id)
-
-        self.last_ping = 0
-
-        # spawn an eventlet api instance that runs the UDP connection
-        logger.debug('Spawning region UDP connection for child region %s' % (str(self.sim_ip) + ":" + str(self.sim_port)))
-
-        if self.settings.LOG_COROUTINE_SPAWNS:
-            logger.info("Spawning a coroutine for udp connection to the agent's child region %s" % (str(self.sim_ip) + ":" + str(self.sim_port)))
-
-        api.spawn(self._processUDP)
+        self.message_manager.start_monitors()
 
     def logout(self):
         """ send a logout packet """
@@ -346,9 +300,7 @@ class Region(object):
             # ToDo: We should parse a response packet prior to really disconnecting
             Wait(1)
 
-            self._isUDPRunning = False
-            self._stopEventQueue()
-
+            self.message_manager.stop_monitors()
             return True
         except Exception, error:
             logger.error("Error logging out from region.")
@@ -362,14 +314,13 @@ class Region(object):
                                 AgentID = agent_id,
                                 SessionID = session_id))
 
-        self.send_message(packet)
+        self.message_manager.send_udp_message(packet)
 
     def kill_coroutines(self):
         """ trigger to end processes spawned by the child regions """
 
-        self._isUDPRunning = False
-        self._stopEventQueue()
-
+        self.message_manager.stop_monitors()
+        
     def _init_agent_in_region(self):
         """ send a few packets to set things up """
 
@@ -397,7 +348,7 @@ class Region(object):
                                 SessionID = session_id,
                                 ID = agent_id))
 
-        self.send_reliable(packet)
+        self.message_manager.send_udp_message(packet, reliable=True)
 
     def sendCompleteAgentMovement(self, agent_id, session_id, circuit_code):
         """ initializing on a simulator requires sending CompleteAgentMovement, also required on teleport """
@@ -408,7 +359,7 @@ class Region(object):
                                 SessionID = session_id,
                                 CircuitCode = circuit_code))
 
-        self.send_reliable(packet)
+        self.message_manager.send_udp_message(packet, reliable=True)
 
     def sendUUIDNameRequest(self, agent_ids = []):
         """ sends a packet requesting the name corresponding to a UUID """
@@ -417,7 +368,7 @@ class Region(object):
                         *[Block('UUIDNameBlock',
                                 ID = agent_id) for agent_id in agent_ids])
 
-        self.send_message(packet)
+        self.message_manager.send_udp_message(packet)
 
     def sendAgentUpdate(self,
                         AgentID,
@@ -461,7 +412,7 @@ class Region(object):
                         Block('RegionInfo',
                                 Flags = Flags))
 
-        self.send_reliable(packet)
+        self.message_manager.send_udp_message(packet, reliable=True)
 
     def sendCompletePingCheck(self, PingID):
         """ sends a CompletePingCheck packet """
@@ -470,52 +421,11 @@ class Region(object):
                         Block('PingID',
                                 PingID = PingID))
 
-        self.send_message(packet)
+        self.message_manager.send_udp_message(packet)
 
         # we need to increment the last ping id
         self.last_ping += 1
-
-    def _processUDP(self):
-        """ check for packets and handle certain cases """
-
-        self._isUDPRunning = True
-
-        
-
-        while self._isUDPRunning:
-
-            # free up resources for other stuff to happen
-            api.sleep(0)
-
-            # check for new messages
-            msg_buf, msg_size = self.messenger.udp_client.receive_packet(self.messenger.socket)
-            self.messenger.receive_check(self.messenger.udp_client.get_sender(),
-                                            msg_buf, msg_size)
-
-            if self.messenger.has_unacked():
-                self.messenger.process_acks()
-
-            # send pending messages in the queue
-            for (packet, reliable) in self.packet_queue:
-                self.send_message(packet, reliable)
-                self.packet_queue.remove((packet, reliable))
-
-        logger.debug("Stopped the UDP connection for %s" % (self.SimName))
-
-    def _startEventQueue(self):
-        """ polls the event queue capability and parses the results  """
-
-        self.event_queue = EventQueueClient(self.capabilities['EventQueueGet'], settings = self.settings, message_handler = self.message_handler, region = self)
-
-        api.spawn(self.event_queue.start)
-
-        self._isEventQueueRunning = True
-
-    def _stopEventQueue(self):
-        """ shuts down the running event queue """
-
-        if self._isEventQueueRunning == True and self.event_queue._running == True:
-            self.event_queue.stop()
+    
 
     def onRegionHandshake(self, packet):
         """ handles the response to receiving a RegionHandshake packet """

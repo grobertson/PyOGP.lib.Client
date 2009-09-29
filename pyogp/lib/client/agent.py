@@ -298,8 +298,8 @@ class Agent(object):
         # start the simulator udp and event queue connections
         if self.settings.LOG_COROUTINE_SPAWNS: 
             logger.info("Spawning a coroutine for connecting to the agent's host region.")
-        api.spawn(self.region.connect)
-
+        self.region.connect()
+        
         self.enable_callbacks()
         
     def _enable_child_region(self, region_params):
@@ -795,8 +795,8 @@ class Agent(object):
 
         # don't enable the event queue when we already have it running
         for region in self.child_regions:
-            if (str(region.sim_ip) + ":" + str(region.sim_port) == message.blocks['Message_Data'][0].get_variable('sim-ip-and-port').data) and region.event_queue != None:
-                if region.event_queue._running:
+            if (str(region.sim_ip) + ":" + str(region.sim_port) == message.blocks['Message_Data'][0].get_variable('sim-ip-and-port').data) and region.message_manager.event_queue != None:
+                if region.message_manager.event_queue._running:
                     is_running = True
 
         # start the event queue

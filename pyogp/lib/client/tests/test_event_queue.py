@@ -25,9 +25,10 @@ from eventlet import api, coros
 
 # pyogp
 from pyogp.lib.client.region import Region
-from pyogp.lib.client.event_queue import EventQueueClient
+from pyogp.lib.base.event_queue import EventQueueClient
 from pyogp.lib.base.exc import *
 from pyogp.lib.base.caps import Capability
+from pyogp.lib.base.message.circuit import Host
 
 # pyogp tests
 import pyogp.lib.base.tests.config 
@@ -36,7 +37,7 @@ class TestEventQueue(unittest.TestCase):
 
     def setUp(self):
 
-        self.eq = EventQueueClient(region = Region())
+        self.eq = EventQueueClient(region = Region(), host = Host(('127.0.0.1', '9000')))
 
     def tearDown(self):
 
