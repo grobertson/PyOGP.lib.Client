@@ -104,28 +104,7 @@ class ObjectManager(DataManager):
         # onDeRezObject_sent.subscribe(self.helpers.log_packet, self)
 
 
-    def process_multiple_object_updates(self, objects):
-        """ process a list of object updates """
 
-        [self.process_object_update(_object) for _object in objects]
-
-    def process_object_update(self, _object):
-        """ append to or replace an object in self.objects """
-
-        # this is an avatar
-        if _object.PCode == PCodeEnum.Avatar:
-
-            self.store_avatar(_object)
-
-        # this is a Primitive
-        elif _object.PCode == PCodeEnum.Primitive:
-
-            self.store_object(_object)
-
-        else:
-
-            if self.settings.LOG_VERBOSE:
-                logger.debug("Not processing object update of type %s" % (PCodeEnum(_object.PCode)))
 
     def store_object(self, _object):
         """ store a representation of an object that has been transformed from data off the wire """
@@ -186,6 +165,12 @@ class ObjectManager(DataManager):
             self.avatar_store.append(_objectdata)
 
             #if self.settings.LOG_VERBOSE: logger.debug('Stored a new avatar: %s in region \'%s\'' % (_objectdata.LocalID, self.region.SimName))
+
+        self.agent.events_handler.handle(AppEvent("AvatarUpdate",
+                                                  payload = {'object':_objectdata,
+                                                             'region':self.region}))
+
+
 
     def get_object_from_store(self, LocalID = None, FullID = None):
         """ searches the store and returns object if stored, None otherwise """
@@ -285,6 +270,10 @@ class ObjectManager(DataManager):
         index = [self.avatar_store.index(_avatar_) for _avatar_ in self.avatar_store if _avatar_.LocalID == ID]
 
         if index != []:
+            self.agent.events_handler.handle(AppEvent("KillAvatar",
+                                                      payload = {'object':self.avatar_store[index[0]],
+                                                                 'region':self.region}))
+            
             del self.avatar_store[index[0]]
             if self.settings.LOG_VERBOSE and self.settings.ENABLE_OBJECT_LOGGING:
                 logger.debug("Kill on object data for avatar tracked as local id %s" % (ID))
@@ -505,6 +494,7 @@ class ObjectManager(DataManager):
             object_properties['TextureEntry'] = ObjectData_block.get_variable('TextureEntry').data
             object_properties['TextureAnim'] = ObjectData_block.get_variable('TextureAnim').data
             object_properties['NameValue'] = ObjectData_block.get_variable('NameValue').data
+            # TODO: Need a NameValue parser/implementation (it's a serialized dict-like structure)
             object_properties['Data'] = ObjectData_block.get_variable('Data').data
             object_properties['Text'] = ObjectData_block.get_variable('Text').data
             object_properties['TextColor'] = ObjectData_block.get_variable('TextColor').data
@@ -683,7 +673,7 @@ class ObjectManager(DataManager):
             object_properties['PCode'] = struct.unpack(">B", _Data[pos:pos+1])[0]
             pos += 1
 
-            if object_properties['PCode'] != 9:         # if it is not a prim, stop.
+            if object_properties['PCode'] != PCodeEnum.Primitive:         # if it is not a prim, stop.
                 logger.warning('Fix Me!! Skipping parsing of ObjectUpdateCompressed packet when it is not a prim.')
                 # we ought to parse it and make sense of the data...
                 continue
@@ -852,46 +842,33 @@ class ObjectManager(DataManager):
                 object_properties['ProfileHollow'] = None
                 object_properties['TextureEntry'] = None
                 object_properties['TextureAnim'] = None
-                object_properties['TextureAnim'] = None
 
             else:
+                properties = [
+                    ('PathCurve', ">B"),
+                    ('PathBegin', "<H"),
+                    ('PathEnd', "<H"),
+                    ('PathScaleX', ">B"),
+                    ('PathScaleY', ">B"),
+                    ('PathShearX', ">B"),
+                    ('PathShearY', ">B"),
+                    ('PathTwist', ">B"),
+                    ('PathTwistBegin', ">B"),
+                    ('PathRadiusOffset', ">B"),
+                    ('PathTaperX', ">B"),
+                    ('PathTaperY', ">B"),
+                    ('PathRevolutions', ">B"),
+                    ('PathSkew', ">B"),
+                    ('ProfileCurve', ">B"),
+                    ('ProfileBegin', ">B"),
+                    ('ProfileEnd', ">B"),
+                    ('ProfileHollow', ">B")
+                    ]
 
-                object_properties['PathCurve'] = struct.unpack(">B", _Data[pos:pos+1])[0]
-                pos += 1
-                object_properties['PathBegin'] = struct.unpack("<H", _Data[pos:pos+2])[0]
-                pos += 2
-                object_properties['PathEnd'] = struct.unpack("<H", _Data[pos:pos+2])[0]
-                pos += 2
-                object_properties['PathScaleX'] = struct.unpack(">B", _Data[pos:pos+1])[0]
-                pos += 1
-                object_properties['PathScaleY'] = struct.unpack(">B", _Data[pos:pos+1])[0]
-                pos += 1
-                object_properties['PathShearX'] = struct.unpack(">B", _Data[pos:pos+1])[0]
-                pos += 1
-                object_properties['PathShearY'] = struct.unpack(">B", _Data[pos:pos+1])[0]
-                pos += 1
-                object_properties['PathTwist'] = struct.unpack(">B", _Data[pos:pos+1])[0]
-                pos += 1
-                object_properties['PathTwistBegin'] = struct.unpack(">B", _Data[pos:pos+1])[0]
-                pos += 1
-                object_properties['PathRadiusOffset'] = struct.unpack(">B", _Data[pos:pos+1])[0]
-                pos += 1
-                object_properties['PathTaperX'] = struct.unpack(">B", _Data[pos:pos+1])[0]
-                pos += 1
-                object_properties['PathTaperY'] = struct.unpack(">B", _Data[pos:pos+1])[0]
-                pos += 1
-                object_properties['PathRevolutions'] = struct.unpack(">B", _Data[pos:pos+1])[0]
-                pos += 1
-                object_properties['PathSkew'] = struct.unpack(">B", _Data[pos:pos+1])[0]
-                pos += 1
-                object_properties['ProfileCurve'] = struct.unpack(">B", _Data[pos:pos+1])[0]
-                pos += 1
-                object_properties['ProfileBegin'] = struct.unpack(">B", _Data[pos:pos+1])[0]
-                pos += 1
-                object_properties['ProfileEnd'] = struct.unpack(">B", _Data[pos:pos+1])[0]
-                pos += 1
-                object_properties['ProfileHollow'] = struct.unpack(">B", _Data[pos:pos+1])[0]
-                pos += 1 
+                for prop, pack in properties:
+                    packsize = struct.calcsize(pack)
+                    object_properties[prop] = struct.unpack(pack, _Data[pos:pos+packsize])[0]
+                    pos += packsize
 
                 # Texture handling
                 size = struct.unpack("<H", _Data[pos:pos+2])[0]
