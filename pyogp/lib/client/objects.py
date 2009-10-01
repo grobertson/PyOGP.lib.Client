@@ -31,6 +31,7 @@ from pyogp.lib.client.datamanager import DataManager
 from pyogp.lib.client.permissions import PermissionsTarget, PermissionsMask
 from pyogp.lib.base.datatypes import UUID, Vector3, Quaternion
 from pyogp.lib.client.event_system import AppEvent
+from pyogp.lib.client.namevalue import NameValueList
 
 # pyogp message
 from pyogp.lib.base.message.message_handler import MessageHandler
@@ -493,8 +494,6 @@ class ObjectManager(DataManager):
             object_properties['ProfileHollow'] = ObjectData_block.get_variable('ProfileHollow').data
             object_properties['TextureEntry'] = ObjectData_block.get_variable('TextureEntry').data
             object_properties['TextureAnim'] = ObjectData_block.get_variable('TextureAnim').data
-            object_properties['NameValue'] = ObjectData_block.get_variable('NameValue').data
-            # TODO: Need a NameValue parser/implementation (it's a serialized dict-like structure)
             object_properties['Data'] = ObjectData_block.get_variable('Data').data
             object_properties['Text'] = ObjectData_block.get_variable('Text').data
             object_properties['TextColor'] = ObjectData_block.get_variable('TextColor').data
@@ -509,6 +508,9 @@ class ObjectManager(DataManager):
             object_properties['JointType'] = ObjectData_block.get_variable('JointType').data
             object_properties['JointPivot'] = ObjectData_block.get_variable('JointPivot').data
             object_properties['JointAxisOrAnchor'] = ObjectData_block.get_variable('JointAxisOrAnchor').data
+
+            namevalues = ObjectData_block.get_variable('NameValue').data
+            object_properties['NameValue'] = NameValueList(namevalues)
 
             # deal with the data stored in _ObjectData
             # see http://wiki.secondlife.com/wiki/ObjectUpdate#ObjectData_Format for details
@@ -707,7 +709,7 @@ class ObjectManager(DataManager):
             object_properties['Gain'] = 0
             object_properties['Flags'] = 0
             object_properties['Radius'] = 0
-            object_properties['NameValue'] = ''
+            object_properties['NameValue'] = NameValueList(None)
             object_properties['ExtraParams'] = None
 
             if object_properties['Flags'] != 0:
