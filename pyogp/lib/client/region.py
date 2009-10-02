@@ -38,6 +38,7 @@ from pyogp.lib.client.parcel import ParcelManager
 from pyogp.lib.base.message.message import Message, Block
 from pyogp.lib.base.message.message_handler import MessageHandler
 from pyogp.lib.base.message_manager import MessageManager
+from pyogp.lib.base.message.circuit import Host
 
 # utilities
 from pyogp.lib.base.helpers import Wait
@@ -272,7 +273,8 @@ class Region(object):
             self._get_region_capabilities()
 
             
-        self.message_manager = MessageManager(self, self.message_handler,
+        self.message_manager = MessageManager(Host((self.sim_ip, self.sim_port)),
+                                              self.message_handler,
                                               self.capabilities,  self.settings)
         self.enable_callbacks()
         self._init_agent_in_region()

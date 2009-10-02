@@ -100,10 +100,6 @@ class Settings(BaseSettings):
         # shall we handle the eq data?
         self.HANDLE_EVENT_QUEUE_DATA = True
 
-        # how many seconds to wait between polling
-        # a region's event queue
-        self.REGION_EVENT_QUEUE_POLL_INTERVAL = 1
-
         # allow connecting to multiple simulators
         self.MULTIPLE_SIM_CONNECTIONS = False
 

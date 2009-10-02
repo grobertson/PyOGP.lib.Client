@@ -24,7 +24,6 @@ from indra.base import llsd
 from eventlet import api, coros
 
 # pyogp
-from pyogp.lib.client.region import Region
 from pyogp.lib.base.event_queue import EventQueueClient
 from pyogp.lib.base.exc import *
 from pyogp.lib.base.caps import Capability
@@ -37,7 +36,7 @@ class TestEventQueue(unittest.TestCase):
 
     def setUp(self):
 
-        self.eq = EventQueueClient(region = Region(), host = Host(('127.0.0.1', '9000')))
+        self.eq = EventQueueClient(host = Host(('127.0.0.1', '9000')))
 
     def tearDown(self):
 
