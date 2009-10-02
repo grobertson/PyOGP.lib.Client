@@ -648,31 +648,6 @@ class Agent(object):
 
         self.health = packet.blocks['HealthData'][0].get_variable('Health').data
 
-    def onAgentGroupDataUpdate(self, packet):
-        """ callback handler for received AgentGroupDataUpdate messages which updates stored group instances in the group_manager """
-
-        # AgentData block
-        # AgentID = packet.blocks['AgentData'][0].get_variable('AgentID').data
-
-        # GroupData block
-        for GroupData_block in packet.blocks['GroupData']:
-
-            AcceptNotices = GroupData_block.get_variable('AcceptNotices').data
-            GroupPowers = GroupData_block.get_variable('GroupPowers').data
-            GroupID = GroupData_block.get_variable('GroupID').data
-            GroupName = GroupData_block.get_variable('GroupName').data
-            ListInProfile = GroupData_block.get_variable('ListInProfile').data
-            Contribution = GroupData_block.get_variable('Contribution').data
-            GroupInsigniaID = GroupData_block.get_variable('GroupInsigniaID').data
-
-            # make sense of group powers
-            GroupPowers = [ord(x) for x in GroupPowers]
-            GroupPowers = ''.join([str(x) for x in GroupPowers])
-
-            group = Group(AcceptNotices, GroupPowers, GroupID, GroupName, ListInProfile, Contribution, GroupInsigniaID )
-
-            self.group_manager.store_group(group)
-
     def onChatFromSimulator(self, packet):
         """ callback handler for received ChatFromSimulator messages which parses and fires a ChatReceived event. """
 
