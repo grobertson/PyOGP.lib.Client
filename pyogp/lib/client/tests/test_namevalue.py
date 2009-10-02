@@ -52,6 +52,22 @@ class TestNameValues(unittest.TestCase):
             self.assertEquals(test, result)
 
 
+    def test_namevaluelist(self):
+        test_list = \
+                  "Alpha STRING R S 'Twas brillig and the slighy toves/Did gyre and gimble in the wabe\n" + \
+                  "Beta F32 R S 3.14159\n" + \
+                  "Gamma S32 R S -12345\n" + \
+                  "Delta VEC3 R S <1.2, -3.4, 5.6>\n" + \
+                  "Epsilon U32 R S 12345\n" + \
+                  "Zeta ASSET R S 041a8591-6f30-42f8-b9f7-7f281351f375\n" + \
+                  "Eta U64 R S 9223372036854775807"
+
+        nvlist = NameValueList(test_list)
+        result = repr(nvlist)
+
+        self.assertEquals(test_list, result)
+
+
     def test_enums(self):
 
         for enum in NameValueType, NameValueClass, NameValueSendTo:

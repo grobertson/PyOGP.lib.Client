@@ -212,7 +212,7 @@ class NameValueList(object):
 
 
     def __repr__(self):
-        return self.namevalues.join('\n')
+        return '\n'.join([repr(nv) for nv in self.namevalues])
 
     def __getitem__(self, key):
         return self._dict[key]
