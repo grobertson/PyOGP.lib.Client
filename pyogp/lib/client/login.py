@@ -32,7 +32,7 @@ from pyogp.lib.base.tests.base import MockXMLRPCLogin
 from pyogp.lib.base.network.stdlib_client import StdLibClient
 
 # initialize globals
-logger = getLogger('login')
+logger = getLogger('pyogp.lib.client.login')
 
 class Login(object):
     """ logs into a login endpoint 
@@ -200,13 +200,15 @@ class Login(object):
         else:
             self.start_location = self.settings.DEFAULT_START_LOCATION
 
-    def _post_to_legacy_loginuri(self, loginuri = None, login_params = None, login_method = 'login_to_simulator'):
+    def _post_to_legacy_loginuri(self, loginuri = None, login_params = None, login_method = 'login_to_simulator', proxied = False):
         """ post to a login uri and return the results """
 
         if loginuri != None:
             self.loginuri = loginuri
 
-        if login_params != None:
+        if isinstance(login_params, dict):
+            self.login_params = login_params
+        elif isinstance(login_params, LegacyLoginParams):
             self.login_params = login_params.serialize()
 
         self._init_legacy_login_handler(loginuri)
@@ -218,8 +220,6 @@ class Login(object):
         # plus, all the transforms that may need to be followed
         login_handler = self.handler.__getattr__(login_method)
 
-        self.response = login_handler(self.login_params)
-
         try:
             self.response = login_handler(self.login_params)
         except Exception, error:
@@ -227,7 +227,10 @@ class Login(object):
 
         if self.response['login'] in ('true', 'false'):
 
-            self._parse_response()
+            if proxied:
+                return self.response
+            else:
+                self._parse_response()
 
         else:
             # handle transformation
