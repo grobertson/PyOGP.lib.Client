@@ -32,7 +32,7 @@ class TestLegacyLogin(unittest.TestCase):
 
     def setUp(self):
 
-        self.legacy_loginuri = 'http://localhost:12345/login.cgi'
+        self.legacy_loginuri = 'http://localhost:12345/cgi-bin/login.cgi'
         self.login_params = LegacyLoginParams('firstname', 'lastname', 'secret')
 
         self.login = Login()
