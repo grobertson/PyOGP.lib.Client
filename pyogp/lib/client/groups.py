@@ -23,11 +23,11 @@ import re
 # related
 from eventlet import api
 
-# for MockChatInterface
-import sys
-import select
-import tty
-import termios
+# for MockChatInterface (disabled to allow pyogp to work on windows)
+#import sys
+#import select
+#import tty
+#import termios
 
 # pyogp
 from pyogp.lib.base.datatypes import UUID, Vector3
@@ -476,6 +476,7 @@ class Group(object):
         # Todo: raise an app level event
         logger.info("Group chat received. Group: %s From: %s Message: %s" % (session_name, from_name, _message))
 
+'''
 class MockChatInterface(object):
     """ a super simple chat interface for testing group chat in a console """
 
@@ -525,7 +526,7 @@ class MockChatInterface(object):
 
         self.message = raw_input("Enter Message to group")
         self.chat_handler(self.message)
-
+'''
 '''
 class ChatterBoxInvitation_Message(object):
     """ a group chat message sent over the event queue """
