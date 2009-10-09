@@ -52,8 +52,8 @@ class TestAppearance(unittest.TestCase):
         packet_list = self.agent.region.dummy_packet_holder
         self.assertEquals(len(packet_list), 1)
         packet = packet_list.pop()
-        self.assertEquals(self.agent.agent_id, packet.blocks["AgentData"][0].get_variable('AgentID').data)
-        self.assertEquals(self.agent.session_id, packet.blocks["AgentData"][0].get_variable('SessionID').data)
+        self.assertEquals(self.agent.agent_id, packet["AgentData"][0]['AgentID'])
+        self.assertEquals(self.agent.session_id, packet["AgentData"][0]['SessionID'])
 
     def test_request_agent_noAgentIDorSessionID(self):
         packet_list = self.agent.region.dummy_packet_holder

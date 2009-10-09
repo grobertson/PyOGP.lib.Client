@@ -149,10 +149,10 @@ class AppearanceManager(DataManager):
 
         #self.verifyAgentData(packet)
         #logger.debug("AgentWearablesUpdate: %s" % packet)
-        for wearableData in packet.blocks['WearableData']:
-            wearableType = wearableData.get_variable('WearableType').data
-            itemID = wearableData.get_variable('ItemID').data
-            assetID = wearableData.get_variable('AssetID').data
+        for wearableData in packet['WearableData']:
+            wearableType = wearableData['WearableType']
+            itemID = wearableData['ItemID']
+            assetID = wearableData['AssetID']
             wearable = self.wearables[wearableType]
             wearable.ItemID = itemID
             wearable.AssetID = assetID
@@ -176,10 +176,10 @@ class AppearanceManager(DataManager):
         send_AgentSetAppearance
         """
         #logger.debug("AgentCachedTextureRespose received: %s" % packet)
-        for bakedTexture in packet.blocks['WearableData']:
-            bakedIndex = bakedTexture.get_variable('TextureIndex').data
-            self.bakedTextures[bakedIndex].TextureID = bakedTexture.get_variable('TextureID').data
-            self.bakedTextures[bakedIndex].HostName = bakedTexture.get_variable('HostName').data
+        for bakedTexture in packet['WearableData']:
+            bakedIndex = bakedTexture['TextureIndex']
+            self.bakedTextures[bakedIndex].TextureID = bakedTexture['TextureID']
+            self.bakedTextures[bakedIndex].HostName = bakedTexture['HostName']
         self.send_AgentSetAppearance(self.agent.agent_id,
                                      self.agent.session_id,
                                      self.Size,
@@ -191,8 +191,8 @@ class AppearanceManager(DataManager):
         """
         verifies that packet refers to this agent
         """
-        pAgentID = packet.blocks['AgentData'][0].get_variable("AgentID").data
-        pSessionID = packet.blocks['AgentData'][0].get_variable("SessionID").data
+        pAgentID = packet['AgentData'][0]["AgentID"]
+        pSessionID = packet['AgentData'][0]["SessionID"]
         if  str(pAgentID) != str(self.agent.agent_id):
             logger.warning("%s packet does not have an AgentID", packet.name)
         if str(pSessionID) != str(self.agent.session_id):

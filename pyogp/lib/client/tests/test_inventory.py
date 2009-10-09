@@ -166,9 +166,9 @@ class TestInventory(unittest.TestCase):
         packet = self.inventory.agent.region.dummy_packet_holder.pop()
         self.assertEqual(packet.name, "CreateInventoryItem")
 
-        self.assertEqual(packet.get_block('InventoryBlock')[0].get_variable('FolderID').data, folder.FolderID)
-        self.assertEqual(packet.get_block('InventoryBlock')[0].get_variable('Name').data, 'Name')
-        self.assertEqual(packet.get_block('InventoryBlock')[0].get_variable('Description').data, 'Desc')
+        self.assertEqual(packet['InventoryBlock'][0]['FolderID'], folder.FolderID)
+        self.assertEqual(packet['InventoryBlock'][0]['Name'], 'Name')
+        self.assertEqual(packet['InventoryBlock'][0]['Description'], 'Desc')
 
         fake_uuid = UUID()
         fake_uuid.random()

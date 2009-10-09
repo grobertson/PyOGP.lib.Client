@@ -82,12 +82,12 @@ class GroupManager(DataManager):
     def handle_group_chat(self, message):
         """ process a ChatterBoxInvitation_Message instance"""
 
-        group = [group for group in self.group_store if str(message.blocks['Message_Data'][0].get_variable('session_id').data) == str(group.GroupID)]
+        group = [group for group in self.group_store if str(message['Message_Data'][0]['session_id']) == str(group.GroupID)]
 
         if group != []:
             group[0].handle_inbound_chat(message)
         else:
-            logger.warning("Received group chat message from unknown group. Group: %s. Agent: %s. Message: %s" % (message.blocks['Message_Data'][0].get_variable('session_name').data, message.blocks['Message_Data'][0].get_variable('from_name').data, message.blocks['Message_Data'][0].get_variable('instantmessage').data['message_params']['message']))
+            logger.warning("Received group chat message from unknown group. Group: %s. Agent: %s. Message: %s" % (message['Message_Data'][0]['session_name'], message['Message_Data'][0]['from_name'], message['Message_Data'][0]['instantmessage']['message_params']['message']))
 
     def store_group(self, _group):
         """ append to or replace a group in self.group_store """
@@ -261,10 +261,10 @@ class GroupManager(DataManager):
         # remove the monitor
         self.onCreateGroupReply_received.unsubscribe(self.onCreateGroupReply)
 
-        AgentID = packet.blocks['AgentData'][0].get_variable('AgentID').data
-        GroupID = packet.blocks['ReplyData'][0].get_variable('GroupID').data
-        Success = packet.blocks['ReplyData'][0].get_variable('Success').data
-        _Message = packet.blocks['ReplyData'][0].get_variable('Message').data
+        AgentID = packet['AgentData'][0]['AgentID']
+        GroupID = packet['ReplyData'][0]['GroupID']
+        Success = packet['ReplyData'][0]['Success']
+        _Message = packet['ReplyData'][0]['Message']
 
         if Success:
             logger.info("Created group %s. Message data is: %s" % (GroupID, _Message))
@@ -277,9 +277,9 @@ class GroupManager(DataManager):
 
         self.onJoinGroupReply_received.unsubscribe(self.onJoinGroupReply)
 
-        AgentID = packet.blocks['AgentData'][0].get_variable('AgentID').data
-        GroupID = packet.blocks['GroupData'][0].get_variable('GroupID').data
-        Success = packet.blocks['GroupData'][0].get_variable('Success').data
+        AgentID = packet['AgentData'][0]['AgentID']
+        GroupID = packet['GroupData'][0]['GroupID']
+        Success = packet['GroupData'][0]['Success']
 
         if Success:
             logger.info("Joined group %s" % (GroupID))
@@ -291,17 +291,17 @@ class GroupManager(DataManager):
 
         group_data = {}
 
-        AgentID = packet.blocks['AgentData'][0].get_variable('AgentID').data
+        AgentID = packet['AgentData'][0]['AgentID']
 
         # GroupData block
-        for GroupData_block in packet.blocks['GroupData']:
+        for GroupData_block in packet['GroupData']:
 
-            group_data['GroupID'] = GroupData_block.get_variable('GroupID').data
-            group_data['GroupPowers'] = GroupData_block.get_variable('GroupPowers').data
-            group_data['AcceptNotices'] = GroupData_block.get_variable('AcceptNotices').data
-            group_data['GroupInsigniaID'] = GroupData_block.get_variable('GroupInsigniaID').data
-            group_data['Contribution'] = GroupData_block.get_variable('Contribution').data
-            group_data['GroupName'] = GroupData_block.get_variable('GroupName').data
+            group_data['GroupID'] = GroupData_block['GroupID']
+            group_data['GroupPowers'] = GroupData_block['GroupPowers']
+            group_data['AcceptNotices'] = GroupData_block['AcceptNotices']
+            group_data['GroupInsigniaID'] = GroupData_block['GroupInsigniaID']
+            group_data['Contribution'] = GroupData_block['Contribution']
+            group_data['GroupName'] = GroupData_block['GroupName']
 
             # make sense of group powers
             group_data['GroupPowers'] = [ord(x) for x in group_data['GroupPowers']]
@@ -323,18 +323,18 @@ class GroupManager(DataManager):
         """ parse teh response to a request to join a group chat and propagate data out """
 
         data = {}
-        data['session_id'] = message.blocks['Message_Data'][0].get_variable('session_id').data
-        data['agent_updates'] = message.blocks['Message_Data'][0].get_variable('agent_updates').data
+        data['session_id'] = message['Message_Data'][0]['session_id']
+        data['agent_updates'] = message['Message_Data'][0]['agent_updates']
 
         self.update_group_by_session_id(data)
 
     def onChatterBoxSessionStartReply(self, message):
 
         data = {}
-        data['temp_session_id'] = message.blocks['Message_Data'][0].get_variable('temp_session_id').data
-        data['success'] = message.blocks['Message_Data'][0].get_variable('success').data
-        data['session_id'] = message.blocks['Message_Data'][0].get_variable('session_id').data
-        data['session_info'] = message.blocks['Message_Data'][0].get_variable('session_info').data
+        data['temp_session_id'] = message['Message_Data'][0]['temp_session_id']
+        data['success'] = message['Message_Data'][0]['success']
+        data['session_id'] = message['Message_Data'][0]['session_id']
+        data['session_info'] = message['Message_Data'][0]['session_info']
 
         self.update_group_by_name(data, data['session_info']['session_name'])
 
@@ -466,10 +466,10 @@ class Group(object):
     def handle_inbound_chat(self, message):
         """ parses an incoming chat message from a group """
 
-        session_id = message.blocks['Message_Data'][0].get_variable('session_id').data
-        session_name = message.blocks['Message_Data'][0].get_variable('session_name').data
-        from_name = message.blocks['Message_Data'][0].get_variable('from_name').data
-        _message = message.blocks['Message_Data'][0].get_variable('instantmessage').data['message_params']['message']
+        session_id = message['Message_Data'][0]['session_id']
+        session_name = message['Message_Data'][0]['session_name']
+        from_name = message['Message_Data'][0]['from_name']
+        _message = message['Message_Data'][0]['instantmessage']['message_params']['message']
 
         self.chat_history.append(message)
 

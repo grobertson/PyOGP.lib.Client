@@ -90,42 +90,42 @@ class InventoryManager(DataManager):
     def onBulkUpdateInventory(self, packet):
         """ handle the inventory data being delivered in the BullkUpdateInventory packet """
 
-        for FolderData_block in packet.blocks['FolderData']:
+        for FolderData_block in packet['FolderData']:
 
-            _FolderID = FolderData_block.get_variable('FolderID').data
-            _ParentID = FolderData_block.get_variable('ParentID').data
-            _Type = FolderData_block.get_variable('Type').data
-            _Name = FolderData_block.get_variable('Name').data
+            _FolderID = FolderData_block['FolderID']
+            _ParentID = FolderData_block['ParentID']
+            _Type = FolderData_block['Type']
+            _Name = FolderData_block['Name']
 
             folder = InventoryFolder( _Name, _FolderID, _ParentID, None, _Type)
 
             self._store_inventory_folder(folder)
 
-        for ItemData_block in packet.blocks['ItemData']:
+        for ItemData_block in packet['ItemData']:
 
             # what is CallbackID??? not doing anything with it.
 
-            _ItemID = ItemData_block.get_variable('ItemID').data
-            _FolderID = ItemData_block.get_variable('FolderID').data
-            _CreatorID = ItemData_block.get_variable('CreatorID').data
-            _OwnerID = ItemData_block.get_variable('OwnerID').data
-            _GroupID = ItemData_block.get_variable('GroupID').data
-            _BaseMask = ItemData_block.get_variable('BaseMask').data
-            _OwnerMask = ItemData_block.get_variable('OwnerMask').data
-            _GroupMask = ItemData_block.get_variable('GroupMask').data
-            _EveryoneMask = ItemData_block.get_variable('EveryoneMask').data
-            _NextOwnerMask = ItemData_block.get_variable('NextOwnerMask').data
-            _GroupOwned = ItemData_block.get_variable('GroupOwned').data
-            _AssetID = ItemData_block.get_variable('AssetID').data
-            _Type = ItemData_block.get_variable('Type').data
-            _InvType = ItemData_block.get_variable('InvType').data
-            _Flags = ItemData_block.get_variable('Flags').data
-            _SaleType = ItemData_block.get_variable('SaleType').data
-            _SalePrice = ItemData_block.get_variable('SalePrice').data
-            _Name = ItemData_block.get_variable('Name').data
-            _Description = ItemData_block.get_variable('Description').data
-            _CreationDate = ItemData_block.get_variable('CreationDate').data
-            _CRC = ItemData_block.get_variable('CRC').data
+            _ItemID = ItemData_block['ItemID']
+            _FolderID = ItemData_block['FolderID']
+            _CreatorID = ItemData_block['CreatorID']
+            _OwnerID = ItemData_block['OwnerID']
+            _GroupID = ItemData_block['GroupID']
+            _BaseMask = ItemData_block['BaseMask']
+            _OwnerMask = ItemData_block['OwnerMask']
+            _GroupMask = ItemData_block['GroupMask']
+            _EveryoneMask = ItemData_block['EveryoneMask']
+            _NextOwnerMask = ItemData_block['NextOwnerMask']
+            _GroupOwned = ItemData_block['GroupOwned']
+            _AssetID = ItemData_block['AssetID']
+            _Type = ItemData_block['Type']
+            _InvType = ItemData_block['InvType']
+            _Flags = ItemData_block['Flags']
+            _SaleType = ItemData_block['SaleType']
+            _SalePrice = ItemData_block['SalePrice']
+            _Name = ItemData_block['Name']
+            _Description = ItemData_block['Description']
+            _CreationDate = ItemData_block['CreationDate']
+            _CRC = ItemData_block['CRC']
 
             inventory_item = InventoryItem(_ItemID,
                                             _FolderID,
@@ -434,14 +434,14 @@ class InventoryManager(DataManager):
     def handle_inventory_offer(self, packet):
         """ parses and handles an incoming inventory offer """
 
-        FromAgentID = packet.blocks['AgentData'][0].get_variable('AgentID').data
-        FromAgentName = packet.blocks['MessageBlock'][0].get_variable('FromAgentName').data
-        InventoryName = packet.blocks['MessageBlock'][0].get_variable('Message').data
-        ID = packet.blocks['MessageBlock'][0].get_variable('ID').data
-        _Message = packet.blocks['MessageBlock'][0].get_variable('Message').data
-        ToAgentID = packet.blocks['MessageBlock'][0].get_variable('ToAgentID').data
+        FromAgentID = packet['AgentData'][0]['AgentID']
+        FromAgentName = packet['MessageBlock'][0]['FromAgentName']
+        InventoryName = packet['MessageBlock'][0]['Message']
+        ID = packet['MessageBlock'][0]['ID']
+        _Message = packet['MessageBlock'][0]['Message']
+        ToAgentID = packet['MessageBlock'][0]['ToAgentID']
 
-        BinaryBucket = packet.blocks['MessageBlock'][0].get_variable('BinaryBucket').data
+        BinaryBucket = packet['MessageBlock'][0]['BinaryBucket']
 
         # parse the binary bucket
         AssetType = struct.unpack(">b", BinaryBucket[0:1])[0]
@@ -491,31 +491,29 @@ class InventoryManager(DataManager):
         updateCreateInventoryHandler = self.agent.region.message_handler.register('UpdateCreateInventoryItem')
 
         def onUpdateCreateInventoryItem(packet):
-            if str(transaction_id) != \
-                   str(packet.blocks['AgentData'][0]\
-                       .get_variable('TransactionID').data):
-                inv_data = packet.blocks['InventoryData'][0]
-                item = InventoryItem(inv_data.get_variable('ItemID').data,
-                                     inv_data.get_variable('FolderID').data,
-                                     inv_data.get_variable('CreatorID').data,
-                                     inv_data.get_variable('OwnerID').data,
-                                     inv_data.get_variable('GroupID').data,
-                                     inv_data.get_variable('BaseMask').data,
-                                     inv_data.get_variable('OwnerMask').data,
-                                     inv_data.get_variable('GroupMask').data,
-                                     inv_data.get_variable('EveryoneMask').data,
-                                     inv_data.get_variable('NextOwnerMask').data,
-                                     inv_data.get_variable('GroupOwned').data,
-                                     inv_data.get_variable('AssetID').data,
-                                     inv_data.get_variable('Type').data,
-                                     inv_data.get_variable('InvType').data,
-                                     inv_data.get_variable('Flags').data,
-                                     inv_data.get_variable('SaleType').data,
-                                     inv_data.get_variable('SalePrice').data,
-                                     inv_data.get_variable('Name').data,
-                                     inv_data.get_variable('Description').data,
-                                     inv_data.get_variable('CreationDate').data,
-                                     inv_data.get_variable('CRC').data)
+            if str(transaction_id) != str(packet['AgentData'][0]['TransactionID']):
+                inv_data = packet['InventoryData'][0]
+                item = InventoryItem(inv_data['ItemID'],
+                                     inv_data['FolderID'],
+                                     inv_data['CreatorID'],
+                                     inv_data['OwnerID'],
+                                     inv_data['GroupID'],
+                                     inv_data['BaseMask'],
+                                     inv_data['OwnerMask'],
+                                     inv_data['GroupMask'],
+                                     inv_data['EveryoneMask'],
+                                     inv_data['NextOwnerMask'],
+                                     inv_data['GroupOwned'],
+                                     inv_data['AssetID'],
+                                     inv_data['Type'],
+                                     inv_data['InvType'],
+                                     inv_data['Flags'],
+                                     inv_data['SaleType'],
+                                     inv_data['SalePrice'],
+                                     inv_data['Name'],
+                                     inv_data['Description'],
+                                     inv_data['CreationDate'],
+                                     inv_data['CRC'])
 
                 self._store_inventory_item(item)
                 updateCreateInventoryHandler.unsubscribe(onUpdateCreateInventoryItem)
@@ -782,31 +780,31 @@ class UDP_Inventory(InventoryManager):
 
     def onFetchInventoryReply(self, packet):
 
-        _agent_id = packet.blocks['AgentData'][0].get_variable('AgentID')
+        _agent_id = packet['AgentData'][0]['AgentID']
 
-        for InventoryData_block in packet.blocks['InventoryData']:
+        for InventoryData_block in packet['InventoryData']:
 
-            _ItemID = InventoryData_block.get_variable('ItemID').data
-            _FolderID = InventoryData_block.get_variable('FolderID').data
-            _CreatorID = InventoryData_block.get_variable('CreatorID').data
-            _OwnerID = InventoryData_block.get_variable('OwnerID').data
-            _GroupID = InventoryData_block.get_variable('GroupID').data
-            _BaseMask = InventoryData_block.get_variable('BaseMask').data
-            _OwnerMask = InventoryData_block.get_variable('OwnerMask').data
-            _GroupMask = InventoryData_block.get_variable('GroupMask').data
-            _EveryoneMask = InventoryData_block.get_variable('EveryoneMask').data
-            _NextOwnerMask = InventoryData_block.get_variable('NextOwnerMask').data
-            _GroupOwned = InventoryData_block.get_variable('GroupOwned').data
-            _AssetID = InventoryData_block.get_variable('AssetID').data
-            _Type = InventoryData_block.get_variable('Type').data
-            _InvType = InventoryData_block.get_variable('InvType').data
-            _Flags = InventoryData_block.get_variable('Flags').data
-            _SaleType = InventoryData_block.get_variable('SaleType').data
-            _SalePrice = InventoryData_block.get_variable('SalePrice').data
-            _Name = InventoryData_block.get_variable('Name').data
-            _Description = InventoryData_block.get_variable('Description').data
-            _CreationDate = InventoryData_block.get_variable('CreationDate').data
-            _CRC = InventoryData_block.get_variable('CRC').data
+            _ItemID = InventoryData_block['ItemID']
+            _FolderID = InventoryData_block['FolderID']
+            _CreatorID = InventoryData_block['CreatorID']
+            _OwnerID = InventoryData_block['OwnerID']
+            _GroupID = InventoryData_block['GroupID']
+            _BaseMask = InventoryData_block['BaseMask']
+            _OwnerMask = InventoryData_block['OwnerMask']
+            _GroupMask = InventoryData_block['GroupMask']
+            _EveryoneMask = InventoryData_block['EveryoneMask']
+            _NextOwnerMask = InventoryData_block['NextOwnerMask']
+            _GroupOwned = InventoryData_block['GroupOwned']
+            _AssetID = InventoryData_block['AssetID']
+            _Type = InventoryData_block['Type']
+            _InvType = InventoryData_block['InvType']
+            _Flags = InventoryData_block['Flags']
+            _SaleType = InventoryData_block['SaleType']
+            _SalePrice = InventoryData_block['SalePrice']
+            _Name = InventoryData_block['Name']
+            _Description = InventoryData_block['Description']
+            _CreationDate = InventoryData_block['CreationDate']
+            _CRC = InventoryData_block['CRC']
 
             inventory_item = InventoryItem(_ItemID, _FolderID, _CreatorID, _OwnerID, _GroupID, _BaseMask, _OwnerMask, _GroupMask, _EveryoneMask, _NextOwnerMask, _GroupOwned, _AssetID, _Type, _InvType, _Flags, _SaleType, _SalePrice, _Name, _Description, _CreationDate, _CRC)
 
@@ -814,54 +812,54 @@ class UDP_Inventory(InventoryManager):
 
     def onInventoryDescendents(self, packet):
 
-        if packet.blocks['AgentData'][0].get_variable('Descendents') > 0:
+        if packet['AgentData'][0]['Descendents'] > 0:
 
-            _agent_id = packet.blocks['AgentData'][0].get_variable('AgentID')
-            _folder_id = packet.blocks['AgentData'][0].get_variable('FolderID')
-            _owner_id = packet.blocks['AgentData'][0].get_variable('OwnerID')
-            _version = packet.blocks['AgentData'][0].get_variable('Version')
-            _descendents = packet.blocks['AgentData'][0].get_variable('Descendents')
+            _agent_id = packet['AgentData'][0]['AgentID']
+            _folder_id = packet['AgentData'][0]['FolderID']
+            _owner_id = packet['AgentData'][0]['OwnerID']
+            _version = packet['AgentData'][0]['Version']
+            _descendents = packet['AgentData'][0]['Descendents']
             # _descendents is not dealt with in any way here
 
 
-            if str(packet.blocks['ItemData'][0].get_variable('ItemID').data) != str(UUID()):
+            if str(packet['ItemData'][0]['ItemID']) != str(UUID()):
 
-                for ItemData_block in packet.blocks['ItemData']:
+                for ItemData_block in packet['ItemData']:
 
-                    _ItemID = ItemData_block.get_variable('ItemID').data
-                    _FolderID = ItemData_block.get_variable('FolderID').data
-                    _CreatorID = ItemData_block.get_variable('CreatorID').data
-                    _OwnerID = ItemData_block.get_variable('OwnerID').data
-                    _GroupID = ItemData_block.get_variable('GroupID').data
-                    _BaseMask = ItemData_block.get_variable('BaseMask').data
-                    _OwnerMask = ItemData_block.get_variable('OwnerMask').data
-                    _GroupMask = ItemData_block.get_variable('GroupMask').data
-                    _EveryoneMask = ItemData_block.get_variable('EveryoneMask').data
-                    _NextOwnerMask = ItemData_block.get_variable('NextOwnerMask').data
-                    _GroupOwned = ItemData_block.get_variable('GroupOwned').data
-                    _AssetID = ItemData_block.get_variable('AssetID').data
-                    _Type = ItemData_block.get_variable('Type').data
-                    _InvType = ItemData_block.get_variable('InvType').data
-                    _Flags = ItemData_block.get_variable('Flags').data
-                    _SaleType = ItemData_block.get_variable('SaleType').data
-                    _SalePrice = ItemData_block.get_variable('SalePrice').data
-                    _Name = ItemData_block.get_variable('Name').data
-                    _Description = ItemData_block.get_variable('Description').data
-                    _CreationDate = ItemData_block.get_variable('CreationDate').data
-                    _CRC = ItemData_block.get_variable('CRC').data
+                    _ItemID = ItemData_block['ItemID']
+                    _FolderID = ItemData_block['FolderID']
+                    _CreatorID = ItemData_block['CreatorID']
+                    _OwnerID = ItemData_block['OwnerID']
+                    _GroupID = ItemData_block['GroupID']
+                    _BaseMask = ItemData_block['BaseMask']
+                    _OwnerMask = ItemData_block['OwnerMask']
+                    _GroupMask = ItemData_block['GroupMask']
+                    _EveryoneMask = ItemData_block['EveryoneMask']
+                    _NextOwnerMask = ItemData_block['NextOwnerMask']
+                    _GroupOwned = ItemData_block['GroupOwned']
+                    _AssetID = ItemData_block['AssetID']
+                    _Type = ItemData_block['Type']
+                    _InvType = ItemData_block['InvType']
+                    _Flags = ItemData_block['Flags']
+                    _SaleType = ItemData_block['SaleType']
+                    _SalePrice = ItemData_block['SalePrice']
+                    _Name = ItemData_block['Name']
+                    _Description = ItemData_block['Description']
+                    _CreationDate = ItemData_block['CreationDate']
+                    _CRC = ItemData_block['CRC']
 
                     inventory_item = InventoryItem(_ItemID, _FolderID, _CreatorID, _OwnerID, _GroupID, _BaseMask, _OwnerMask, _GroupMask, _EveryoneMask, _NextOwnerMask, _GroupOwned, _AssetID, _Type, _InvType, _Flags, _SaleType, _SalePrice, _Name, _Description, _CreationDate, _CRC)
 
                     self._store_inventory_item(inventory_item)
 
-            if str(packet.blocks['FolderData'][0].get_variable('FolderID').data) != str(UUID()):
+            if str(packet['FolderData'][0]['FolderID']) != str(UUID()):
 
-                for FolderData_block in packet.blocks['FolderData']:
+                for FolderData_block in packet['FolderData']:
 
-                    _FolderID = FolderData_block.get_variable('FolderID').data
-                    _ParentID = FolderData_block.get_variable('ParentID').data
-                    _Type = FolderData_block.get_variable('Type').data
-                    _Name = FolderData_block.get_variable('Name').data
+                    _FolderID = FolderData_block['FolderID']
+                    _ParentID = FolderData_block['ParentID']
+                    _Type = FolderData_block['Type']
+                    _Name = FolderData_block['Name']
 
                     folder = InventoryFolder( _Name, _FolderID, _ParentID, None, _Type, _agent_id)
 

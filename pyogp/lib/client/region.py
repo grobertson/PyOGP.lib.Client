@@ -436,29 +436,29 @@ class Region(object):
         self.sendRegionHandshakeReply(self.agent.agent_id, self.agent.session_id)
 
         # propagate the incoming data
-        self.SimName = packet.blocks['RegionInfo'][0].get_variable('SimName').data
-        self.SimAccess = packet.blocks['RegionInfo'][0].get_variable('SimAccess').data
-        self.SimOwner = packet.blocks['RegionInfo'][0].get_variable('SimOwner').data
-        self.IsEstateManager = packet.blocks['RegionInfo'][0].get_variable('IsEstateManager').data
-        self.WaterHeight = packet.blocks['RegionInfo'][0].get_variable('WaterHeight').data
-        self.BillableFactor = packet.blocks['RegionInfo'][0].get_variable('BillableFactor').data
-        self.TerrainBase0 = packet.blocks['RegionInfo'][0].get_variable('TerrainBase0').data
-        self.TerrainBase1 = packet.blocks['RegionInfo'][0].get_variable('TerrainBase1').data
-        self.TerrainBase2 = packet.blocks['RegionInfo'][0].get_variable('TerrainBase2').data
-        self.TerrainStartHeight00 = packet.blocks['RegionInfo'][0].get_variable('TerrainStartHeight00').data
-        self.TerrainStartHeight01 = packet.blocks['RegionInfo'][0].get_variable('TerrainStartHeight01').data
-        self.TerrainStartHeight10 = packet.blocks['RegionInfo'][0].get_variable('TerrainStartHeight10').data
-        self.TerrainStartHeight11 = packet.blocks['RegionInfo'][0].get_variable('TerrainStartHeight11').data
-        self.TerrainHeightRange00 = packet.blocks['RegionInfo'][0].get_variable('TerrainHeightRange00').data
-        self.TerrainHeightRange01 = packet.blocks['RegionInfo'][0].get_variable('TerrainHeightRange01').data
-        self.TerrainHeightRange10 = packet.blocks['RegionInfo'][0].get_variable('TerrainHeightRange10').data
-        self.TerrainHeightRange11 = packet.blocks['RegionInfo'][0].get_variable('TerrainHeightRange11').data
-        self.CPUClassID = packet.blocks['RegionInfo3'][0].get_variable('CPUClassID').data
-        self.CPURatio = packet.blocks['RegionInfo3'][0].get_variable('CPURatio').data
-        self.ColoName = packet.blocks['RegionInfo3'][0].get_variable('ColoName').data
-        self.ProductSKU = packet.blocks['RegionInfo3'][0].get_variable('ProductSKU').data
-        self.ProductName = packet.blocks['RegionInfo3'][0].get_variable('ProductName').data
-        self.RegionID = packet.blocks['RegionInfo2'][0].get_variable('RegionID').data
+        self.SimName = packet['RegionInfo'][0]['SimName']
+        self.SimAccess = packet['RegionInfo'][0]['SimAccess']
+        self.SimOwner = packet['RegionInfo'][0]['SimOwner']
+        self.IsEstateManager = packet['RegionInfo'][0]['IsEstateManager']
+        self.WaterHeight = packet['RegionInfo'][0]['WaterHeight']
+        self.BillableFactor = packet['RegionInfo'][0]['BillableFactor']
+        self.TerrainBase0 = packet['RegionInfo'][0]['TerrainBase0']
+        self.TerrainBase1 = packet['RegionInfo'][0]['TerrainBase1']
+        self.TerrainBase2 = packet['RegionInfo'][0]['TerrainBase2']
+        self.TerrainStartHeight00 = packet['RegionInfo'][0]['TerrainStartHeight00']
+        self.TerrainStartHeight01 = packet['RegionInfo'][0]['TerrainStartHeight01']
+        self.TerrainStartHeight10 = packet['RegionInfo'][0]['TerrainStartHeight10']
+        self.TerrainStartHeight11 = packet['RegionInfo'][0]['TerrainStartHeight11']
+        self.TerrainHeightRange00 = packet['RegionInfo'][0]['TerrainHeightRange00']
+        self.TerrainHeightRange01 = packet['RegionInfo'][0]['TerrainHeightRange01']
+        self.TerrainHeightRange10 = packet['RegionInfo'][0]['TerrainHeightRange10']
+        self.TerrainHeightRange11 = packet['RegionInfo'][0]['TerrainHeightRange11']
+        self.CPUClassID = packet['RegionInfo3'][0]['CPUClassID']
+        self.CPURatio = packet['RegionInfo3'][0]['CPURatio']
+        self.ColoName = packet['RegionInfo3'][0]['ColoName']
+        self.ProductSKU = packet['RegionInfo3'][0]['ProductSKU']
+        self.ProductName = packet['RegionInfo3'][0]['ProductName']
+        self.RegionID = packet['RegionInfo2'][0]['RegionID']
 
         # we are connected
         self.connected = True

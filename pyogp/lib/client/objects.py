@@ -456,60 +456,60 @@ class ObjectManager(DataManager):
         object_list = []
 
         # ToDo: handle these 2 variables properly
-        _RegionHandle = packet.blocks['RegionData'][0].get_variable('RegionHandle').data
-        _TimeDilation = packet.blocks['RegionData'][0].get_variable('TimeDilation').data
+        _RegionHandle = packet['RegionData'][0]['RegionHandle']
+        _TimeDilation = packet['RegionData'][0]['TimeDilation']
 
-        for ObjectData_block in packet.blocks['ObjectData']:
+        for ObjectData_block in packet['ObjectData']:
 
             object_properties = {}
 
-            object_properties['LocalID'] = ObjectData_block.get_variable('ID').data
-            object_properties['State'] = ObjectData_block.get_variable('State').data
-            object_properties['FullID'] = ObjectData_block.get_variable('FullID').data
-            object_properties['CRC'] = ObjectData_block.get_variable('CRC').data
-            object_properties['PCode'] = ObjectData_block.get_variable('PCode').data
-            object_properties['Material'] = ObjectData_block.get_variable('Material').data
-            object_properties['ClickAction'] = ObjectData_block.get_variable('ClickAction').data
-            object_properties['Scale'] = ObjectData_block.get_variable('Scale').data
-            object_properties['ObjectData'] = ObjectData_block.get_variable('ObjectData').data
-            object_properties['ParentID'] = ObjectData_block.get_variable('ParentID').data
-            object_properties['UpdateFlags'] = ObjectData_block.get_variable('UpdateFlags').data
-            object_properties['PathCurve'] = ObjectData_block.get_variable('PathCurve').data
-            object_properties['ProfileCurve'] = ObjectData_block.get_variable('ProfileCurve').data
-            object_properties['PathBegin'] = ObjectData_block.get_variable('PathBegin').data
-            object_properties['PathEnd'] = ObjectData_block.get_variable('PathEnd').data
-            object_properties['PathScaleX'] = ObjectData_block.get_variable('PathScaleX').data
-            object_properties['PathScaleY'] = ObjectData_block.get_variable('PathScaleY').data
-            object_properties['PathShearX'] = ObjectData_block.get_variable('PathShearX').data
-            object_properties['PathShearY'] = ObjectData_block.get_variable('PathShearY').data
-            object_properties['PathTwist'] = ObjectData_block.get_variable('PathTwist').data
-            object_properties['PathTwistBegin'] = ObjectData_block.get_variable('PathTwistBegin').data
-            object_properties['PathRadiusOffset'] = ObjectData_block.get_variable('PathRadiusOffset').data
-            object_properties['PathTaperX'] = ObjectData_block.get_variable('PathTaperX').data
-            object_properties['PathTaperY'] = ObjectData_block.get_variable('PathTaperY').data
-            object_properties['PathRevolutions'] = ObjectData_block.get_variable('PathRevolutions').data
-            object_properties['PathSkew'] = ObjectData_block.get_variable('PathSkew').data
-            object_properties['ProfileBegin'] = ObjectData_block.get_variable('ProfileBegin').data
-            object_properties['ProfileEnd'] = ObjectData_block.get_variable('ProfileEnd').data
-            object_properties['ProfileHollow'] = ObjectData_block.get_variable('ProfileHollow').data
-            object_properties['TextureEntry'] = ObjectData_block.get_variable('TextureEntry').data
-            object_properties['TextureAnim'] = ObjectData_block.get_variable('TextureAnim').data
-            object_properties['Data'] = ObjectData_block.get_variable('Data').data
-            object_properties['Text'] = ObjectData_block.get_variable('Text').data
-            object_properties['TextColor'] = ObjectData_block.get_variable('TextColor').data
-            object_properties['MediaURL'] = ObjectData_block.get_variable('MediaURL').data
-            object_properties['PSBlock'] = ObjectData_block.get_variable('PSBlock').data
-            object_properties['ExtraParams'] = ObjectData_block.get_variable('ExtraParams').data
-            object_properties['Sound'] = ObjectData_block.get_variable('Sound').data
-            object_properties['OwnerID'] = ObjectData_block.get_variable('OwnerID').data
-            object_properties['Gain'] = ObjectData_block.get_variable('Gain').data
-            object_properties['Flags'] = ObjectData_block.get_variable('Flags').data
-            object_properties['Radius'] = ObjectData_block.get_variable('Radius').data
-            object_properties['JointType'] = ObjectData_block.get_variable('JointType').data
-            object_properties['JointPivot'] = ObjectData_block.get_variable('JointPivot').data
-            object_properties['JointAxisOrAnchor'] = ObjectData_block.get_variable('JointAxisOrAnchor').data
+            object_properties['LocalID'] = ObjectData_block['ID']
+            object_properties['State'] = ObjectData_block['State']
+            object_properties['FullID'] = ObjectData_block['FullID']
+            object_properties['CRC'] = ObjectData_block['CRC']
+            object_properties['PCode'] = ObjectData_block['PCode']
+            object_properties['Material'] = ObjectData_block['Material']
+            object_properties['ClickAction'] = ObjectData_block['ClickAction']
+            object_properties['Scale'] = ObjectData_block['Scale']
+            object_properties['ObjectData'] = ObjectData_block['ObjectData']
+            object_properties['ParentID'] = ObjectData_block['ParentID']
+            object_properties['UpdateFlags'] = ObjectData_block['UpdateFlags']
+            object_properties['PathCurve'] = ObjectData_block['PathCurve']
+            object_properties['ProfileCurve'] = ObjectData_block['ProfileCurve']
+            object_properties['PathBegin'] = ObjectData_block['PathBegin']
+            object_properties['PathEnd'] = ObjectData_block['PathEnd']
+            object_properties['PathScaleX'] = ObjectData_block['PathScaleX']
+            object_properties['PathScaleY'] = ObjectData_block['PathScaleY']
+            object_properties['PathShearX'] = ObjectData_block['PathShearX']
+            object_properties['PathShearY'] = ObjectData_block['PathShearY']
+            object_properties['PathTwist'] = ObjectData_block['PathTwist']
+            object_properties['PathTwistBegin'] = ObjectData_block['PathTwistBegin']
+            object_properties['PathRadiusOffset'] = ObjectData_block['PathRadiusOffset']
+            object_properties['PathTaperX'] = ObjectData_block['PathTaperX']
+            object_properties['PathTaperY'] = ObjectData_block['PathTaperY']
+            object_properties['PathRevolutions'] = ObjectData_block['PathRevolutions']
+            object_properties['PathSkew'] = ObjectData_block['PathSkew']
+            object_properties['ProfileBegin'] = ObjectData_block['ProfileBegin']
+            object_properties['ProfileEnd'] = ObjectData_block['ProfileEnd']
+            object_properties['ProfileHollow'] = ObjectData_block['ProfileHollow']
+            object_properties['TextureEntry'] = ObjectData_block['TextureEntry']
+            object_properties['TextureAnim'] = ObjectData_block['TextureAnim']
+            object_properties['Data'] = ObjectData_block['Data']
+            object_properties['Text'] = ObjectData_block['Text']
+            object_properties['TextColor'] = ObjectData_block['TextColor']
+            object_properties['MediaURL'] = ObjectData_block['MediaURL']
+            object_properties['PSBlock'] = ObjectData_block['PSBlock']
+            object_properties['ExtraParams'] = ObjectData_block['ExtraParams']
+            object_properties['Sound'] = ObjectData_block['Sound']
+            object_properties['OwnerID'] = ObjectData_block['OwnerID']
+            object_properties['Gain'] = ObjectData_block['Gain']
+            object_properties['Flags'] = ObjectData_block['Flags']
+            object_properties['Radius'] = ObjectData_block['Radius']
+            object_properties['JointType'] = ObjectData_block['JointType']
+            object_properties['JointPivot'] = ObjectData_block['JointPivot']
+            object_properties['JointAxisOrAnchor'] = ObjectData_block['JointAxisOrAnchor']
 
-            namevalues = ObjectData_block.get_variable('NameValue').data
+            namevalues = ObjectData_block['NameValue']
             object_properties['NameValue'] = NameValueList(namevalues)
 
             # deal with the data stored in _ObjectData
@@ -624,16 +624,16 @@ class ObjectManager(DataManager):
         """ borrowing from libomv, we'll request object data for all data coming in via ObjectUpdateCached"""
 
         # ToDo: handle these 2 variables properly
-        _RegionHandle = packet.blocks['RegionData'][0].get_variable('RegionHandle').data
-        _TimeDilation = packet.blocks['RegionData'][0].get_variable('TimeDilation').data
+        _RegionHandle = packet['RegionData'][0]['RegionHandle']
+        _TimeDilation = packet['RegionData'][0]['TimeDilation']
 
         _request_list = []
 
-        for ObjectData_block in packet.blocks['ObjectData']:
+        for ObjectData_block in packet['ObjectData']:
 
-            LocalID = ObjectData_block.get_variable('ID').data
-            _CRC = ObjectData_block.get_variable('CRC').data
-            _UpdateFlags = ObjectData_block.get_variable('UpdateFlags').data
+            LocalID = ObjectData_block['ID']
+            _CRC = ObjectData_block['CRC']
+            _UpdateFlags = ObjectData_block['UpdateFlags']
 
             # Objects.request_object_update() expects a tuple of (_ID, CacheMissType)
 
@@ -656,15 +656,15 @@ class ObjectManager(DataManager):
         object_list = []
 
         # ToDo: handle these 2 variables properly
-        _RegionHandle = packet.blocks['RegionData'][0].get_variable('RegionHandle').data
-        _TimeDilation = packet.blocks['RegionData'][0].get_variable('TimeDilation').data
+        _RegionHandle = packet['RegionData'][0]['RegionHandle']
+        _TimeDilation = packet['RegionData'][0]['TimeDilation']
 
-        for ObjectData_block in packet.blocks['ObjectData']:
+        for ObjectData_block in packet['ObjectData']:
 
             object_properties = {}
 
-            object_properties['UpdateFlags'] = ObjectData_block.get_variable('UpdateFlags').data
-            object_properties['Data'] = ObjectData_block.get_variable('Data').data
+            object_properties['UpdateFlags'] = ObjectData_block['UpdateFlags']
+            object_properties['Data'] = ObjectData_block['Data']
             _Data = object_properties['Data']
 
             pos = 0         # position in the binary string
@@ -892,14 +892,14 @@ class ObjectManager(DataManager):
         """ handles ImprovedTerseObjectUpdate messages from the simulator """
         # ToDo: handle these 2 variables properly
         try:
-            _RegionHandle = packet.blocks['RegionData'][0].get_variable('RegionHandle').data
-            _TimeDilation = packet.blocks['RegionData'][0].get_variable('TimeDilation').data
+            _RegionHandle = packet['RegionData'][0]['RegionHandle']
+            _TimeDilation = packet['RegionData'][0]['TimeDilation']
 
             object_list = []
-            for ObjectData_block in packet.blocks['ObjectData']:
+            for ObjectData_block in packet['ObjectData']:
 
                 object_properties = {}
-                object_properties['Data'] = ObjectData_block.get_variable('Data').data
+                object_properties['Data'] = ObjectData_block['Data']
                 _Data = object_properties['Data']
 
                 pos = 0         # position in the binary string
@@ -934,7 +934,7 @@ class ObjectManager(DataManager):
                                                                Y=Helpers().packed_u16_to_float(_Data, pos+2, -64.0, 64.0),
                                                                Z=Helpers().packed_u16_to_float(_Data, pos+4, -64.0, 64.0))
                 pos += 6
-                object_properties['TextureEntry'] = ObjectData_block.get_variable('TextureEntry').data
+                object_properties['TextureEntry'] = ObjectData_block['TextureEntry']
                 object_list.append(object_properties)
             
             self.update_multiple_objects_properties(object_list)
@@ -943,7 +943,7 @@ class ObjectManager(DataManager):
         
     def onKillObject(self, packet):
 
-        _KillID = packet.blocks['ObjectData'][0].get_variable('ID').data
+        _KillID = packet['ObjectData'][0]['ID']
 
         self.remove_object_from_store(_KillID)
 
@@ -951,38 +951,38 @@ class ObjectManager(DataManager):
 
         object_list = []
 
-        for ObjectData_block in packet.blocks['ObjectData']:
+        for ObjectData_block in packet['ObjectData']:
 
             object_properties = {}
 
-            object_properties['FullID'] = ObjectData_block.get_variable('ObjectID').data
-            object_properties['CreatorID'] = ObjectData_block.get_variable('CreatorID').data
-            object_properties['OwnerID'] = ObjectData_block.get_variable('OwnerID').data
-            object_properties['GroupID'] = ObjectData_block.get_variable('GroupID').data
-            object_properties['CreationDate'] = ObjectData_block.get_variable('CreationDate').data
-            object_properties['BaseMask'] = ObjectData_block.get_variable('BaseMask').data
-            object_properties['OwnerMask'] = ObjectData_block.get_variable('OwnerMask').data
-            object_properties['GroupMask'] = ObjectData_block.get_variable('GroupMask').data
-            object_properties['EveryoneMask'] = ObjectData_block.get_variable('EveryoneMask').data
-            object_properties['NextOwnerMask'] = ObjectData_block.get_variable('NextOwnerMask').data
-            object_properties['OwnershipCost'] = ObjectData_block.get_variable('OwnershipCost').data
-            #object_properties['TaxRate'] = ObjectData_block.get_variable('TaxRate').data
-            object_properties['SaleType'] = ObjectData_block.get_variable('SaleType').data
-            object_properties['SalePrice'] = ObjectData_block.get_variable('SalePrice').data
-            object_properties['AggregatePerms'] = ObjectData_block.get_variable('AggregatePerms').data
-            object_properties['AggregatePermTextures'] = ObjectData_block.get_variable('AggregatePermTextures').data
-            object_properties['AggregatePermTexturesOwner'] = ObjectData_block.get_variable('AggregatePermTexturesOwner').data
-            object_properties['Category'] = ObjectData_block.get_variable('Category').data
-            object_properties['InventorySerial'] = ObjectData_block.get_variable('InventorySerial').data
-            object_properties['ItemID'] = ObjectData_block.get_variable('ItemID').data
-            object_properties['FolderID'] = ObjectData_block.get_variable('FolderID').data
-            object_properties['FromTaskID'] = ObjectData_block.get_variable('FromTaskID').data
-            object_properties['LastOwnerID'] = ObjectData_block.get_variable('LastOwnerID').data
-            object_properties['Name'] = ObjectData_block.get_variable('Name').data
-            object_properties['Description'] = ObjectData_block.get_variable('Description').data
-            object_properties['TouchName'] = ObjectData_block.get_variable('TouchName').data
-            object_properties['SitName'] = ObjectData_block.get_variable('SitName').data
-            object_properties['TextureID'] = ObjectData_block.get_variable('TextureID').data
+            object_properties['FullID'] = ObjectData_block['ObjectID']
+            object_properties['CreatorID'] = ObjectData_block['CreatorID']
+            object_properties['OwnerID'] = ObjectData_block['OwnerID']
+            object_properties['GroupID'] = ObjectData_block['GroupID']
+            object_properties['CreationDate'] = ObjectData_block['CreationDate']
+            object_properties['BaseMask'] = ObjectData_block['BaseMask']
+            object_properties['OwnerMask'] = ObjectData_block['OwnerMask']
+            object_properties['GroupMask'] = ObjectData_block['GroupMask']
+            object_properties['EveryoneMask'] = ObjectData_block['EveryoneMask']
+            object_properties['NextOwnerMask'] = ObjectData_block['NextOwnerMask']
+            object_properties['OwnershipCost'] = ObjectData_block['OwnershipCost']
+            #object_properties['TaxRate'] = ObjectData_block['TaxRate']
+            object_properties['SaleType'] = ObjectData_block['SaleType']
+            object_properties['SalePrice'] = ObjectData_block['SalePrice']
+            object_properties['AggregatePerms'] = ObjectData_block['AggregatePerms']
+            object_properties['AggregatePermTextures'] = ObjectData_block['AggregatePermTextures']
+            object_properties['AggregatePermTexturesOwner'] = ObjectData_block['AggregatePermTexturesOwner']
+            object_properties['Category'] = ObjectData_block['Category']
+            object_properties['InventorySerial'] = ObjectData_block['InventorySerial']
+            object_properties['ItemID'] = ObjectData_block['ItemID']
+            object_properties['FolderID'] = ObjectData_block['FolderID']
+            object_properties['FromTaskID'] = ObjectData_block['FromTaskID']
+            object_properties['LastOwnerID'] = ObjectData_block['LastOwnerID']
+            object_properties['Name'] = ObjectData_block['Name']
+            object_properties['Description'] = ObjectData_block['Description']
+            object_properties['TouchName'] = ObjectData_block['TouchName']
+            object_properties['SitName'] = ObjectData_block['SitName']
+            object_properties['TextureID'] = ObjectData_block['TextureID']
 
             object_list.append(object_properties)
 

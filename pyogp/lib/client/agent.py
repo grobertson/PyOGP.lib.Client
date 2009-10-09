@@ -345,11 +345,11 @@ class Agent(object):
     def _start_EQ_on_neighboring_region(self, message):
         """ enables the event queue on an agent's neighboring region """
 
-        region = [region for region in self.child_regions if message.blocks['Message_Data'][0].get_variable('sim-ip-and-port').data == str(region.sim_ip) + ":" + str(region.sim_port)]
+        region = [region for region in self.child_regions if message['Message_Data'][0]['sim-ip-and-port'] == str(region.sim_ip) + ":" + str(region.sim_port)]
 
         if region != []:
 
-            region[0]._set_seed_capability(message.blocks['Message_Data'][0].get_variable('seed-capability').data)
+            region[0]._set_seed_capability(message['Message_Data'][0]['seed-capability'])
 
             region[0]._get_region_capabilities()
 
@@ -437,9 +437,9 @@ class Agent(object):
         def repack(packet, blockname):
             """Repack a single block packet into an AppEvent"""
             payload = {}
-            block = packet.blocks[blockname][0]
+            block = packet[blockname][0]
             for var in block.var_list:
-                payload[var] = block.get_variable(var).data
+                payload[var] = block[var]
 
             return AppEvent(packet.name, payload=payload)
 
@@ -598,35 +598,35 @@ class Agent(object):
         """ callback handler for received AgentDataUpdate messages which populates various Agent() attributes """
 
         if self.agent_id == None:
-            self.agent_id = packet.blocks['AgentData'][0].get_variable('AgentID').data
+            self.agent_id = packet['AgentData'][0]['AgentID']
 
         if self.firstname == None:
-            self.firstname = packet.blocks['AgentData'][0].get_variable('FirstName').data
+            self.firstname = packet['AgentData'][0]['FirstName']
 
         if self.lastname == None:
-            self.firstname = packet.blocks['AgentData'][0].get_variable('LastName').data
+            self.firstname = packet['AgentData'][0]['LastName']
 
-        self.active_group_title = packet.blocks['AgentData'][0].get_variable('GroupTitle').data
+        self.active_group_title = packet['AgentData'][0]['GroupTitle']
 
-        self.active_group_id = packet.blocks['AgentData'][0].get_variable('ActiveGroupID').data
+        self.active_group_id = packet['AgentData'][0]['ActiveGroupID']
 
-        self.active_group_powers = packet.blocks['AgentData'][0].get_variable('GroupPowers').data
+        self.active_group_powers = packet['AgentData'][0]['GroupPowers']
 
-        self.active_group_name = packet.blocks['AgentData'][0].get_variable('GroupName').data
+        self.active_group_name = packet['AgentData'][0]['GroupName']
 
     def onAgentMovementComplete(self, packet):
         """ callback handler for received AgentMovementComplete messages which populates various Agent() and Region() attributes """
 
-        self.Position = packet.blocks['Data'][0].get_variable('Position').data
+        self.Position = packet['Data'][0]['Position']
         if self.Position == None:
             logger.warning("agent.position is None agent.py")
-        self.LookAt = packet.blocks['Data'][0].get_variable('LookAt').data
+        self.LookAt = packet['Data'][0]['LookAt']
 
-        self.region.RegionHandle = packet.blocks['Data'][0].get_variable('RegionHandle').data
+        self.region.RegionHandle = packet['Data'][0]['RegionHandle']
 
-        #agent.Timestamp = packet.blocks['Data'][0].get_variable('Timestamp')
+        #agent.Timestamp = packet['Data'][0]['Timestamp']
 
-        self.region.ChannelVersion = packet.blocks['SimData'][0].get_variable('ChannelVersion').data
+        self.region.ChannelVersion = packet['SimData'][0]['ChannelVersion']
 
         # Raise a plain-vanilla AppEvent
         self.simple_callback('Data')(packet)
@@ -646,19 +646,19 @@ class Agent(object):
     def onHealthMessage(self, packet):
         """ callback handler for received HealthMessage messages which populates Agent().health """
 
-        self.health = packet.blocks['HealthData'][0].get_variable('Health').data
+        self.health = packet['HealthData'][0]['Health']
 
     def onChatFromSimulator(self, packet):
         """ callback handler for received ChatFromSimulator messages which parses and fires a ChatReceived event. """
 
-        FromName = packet.blocks['ChatData'][0].get_variable('FromName').data
-        SourceID = packet.blocks['ChatData'][0].get_variable('SourceID').data
-        OwnerID = packet.blocks['ChatData'][0].get_variable('OwnerID').data
-        SourceType = packet.blocks['ChatData'][0].get_variable('SourceType').data
-        ChatType = packet.blocks['ChatData'][0].get_variable('ChatType').data
-        Audible = packet.blocks['ChatData'][0].get_variable('Audible').data
-        Position = packet.blocks['ChatData'][0].get_variable('Position').data
-        _Message = packet.blocks['ChatData'][0].get_variable('Message').data 
+        FromName = packet['ChatData'][0]['FromName']
+        SourceID = packet['ChatData'][0]['SourceID']
+        OwnerID = packet['ChatData'][0]['OwnerID']
+        SourceType = packet['ChatData'][0]['SourceType']
+        ChatType = packet['ChatData'][0]['ChatType']
+        Audible = packet['ChatData'][0]['Audible']
+        Position = packet['ChatData'][0]['Position']
+        _Message = packet['ChatData'][0]['Message'] 
 
         message = AppEvent('ChatReceived', 
                             FromName = FromName, 
@@ -677,8 +677,8 @@ class Agent(object):
     def onImprovedInstantMessage(self, packet):
         """ callback handler for received ImprovedInstantMessage messages. much is passed in this message, and handling the data is only partially implemented """
 
-        Dialog = packet.blocks['MessageBlock'][0].get_variable('Dialog').data
-        FromAgentID = packet.blocks['AgentData'][0].get_variable('AgentID').data
+        Dialog = packet['MessageBlock'][0]['Dialog']
+        FromAgentID = packet['AgentData'][0]['AgentID']
 
         if Dialog == ImprovedIMDialogue.InventoryOffered:
 
@@ -688,8 +688,8 @@ class Agent(object):
 
             if str(FromAgentID) != str(self.agent_id):
 
-                FromAgentName = packet.blocks['MessageBlock'][0].get_variable('FromAgentName').data
-                InventoryName = packet.blocks['MessageBlock'][0].get_variable('Message').data
+                FromAgentName = packet['MessageBlock'][0]['FromAgentName']
+                InventoryName = packet['MessageBlock'][0]['Message']
 
                 logger.info("Agent %s accepted the inventory offer." % (FromAgentName))
 
@@ -697,18 +697,18 @@ class Agent(object):
 
             if str(FromAgentID) != str(self.agent_id):
 
-                FromAgentName = packet.blocks['MessageBlock'][0].get_variable('FromAgentName').data
-                InventoryName = packet.blocks['MessageBlock'][0].get_variable('Message').data
+                FromAgentName = packet['MessageBlock'][0]['FromAgentName']
+                InventoryName = packet['MessageBlock'][0]['Message']
 
                 logger.info("Agent %s declined the inventory offer." % (FromAgentName))
 
         elif Dialog == ImprovedIMDialogue.FromAgent:
 
-            RegionID = packet.blocks['MessageBlock'][0].get_variable('RegionID').data
-            Position = packet.blocks['MessageBlock'][0].get_variable('Position').data
-            ID = packet.blocks['MessageBlock'][0].get_variable('ID').data
-            FromAgentName = packet.blocks['MessageBlock'][0].get_variable('FromAgentName').data
-            _Message = packet.blocks['MessageBlock'][0].get_variable('Message').data
+            RegionID = packet['MessageBlock'][0]['RegionID']
+            Position = packet['MessageBlock'][0]['Position']
+            ID = packet['MessageBlock'][0]['ID']
+            FromAgentName = packet['MessageBlock'][0]['FromAgentName']
+            _Message = packet['MessageBlock'][0]['Message']
 
             message = AppEvent('InstantMessageReceived', FromAgentID = FromAgentID, RegionID = RegionID, Position = Position, ID = ID, FromAgentName = FromAgentName, Message = _Message)
 
@@ -723,7 +723,7 @@ class Agent(object):
     def onAlertMessage(self, packet):
         """ callback handler for received AlertMessage messages. logs and raises an event """
 
-        AlertMessage = packet.blocks['AlertData'][0].get_variable('Message').data
+        AlertMessage = packet['AlertData'][0]['Message']
 
         message = AppEvent('AlertMessage', AlertMessage = AlertMessage)
 
@@ -734,13 +734,13 @@ class Agent(object):
     def onEnableSimulator(self, packet):
         """ callback handler for received EnableSimulator messages. stores the region data for later connections """
 
-        IP = [ord(x) for x in packet.blocks['SimulatorInfo'][0].get_variable('IP').data]
+        IP = [ord(x) for x in packet['SimulatorInfo'][0]['IP']]
         IP = '.'.join([str(x) for x in IP])
 
-        Port = packet.blocks['SimulatorInfo'][0].get_variable('Port').data
+        Port = packet['SimulatorInfo'][0]['Port']
 
         # not sure what this is, but pass it up
-        Handle = [ord(x) for x in packet.blocks['SimulatorInfo'][0].get_variable('Handle').data]
+        Handle = [ord(x) for x in packet['SimulatorInfo'][0]['Handle']]
 
         region_params = {'IP': IP, 'Port': Port, 'Handle': Handle}
 
@@ -764,13 +764,13 @@ class Agent(object):
     def onEstablishAgentCommunication(self, message):
         """ callback handler for received EstablishAgentCommunication messages. try to enable the event queue for a neighboring region based on the data received """
 
-        logger.info('Received EstablishAgentCommunication for %s' % (message.blocks['Message_Data'][0].get_variable('sim-ip-and-port').data))
+        logger.info('Received EstablishAgentCommunication for %s' % (message['Message_Data'][0]['sim-ip-and-port']))
 
         is_running = False
 
         # don't enable the event queue when we already have it running
         for region in self.child_regions:
-            if (str(region.sim_ip) + ":" + str(region.sim_port) == message.blocks['Message_Data'][0].get_variable('sim-ip-and-port').data) and region.message_manager.event_queue != None:
+            if (str(region.sim_ip) + ":" + str(region.sim_port) == message['Message_Data'][0]['sim-ip-and-port']) and region.message_manager.event_queue != None:
                 if region.message_manager.event_queue._running:
                     is_running = True
 
@@ -860,14 +860,14 @@ class Agent(object):
 
             logger.info('MapBlockReplyPacket received')
 
-            for block in packet.blocks['Data']:
+            for block in packet['Data']:
 
-                if block.get_variable('Name').data.lower() == region_name.lower():
+                if block['Name'].lower() == region_name.lower():
 
                     handler.unsubscribe(onMapBlockReplyPacket)
 
-                    x = block.get_variable('X').data
-                    y = block.get_variable('Y').data
+                    x = block['X']
+                    y = block['Y']
                     region_handle = Region.xy_to_handle(x, y)
 
                     if region_handle:
@@ -908,11 +908,11 @@ class Agent(object):
         self.simple_callback('Info')(packet)
 
         # packed binary U64 to integral x, y
-        region_handle = packet.blocks['Info'][0].get_variable('RegionHandle').data        
+        region_handle = packet['Info'][0]['RegionHandle']        
         region_x, region_y = Region.handle_to_xy(region_handle) 
 
         # packed binary to dotted-octet
-        sim_ip = packet.blocks['Info'][0].get_variable('SimIP').data
+        sim_ip = packet['Info'][0]['SimIP']
         sim_ip = '.'.join(map(str, struct.unpack('BBBB', sim_ip))) 
 
         # *TODO: Make this more graceful
@@ -928,9 +928,9 @@ class Agent(object):
         self._enable_current_region(
             region_x = region_x,
             region_y = region_y,
-            seed_capability = packet.blocks['Info'][0].get_variable('SeedCapability').data,
+            seed_capability = packet['Info'][0]['SeedCapability'],
             sim_ip = sim_ip,
-            sim_port = packet.blocks['Info'][0].get_variable('SimPort').data
+            sim_port = packet['Info'][0]['SimPort']
             )
 
     def request_agent_names(self, agent_ids, callback):
@@ -965,10 +965,10 @@ class Agent(object):
             logger.info('UUIDNameReplyPacket received')
 
             cbdata = []
-            for block in packet.blocks['UUIDNameBlock']:
-                agent_id = str(block.get_variable('ID').data)
-                first_name = block.get_variable('FirstName').data
-                last_name = block.get_variable('LastName').data
+            for block in packet['UUIDNameBlock']:
+                agent_id = str(block['ID'])
+                first_name = block['FirstName']
+                last_name = block['LastName']
                 self.agent_id_map[agent_id] = (first_name, last_name)
                 cbdata.append((agent_id, first_name, last_name))
 
@@ -1002,7 +1002,7 @@ class Agent(object):
             """ handles the MoneyBalanceReply message from a simulator """
             logger.info('MoneyBalanceReply received')
             handler.unsubscribe(onMoneyBalanceReply) # One-shot handler
-            balance = packet.blocks['MoneyData'][0].get_variable('MoneyBalance').data
+            balance = packet['MoneyData'][0]['MoneyBalance']
             callback(balance)
 
         handler.subscribe(onMoneyBalanceReply)

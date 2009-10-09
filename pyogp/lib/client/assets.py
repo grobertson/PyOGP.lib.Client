@@ -76,10 +76,10 @@ class AssetManager(DataManager):
             TODO wait for all all packets to arrive and assemble the data
             """
             # fill in data for Asset in the requests queue and pop it off and story in assets dict
-            if str(transferID) == str(packet.blocks['TransferData'][0].get_variable('TransferID').data):
+            if str(transferID) == str(packet['TransferData'][0]['TransferID']):
 
                 self.assets[str(assetID)] = AssetWearable(assetID, assetType,
-                                                         packet.blocks['TransferData'][0].get_variable('Data').data)
+                                                         packet['TransferData'][0]['Data'])
                 if callback != None:
                     callback(assetID, True)
                 transferPacketHandler.unsubscribe(onTransferPacket)
@@ -91,8 +91,8 @@ class AssetManager(DataManager):
             TODO set packet count
             """
 
-            if str(transferID) == str(packet.blocks['TransferInfo'][0].get_variable('TransferID')):
-                status = packet.blocks['TransferInfo'][0].get_variable("Status").data
+            if str(transferID) == str(packet['TransferInfo'][0]['TransferID']):
+                status = packet['TransferInfo'][0]["Status"]
                 if status != TransferStatus.OK:
                     logger.warning("Request for asset %s failed with status %s" \
                         % (assetID, status))
