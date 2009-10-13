@@ -50,7 +50,6 @@ class AppearanceManager(DataManager):
     def __init__(self, agent, settings = None):
         """
         initialize the appearance manager
-        TODO Fix the Z by generating actual height
         """
         super(AppearanceManager, self).__init__(agent, settings)
         self.AgentSetSerialNum = 1
@@ -65,9 +64,7 @@ class AppearanceManager(DataManager):
         self.visualParams = VisualParams().params
         self.visualParams[32].value = 1.0
         self.TextureEntry = ""
-        self.Size = Vector3(X = 0.45, Y = 0.60, Z = 1.14 ) # Z which is Height needs to be calculated using params
-
-        self.requests = [] 
+        self.requests = []
 
     def enable_callbacks(self):
         """
@@ -90,7 +87,7 @@ class AppearanceManager(DataManager):
         self.wearables[wearable_type].AssetID = item.AssetID
         self.send_AgentSetAppearance(self.agent.agent_id,
                                      self.agent.session_id,
-                                     self.Size,
+                                     self.get_size(),
                                      self.bakedTextures,
                                      self.TextureEntry,
                                      self.visualParams)
@@ -113,6 +110,16 @@ class AppearanceManager(DataManager):
         self.send_AgentWearablesRequest(self.agent.agent_id,
                                         self.agent.session_id)
 
+    def get_size(self):
+        """
+        Computes the size of the avatar, bases off of libomv's implementation for now.
+        """
+        height = 1.706 + (self.visualParams[692].value*0.1918) + (self.visualParams[842].value*0.0375) + \
+                 (self.visualParams[33].value*0.12022) + (self.visualParams[682].value*0.01117) + \
+                 (self.visualParams[756].value*0.038) + (self.visualParams[198].value*0.08) + \
+                 (self.visualParams[503].value*0.07)
+        return Vector3(X = 0.45, Y = 0.60, Z = height )
+        
     def wearableArrived(self, assetID, isSuccess):
         """
         callback for wearables request
@@ -182,7 +189,7 @@ class AppearanceManager(DataManager):
             self.bakedTextures[bakedIndex].HostName = bakedTexture['HostName']
         self.send_AgentSetAppearance(self.agent.agent_id,
                                      self.agent.session_id,
-                                     self.Size,
+                                     self.get_size(),
                                      self.bakedTextures,
                                      self.TextureEntry,
                                      self.visualParams)
