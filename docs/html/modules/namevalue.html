@@ -1,0 +1,187 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>namevalue &mdash; pyogp.lib.client v0.1 documentation</title>
+    <link rel="stylesheet" href="../_static/sphinxdoc.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '0.1',
+        COLLAPSE_MODINDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <link rel="top" title="pyogp.lib.client v0.1 documentation" href="../index.html" />
+    <link rel="up" title="Modules" href="../modules.html" />
+    <link rel="next" title="objects" href="objects.html" />
+    <link rel="prev" title="login" href="login.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../modindex.html" title="Global Module Index"
+             accesskey="M">modules</a> |</li>
+        <li class="right" >
+          <a href="objects.html" title="objects"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="login.html" title="login"
+             accesskey="P">previous</a> |</li>
+        <li><a href="../index.html">pyogp.lib.client v0.1 documentation</a> &raquo;</li>
+          <li><a href="../modules.html" accesskey="U">Modules</a> &raquo;</li> 
+      </ul>
+    </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+            <h4>Previous topic</h4>
+            <p class="topless"><a href="login.html"
+                                  title="previous chapter"><tt class="docutils literal docutils literal docutils literal"><span class="pre">login</span></tt></a></p>
+            <h4>Next topic</h4>
+            <p class="topless"><a href="objects.html"
+                                  title="next chapter"><tt class="docutils literal"><span class="pre">objects</span></tt></a></p>
+            <h3>This Page</h3>
+            <ul class="this-page-menu">
+              <li><a href="../_sources/modules/namevalue.txt"
+                     rel="nofollow">Show Source</a></li>
+            </ul>
+          <div id="searchbox" style="display: none">
+            <h3>Quick search</h3>
+              <form class="search" action="../search.html" method="get">
+                <input type="text" name="q" size="18" />
+                <input type="submit" value="Go" />
+                <input type="hidden" name="check_keywords" value="yes" />
+                <input type="hidden" name="area" value="default" />
+              </form>
+              <p class="searchtip" style="font-size: 90%">
+              Enter search terms or a module, class or function name.
+              </p>
+          </div>
+          <script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="module-pyogp.lib.client.namevalue">
+<h1><tt class="xref docutils literal"><span class="pre">namevalue</span></tt><a class="headerlink" href="#module-pyogp.lib.client.namevalue" title="Permalink to this headline">¶</a></h1>
+<dl class="class">
+<dt id="pyogp.lib.client.namevalue.NameValueClass">
+<em class="property">
+class </em><tt class="descclassname">pyogp.lib.client.namevalue.</tt><tt class="descname">NameValueClass</tt><a class="headerlink" href="#pyogp.lib.client.namevalue.NameValueClass" title="Permalink to this definition">¶</a></dt>
+<dd><p>Class types for NameValues</p>
+<dl class="staticmethod">
+<dt id="pyogp.lib.client.namevalue.NameValueClass.parse">
+<em class="property">
+static </em><tt class="descname">parse</tt><big>(</big><em>name</em><big>)</big><a class="headerlink" href="#pyogp.lib.client.namevalue.NameValueClass.parse" title="Permalink to this definition">¶</a></dt>
+<dd>Return a enum value given a string, or the default value
+if there is no match.</dd></dl>
+
+<dl class="staticmethod">
+<dt id="pyogp.lib.client.namevalue.NameValueClass.repr">
+<em class="property">
+static </em><tt class="descname">repr</tt><big>(</big><em>value</em><big>)</big><a class="headerlink" href="#pyogp.lib.client.namevalue.NameValueClass.repr" title="Permalink to this definition">¶</a></dt>
+<dd>Return the string representation of an enum value.</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="pyogp.lib.client.namevalue.NameValue">
+<em class="property">
+class </em><tt class="descclassname">pyogp.lib.client.namevalue.</tt><tt class="descname">NameValue</tt><big>(</big><em>data=None</em>, <em>name=''</em>, <em>value_type=1</em>, <em>class_=1</em>, <em>send_to=1</em>, <em>value=''</em><big>)</big><a class="headerlink" href="#pyogp.lib.client.namevalue.NameValue" title="Permalink to this definition">¶</a></dt>
+<dd>represents a typed name-value pair as used in object updates</dd></dl>
+
+<dl class="class">
+<dt id="pyogp.lib.client.namevalue.NameValueType">
+<em class="property">
+class </em><tt class="descclassname">pyogp.lib.client.namevalue.</tt><tt class="descname">NameValueType</tt><a class="headerlink" href="#pyogp.lib.client.namevalue.NameValueType" title="Permalink to this definition">¶</a></dt>
+<dd><p>Value types for NameValues</p>
+<dl class="staticmethod">
+<dt id="pyogp.lib.client.namevalue.NameValueType.parse">
+<em class="property">
+static </em><tt class="descname">parse</tt><big>(</big><em>name</em><big>)</big><a class="headerlink" href="#pyogp.lib.client.namevalue.NameValueType.parse" title="Permalink to this definition">¶</a></dt>
+<dd>Return a enum value given a string, or the default value
+if there is no match.</dd></dl>
+
+<dl class="staticmethod">
+<dt id="pyogp.lib.client.namevalue.NameValueType.repr">
+<em class="property">
+static </em><tt class="descname">repr</tt><big>(</big><em>value</em><big>)</big><a class="headerlink" href="#pyogp.lib.client.namevalue.NameValueType.repr" title="Permalink to this definition">¶</a></dt>
+<dd>Return the string representation of an enum value.</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="pyogp.lib.client.namevalue.NameValueSendTo">
+<em class="property">
+class </em><tt class="descclassname">pyogp.lib.client.namevalue.</tt><tt class="descname">NameValueSendTo</tt><a class="headerlink" href="#pyogp.lib.client.namevalue.NameValueSendTo" title="Permalink to this definition">¶</a></dt>
+<dd><p>Send To types for NameValues</p>
+<dl class="staticmethod">
+<dt id="pyogp.lib.client.namevalue.NameValueSendTo.parse">
+<em class="property">
+static </em><tt class="descname">parse</tt><big>(</big><em>name</em><big>)</big><a class="headerlink" href="#pyogp.lib.client.namevalue.NameValueSendTo.parse" title="Permalink to this definition">¶</a></dt>
+<dd>Return a enum value given a string, or the default value
+if there is no match.</dd></dl>
+
+<dl class="staticmethod">
+<dt id="pyogp.lib.client.namevalue.NameValueSendTo.repr">
+<em class="property">
+static </em><tt class="descname">repr</tt><big>(</big><em>value</em><big>)</big><a class="headerlink" href="#pyogp.lib.client.namevalue.NameValueSendTo.repr" title="Permalink to this definition">¶</a></dt>
+<dd>Return the string representation of an &#8216;enum&#8217; value.</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="pyogp.lib.client.namevalue.NameValueList">
+<em class="property">
+class </em><tt class="descclassname">pyogp.lib.client.namevalue.</tt><tt class="descname">NameValueList</tt><big>(</big><em>data</em><big>)</big><a class="headerlink" href="#pyogp.lib.client.namevalue.NameValueList" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../modindex.html" title="Global Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="objects.html" title="objects"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="login.html" title="login"
+             >previous</a> |</li>
+        <li><a href="../index.html">pyogp.lib.client v0.1 documentation</a> &raquo;</li>
+          <li><a href="../modules.html" >Modules</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+      &copy; Copyright 2009, Pyogp team.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 0.6.2.
+    </div>
+  </body>
+</html>

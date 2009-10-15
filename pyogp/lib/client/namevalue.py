@@ -45,8 +45,11 @@ class NameValueType(object):
 
     @staticmethod
     def parse(name):
-        """Return a 'enum' value given a string, or the default value
-        if there is no match."""
+        """ 
+        Return a enum value given a string, or the default value
+        if there is no match.
+        """
+
         try:
             return NameValueType.Strings.index(name)
             
@@ -55,7 +58,7 @@ class NameValueType(object):
 
     @staticmethod
     def repr(value):
-        """Return the string representation of an 'enum' value."""
+        """ Return the string representation of an enum value. """
         return NameValueType.Strings[value]
                 
 class NameValueClass(object):
@@ -70,7 +73,7 @@ class NameValueClass(object):
 
     @staticmethod
     def parse(name):
-        """Return a 'enum' value given a string, or the default value
+        """Return a enum value given a string, or the default value
         if there is no match."""
         try:
             return NameValueClass.Strings.index(name)
@@ -80,7 +83,7 @@ class NameValueClass(object):
                 
     @staticmethod
     def repr(value):
-        """Return the string representation of an 'enum' value."""
+        """Return the string representation of an enum value."""
         return NameValueClass.Strings[value]
                 
 
@@ -98,7 +101,7 @@ class NameValueSendTo(object):
 
     @staticmethod
     def parse(name):
-        """Return a 'enum' value given a string, or the default value
+        """Return a enum value given a string, or the default value
         if there is no match."""
         try:
             return NameValueSendTo.Strings.index(name)
@@ -114,13 +117,13 @@ class NameValueSendTo(object):
 
 
 class NameValue(object):
-    """ represents a typed name-value pair as used in object updates
+    """ represents a typed name-value pair as used in object updates """
 
-        Examples:
-            namevalues = [NameValue(data=s) for s in rawdata.split('\n')]
-            nv = NameValue(name='lastname', value='Linden')
-            nv = NameValue(name='arc', value_type=NameValueType.U32, value=123)
-    """
+        #Examples:
+        #    namevalues = [NameValue(data=s) for s in rawdata.split('\n')]
+        #    nv = NameValue(name='lastname', value='Linden')
+        #    nv = NameValue(name='arc', value_type=NameValueType.U32, value=123)
+
     _re_separators = re.compile('[ \n\t\r]')
 
 

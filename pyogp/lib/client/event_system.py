@@ -157,9 +157,9 @@ class AppEvent(object):
 
     name = name of the event, to which applications will subscribe. 
     payload = dict of the contents of the event (key:value)
-    **kwdargs = key:value pairs
+    kwdargs = key:value pairs
 
-    either payload or **kwdargs should be used, not both
+    either payload or kwdargs should be used, not both
     """
 
     def __init__(self, name, payload = None, llsd = None, **kwargs):
