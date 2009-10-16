@@ -38,8 +38,6 @@ def main():
 
     path_additions.append(lib_dir)
 
-    print "Checking in %s for package to parse" % (lib_dir)
-
     try:
         import pyogp.lib.base
         print "pyogp.lib.base is in the path, continuing..."
@@ -87,22 +85,23 @@ def main():
 
             for fname in fnames:
                 if not re.search(".svn", fname):
-                    print "  Removing " + os.path.join(dirname, fname)
+                    #print "  Removing " + os.path.join(dirname, fname)
                     os.remove(os.path.join(dirname, fname))
 
                     mock += 1
 
-    print "Cleaning the sources/modules dir..."
+    print "Cleaning the sources/modules/ dir..."
 
     # remove .rst files in source/modules
     os.path.walk(modules_dir, remove, mock)
 
-    print "Cleaning the sources/unittest dir..."
+    print "Cleaning the sources/unittest/ dir..."
 
     # remove .rst files in source/unittest
     os.path.walk(unit_test_dir, remove, mock)
 
-    print "Removed %s module files" % (mock)
+    # ToDO: purge the html/ dir
+    # print "Cleaning the html/ dir..."
 
     store = {}
 
@@ -126,7 +125,7 @@ def main():
 
         f = open(os.path.join(_dir, fname), 'w')
 
-        print "  Writing %s" % (fname)
+        #print "  Writing %s" % (fname)
 
         return f
 
@@ -190,7 +189,7 @@ def main():
                 if module == 'pyogp.lib.client.groups' and k in ['UUID', 'Vector3', 'Quaternion']:
                     continue
 
-                print "    adding %s" % (k)
+                #print "    adding %s" % (k)
 
                 handle.write(".. autoclass:: " + module + "." + k + "\n")
                 handle.write("  :members:" + "\n")
@@ -199,7 +198,7 @@ def main():
                     handle.write("  :inherited-members:" + "\n")
                 handle.write("" + "\n")
 
-    print "Building modules files..."
+    print "Building modules sphinx files..."
 
     unit_tests = []
 
@@ -236,7 +235,7 @@ def main():
 
             close_handle(handle)
 
-    print "Building unit test module..."
+    print "Building unit test sphinx files..."
 
     for params in unit_tests:
 
@@ -246,15 +245,11 @@ def main():
 
         close_handle(handle)
 
-    #path_string = ",".join(sys.path)
     if base_dir != None:
-        arg = 'PYTHONPATH=\''+ base_dir + '\''
-        # wow, just read up and this code is unreadable. refactor please!
-        print 'setting %s' % (arg)
-        environ = subprocess.call(['export', arg])
-
-    builder = subprocess.Popen(['sphinx-build', '-a', '-c', conf_dir, source_dir, html_dir]).wait()
-
+        cmd = os.path.abspath(os.path.join(os.path.dirname(__file__), 'refresh.sh'))
+        builder = subprocess.Popen([cmd, base_dir]).wait()
+    else:
+        builder = subprocess.Popen(['sphinx-build', '-a', '-c', conf_dir, source_dir, html_dir]).wait()
 
 
 if __name__ == '__main__':
