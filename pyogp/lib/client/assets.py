@@ -149,7 +149,11 @@ class AssetManager(DataManager):
 
             if response['state'] == 'upload':
                 cap = Capability('UpdateScriptAgentResponse', response['uploader'])
-                response = cap.POST_FILE(script)
+                headers = {"Content-type" : "application/octet-stream",
+                           "Expect" : "100-continue",
+                           "Connection" : "close" }
+                
+                response = cap.POST_CUSTOM(headers, script)
                 upload_script_via_caps_responder(response)
             elif response['state'] == 'complete':
                 logger.debug("Upload of script Successful")
@@ -158,10 +162,9 @@ class AssetManager(DataManager):
 
         cap = self.agent.region.capabilities['UpdateScriptAgent']
         post_body = {'item_id' : str(item_id), 'target': 'lsl2'}
-        custom_headers = {'Accept' : 'application/llsd+xml'}
-
+        
         try:
-            response = cap.POST(post_body, custom_headers)
+            response = cap.POST(post_body)
         except ResourceError, error:
             logger.error(error)
             return
@@ -169,7 +172,38 @@ class AssetManager(DataManager):
             logger.error("404 calling: %s" % (error))
             return
         upload_script_via_caps_responder(response)
-
+        
+    def upload_notecard_via_caps(self, item_id, note):
+        """
+        uploads a note via UploadNotecard capability
+        """
+        def upload_notecard_via_caps_responder(response):
+            if response["state"] == "upload":
+                cap = Capability('UploadNotecardAgentResponse', response['uploader'])
+                headers = {"Content-type" : "application/octet-stream",
+                           "Expect" : "100-continue",
+                           "Connection" : "close" }
+                payload = "Linden text version 2\n{\nLLEmbeddedItems version 1\n" + \
+                          "{\ncount 0\n}\nText length " + str(len(note)) + "\n" + note + \
+                          "}\n"
+                response = cap.POST_CUSTOM(headers, payload)
+                upload_notecard_via_caps_responder
+            elif response['state'] == 'complete':
+                logger.debug("Upload of script Successful")
+            else:
+                logger.warning("Upload failed") 
+        cap = self.agent.region.capabilities['UpdateNotecardAgentInventory']
+        payload = {"item_id" : str(item_id)}
+        
+        try:
+            response = cap.POST(payload)
+        except ResourceError, error:
+            logger.error(error)
+            return
+        except ResourceNotFound, error:
+            logger.error("404 calling: %s" % (error))
+            return
+        upload_notecard_via_caps_responder(response)
 
     def get_asset(self, assetID):
         """
