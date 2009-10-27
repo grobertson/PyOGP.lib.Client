@@ -1,4 +1,4 @@
-
+\
 """
 Contributors can be viewed at:
 http://svn.secondlife.com/svn/linden/projects/2008/pyogp/lib/base/trunk/CONTRIBUTORS.txt 
@@ -145,24 +145,32 @@ class AssetManager(DataManager):
         """
         uploads a plaintext LSL file via UploadScriptAgent capability
         """
-        def upload_script_via_caps_responder(response):
-
-            if response['state'] == 'upload':
-                cap = Capability('UpdateScriptAgentResponse', response['uploader'])
-                headers = {"Content-type" : "application/octet-stream",
-                           "Expect" : "100-continue",
-                           "Connection" : "close" }
-                
-                response = cap.POST_CUSTOM(headers, script)
-                upload_script_via_caps_responder(response)
-            elif response['state'] == 'complete':
-                logger.debug("Upload of script Successful")
-            else:
-                logger.warning("Upload failed")
-
-        cap = self.agent.region.capabilities['UpdateScriptAgent']
-        post_body = {'item_id' : str(item_id), 'target': 'lsl2'}
+        custom_post_body = {'item_id' : str(item_id), 'target': 'lsl2'}
+        self.upload_via_caps("UpdateScriptAgent", item_id, script, custom_post_body)
         
+        
+    def upload_notecard_via_caps(self, item_id, note_text):
+        """
+        uploads a note via UploadNotecard capability
+        """
+        note = "Linden text version 2\n{\nLLEmbeddedItems version 1\n" + \
+                          "{\ncount 0\n}\nText length " + str(len(note_text)) + "\n" + note_text + \
+                          "}\n"
+        self.upload_via_caps("UpdateNotecardAgentInventory", item_id, note)
+        
+    def upload_via_caps(self, cap_name, item_id, item, custom_post_body={}):
+        """
+        Uploads payload via cap_name Capability
+        """
+        if cap_name not in self.agent.region.capabilities.keys():
+            logger.error("Capability %s not found")
+            return
+        cap = self.agent.region.capabilities[cap_name]
+        if custom_post_body == {}:
+            post_body = {"item_id" : str(item_id)}
+        else:
+            post_body = custom_post_body
+
         try:
             response = cap.POST(post_body)
         except ResourceError, error:
@@ -171,40 +179,32 @@ class AssetManager(DataManager):
         except ResourceNotFound, error:
             logger.error("404 calling: %s" % (error))
             return
-        upload_script_via_caps_responder(response)
-        
-    def upload_notecard_via_caps(self, item_id, note):
+        if response.has_key('uploader'):
+            self.upload_via_caps_responder(response['uploader'], item)                                            
+        else:
+            logger.warning("Upload via %s failed"  % cap_name)
+                           
+    def upload_via_caps_responder(self, url, payload):
         """
-        uploads a note via UploadNotecard capability
+        Creates a Capability instance for the given url and POSTS the payload.
         """
-        def upload_notecard_via_caps_responder(response):
-            if response["state"] == "upload":
-                cap = Capability('UploadNotecardAgentResponse', response['uploader'])
-                headers = {"Content-type" : "application/octet-stream",
+        cap = Capability("uploader", url)
+        headers = {"Content-type" : "application/octet-stream",
                            "Expect" : "100-continue",
                            "Connection" : "close" }
-                payload = "Linden text version 2\n{\nLLEmbeddedItems version 1\n" + \
-                          "{\ncount 0\n}\nText length " + str(len(note)) + "\n" + note + \
-                          "}\n"
-                response = cap.POST_CUSTOM(headers, payload)
-                upload_notecard_via_caps_responder
-            elif response['state'] == 'complete':
-                logger.debug("Upload of script Successful")
-            else:
-                logger.warning("Upload failed") 
-        cap = self.agent.region.capabilities['UpdateNotecardAgentInventory']
-        payload = {"item_id" : str(item_id)}
-        
         try:
-            response = cap.POST(payload)
+            response = cap.POST_CUSTOM(headers, payload)
         except ResourceError, error:
             logger.error(error)
             return
         except ResourceNotFound, error:
             logger.error("404 calling: %s" % (error))
             return
-        upload_notecard_via_caps_responder(response)
-
+        if response["state"] == "complete":
+            logger.debug("Successful upload to: %s" % url)
+        else:
+            logger.warning("Failed upload to: %s" % url)
+    
     def get_asset(self, assetID):
         """
         returns an asset from the asset store given an assetID
@@ -241,9 +241,9 @@ class AssetManager(DataManager):
                                SourceType = SourceType,
                                Priority = Priority,
                                Params = Params))
-
-
         self.agent.region.enqueue_message(packet)
+
+
 
 class Asset(object):
     def __init__(self, assetID, assetType, data):
