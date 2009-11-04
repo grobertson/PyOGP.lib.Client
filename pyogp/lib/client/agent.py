@@ -266,7 +266,8 @@ class Agent(object):
             self.connected = bool(self.login_response['login'])
             self.inventory_host = self.login_response['inventory_host']
             self.agent_access = self.login_response['agent_access']
-            self.udp_blacklist = self.login_response['udp_blacklist']
+            if self.login_response.has_key('udp_blacklist'):
+                self.udp_blacklist = self.login_response['udp_blacklist']
             self.start_location = self.login_response['start_location']
 
             if self.login_response.has_key('home'): 
@@ -285,7 +286,7 @@ class Agent(object):
         region_x = region_x or self.login_response['region_x']
         region_y = region_y or self.login_response['region_y']
         seed_capability = seed_capability or self.login_response['seed_capability']
-        udp_blacklist = udp_blacklist or self.login_response['udp_blacklist']
+        udp_blacklist = udp_blacklist or self.udp_blacklist
         sim_ip = sim_ip or self.login_response['sim_ip']
         sim_port = sim_port or self.login_response['sim_port']
         circuit_code = circuit_code or self.login_response['circuit_code']
