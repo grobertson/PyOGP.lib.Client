@@ -125,7 +125,8 @@ class GroupManager(DataManager):
                         AcceptNotices = group_data['AcceptNotices'], 
                         GroupInsigniaID = group_data['GroupInsigniaID'], 
                         Contribution = group_data['Contribution'], 
-                        GroupName = group_data['GroupName'])
+                        GroupName = group_data['GroupName'],
+                          agent=self.agent)
 
             self.store_group(group)
 
@@ -208,6 +209,16 @@ class GroupManager(DataManager):
         """ searches the store and returns group if stored, None otherwise """
 
         group = [group for group in self.group_store if str(group.GroupID) == str(GroupID)]
+
+        if group == []:
+            return None
+        else:
+            return group[0]
+
+    def get_group_by_name(self, GroupName = None):
+        """ searches the store and returns group if stored, None otherwise """
+
+        group = [group for group in self.group_store if str(group.GroupName) == str(GroupName)]
 
         if group == []:
             return None
