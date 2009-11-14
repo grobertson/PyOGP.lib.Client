@@ -36,6 +36,7 @@ from pyogp.lib.client.visualparams import VisualParams
 from pyogp.lib.base.datatypes import UUID, Vector3
 from pyogp.lib.client.enums import BakedIndex, TextureIndex, \
      WearableMap, AssetType, WearablesIndex
+from pyogp.lib.client.assets import AssetWearable
 
 # initialize logging
 logger = getLogger('pyogp.lib.client.appearance')
@@ -128,7 +129,8 @@ class AppearanceManager(DataManager):
 
         self.requests.remove(str(assetID))
         if isSuccess:
-            asset = self.agent.asset_manager.get_asset(assetID)
+            base_asset = self.agent.asset_manager.get_asset(assetID)
+            asset = AssetWearable(base_asset.assetID, base_asset.assetType, base_asset.data)
             logger.debug("Received wearable data for %s\n" % asset.Name)
             for paramID in asset.params.keys():
                 self.visualParams[paramID].value = asset.params[paramID]

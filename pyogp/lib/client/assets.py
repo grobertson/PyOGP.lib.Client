@@ -1,4 +1,4 @@
-\
+
 """
 Contributors can be viewed at:
 http://svn.secondlife.com/svn/linden/projects/2008/pyogp/lib/base/trunk/CONTRIBUTORS.txt 
@@ -15,7 +15,7 @@ or in
 
 $/LicenseInfo$
 """
-
+import os
 # standard python libs
 from logging import getLogger
 import uuid
@@ -36,7 +36,7 @@ from pyogp.lib.client.exc import NotImplemented, ResourceError, ResourceNotFound
 from pyogp.lib.client.objects import Object
 from pyogp.lib.base.datatypes import Vector3, UUID
 from pyogp.lib.base.caps import Capability
-
+from pyogp.lib.client.enums import AssetType
 
 # initialize logging
 logger = getLogger('pyogp.lib.client.assets')
@@ -64,33 +64,42 @@ class AssetManager(DataManager):
         will call callback with the assetID and True with the asset received or False
         if request failed.  On successful request the asset is store in
         self.assets 
+        TODO add a timeout
         """
         transferID = UUID()  #associate the assetID with the transferID
         transferID.random()
         transferInfoHandler = self.agent.region.message_handler.register('TransferInfo')
         transferPacketHandler = self.agent.region.message_handler.register('TransferPacket')
-
         def onTransferPacket(packet):
             """
             TransferPacket of a successful TransferRequest
-            TODO wait for all all packets to arrive and assemble the data
             """
             # fill in data for Asset in the requests queue and pop it off and story in assets dict
             if str(transferID) == str(packet['TransferData'][0]['TransferID']):
-
-                self.assets[str(assetID)] = AssetWearable(assetID, assetType,
-                                                         packet['TransferData'][0]['Data'])
-                if callback != None:
-                    callback(assetID, True)
-                transferPacketHandler.unsubscribe(onTransferPacket)
+                
+                
+                                                              
+                # insert packet
+                self.assets[str(assetID)].store_packet(packet['TransferData'][0]['Packet'],
+                                                       packet['TransferData'][0]['Data'],
+                                                       packet['TransferData'][0]['Status'])
+                if self.assets[str(assetID)].is_downloaded():
+                    self.assets[str(assetID)].assemble_data()
+                    if callback != None:
+                        callback(assetID, True)
+                    transferPacketHandler.unsubscribe(onTransferPacket)
+                else:
+                    pass
+                    # wait for more packets
 
         def onTransferInfo(packet):
             """
             Status of TransferRequest
             Account for size and multiple packets
-            TODO set packet count
             """
-
+            if not self.assets.has_key(str(assetID)):
+                    self.assets[str(assetID)] = Asset(assetID, assetType)
+                    
             if str(transferID) == str(packet['TransferInfo'][0]['TransferID']):
                 status = packet['TransferInfo'][0]["Status"]
                 if status != TransferStatus.OK:
@@ -99,6 +108,8 @@ class AssetManager(DataManager):
                     if callback != None:
                         callback(assetID, False)
                     transferPacketHandler.unsubscribe(onTransferPacket)
+                else:
+                    self.assets[str(assetID)].size = packet['TransferInfo'][0]['Size']
                 transferInfoHandler.unsubscribe(onTransferInfo)
 
         transferInfoHandler.subscribe(onTransferInfo)
@@ -116,7 +127,6 @@ class AssetManager(DataManager):
                       self.agent.agent_id.get_bytes() + \
                       UUID().get_bytes() + \
                       itemID.get_bytes()
-
         params += assetID.get_bytes() + \
                   Helpers().int_to_bytes(assetType) 
 
@@ -126,7 +136,33 @@ class AssetManager(DataManager):
                                   priority,
                                   params)
 
+    def request_sound_asset(self, assetID):
+        """
+        requests a sound asset from the simulator 
+        """
+        self.request_asset(assetID, AssetType.Sound, False, self.on_sound_transfer)
 
+    def on_sound_transfer(self, assetID, is_success):
+        """
+        on the sucessful retrieval of asset date a sound file is created
+        and the download buffer is cleared.  asset.dataq is set to the
+        filname.
+        """
+
+        mod_path = os.path.dirname(__file__)
+        
+        if not is_success:
+            return
+        temp_path = mod_path + "/temp/"
+        temp_filename = temp_path + str(assetID) + ".dsf"
+        if not os.path.exists(temp_path):
+            os.mkdir(temp_path)
+        sound = self.get_asset(assetID)
+        sound_file = open(temp_filename, 'wb') 
+        sound_file.write(sound.data)        
+        sound_file.close()
+        sound.data = temp_filename
+                          
     """
     def upload_asset(self, transaction_id, type_, tempfile, store_local,
                      asset_data=None):
@@ -243,18 +279,49 @@ class AssetManager(DataManager):
                                Params = Params))
         self.agent.region.enqueue_message(packet)
 
-
-
 class Asset(object):
-    def __init__(self, assetID, assetType, data):
+    """
+    Object which represents an asset downloaded from a sim.
+    """
+    def __init__(self, assetID, assetType):
         self.assetID = assetID
         self.assetType = assetType
-        self.data = data
+        self.data = ""
+        self.download_buffer = {}
+        self.last_packet = -1
+        self.size = 0
+        
+    def store_packet(self, packet_num, packet_data, status):
+        """
+        Stores a individual packet for this asset.
+        """
+        self.download_buffer[packet_num] = packet_data
+        if status == 1:
+            self.last_packet = packet_num
 
+    def is_downloaded(self):
+        """
+        Tests whether all packets have been downloaded for this asset
+        """
+        if self.last_packet == -1 or \
+               (self.last_packet + 1) != len(self.download_buffer):
+            return False
+        else:
+            return True
+
+    def assemble_data(self):
+        """
+        Takes each of the individual packets and assembles them into self.data
+        """
+        for i in range(self.last_packet + 1):
+            self.data += self.download_buffer[i]
+        self.download_buffer.clear()
+        
+        
 class AssetWearable(Asset):
 
     def __init__(self, assetID, assetType, data):
-        super(AssetWearable, self).__init__(assetID, assetType, data)
+        super(AssetWearable, self).__init__(assetID, assetType)
         self.Version = -1
         self.Name = ''
         self.Description = ''
