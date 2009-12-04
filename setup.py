@@ -39,6 +39,7 @@ setup(name='pyogp.lib.client',
      license='Apache2',
      packages=find_packages(exclude=['ez_setup']),
      #namespace_packages=['pyogp', 'pyogp.lib'],
+     namespace_packages=['pyogp.lib.client'],
      include_package_data=False,
      zip_safe=False,
      install_requires=[
