@@ -43,7 +43,7 @@ setup(name='pyogp.lib.client',
      install_requires=[
          'setuptools',
          # -*- Extra requirements: -*-
-         'pyogp.lib.base'
+         'pyogp.lib.base==0.1dev'
 
      ]
      )
