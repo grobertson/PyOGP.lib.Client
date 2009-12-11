@@ -320,7 +320,7 @@ class Asset(object):
         
 class AssetWearable(Asset):
 
-    def __init__(self, assetID, assetType, data):
+    def __init__(self, assetID, assetType, data = None):
         super(AssetWearable, self).__init__(assetID, assetType)
         self.Version = -1
         self.Name = ''
@@ -330,9 +330,13 @@ class AssetWearable(Asset):
         self.SaleInfo = ''
         self.params = {}
         self.textures = {}
+        self.data = data
         self.parse_data()
+        
 
     def parse_data(self):
+        if not self.data:
+            return
         tokens = self.data.split()
         i = iter(tokens)
         while True:
@@ -344,7 +348,7 @@ class AssetWearable(Asset):
                     self.Type = int(i.next())
                 if token.lower() == 'parameters':
                     count = int(i.next())
-                    while count > 0:
+                    for num in range(count):
                         paramID = int(i.next())
                         paramVal = i.next()
                         #TODO Verify this is correct behavior this fix may be a hack
@@ -352,13 +356,11 @@ class AssetWearable(Asset):
                             self.params[paramID] = 0.0
                         else:
                             self.params[paramID] = float(paramVal)
-                        count -= 1
                 if token.lower() == 'textures':
                     count = int(i.next())
-                    while count > 0:
+                    for num in range(count):
                         textureID = int(i.next())
                         self.textures[textureID] = UUID(i.next())
-                        count -= 1
             except StopIteration:
                 break
 

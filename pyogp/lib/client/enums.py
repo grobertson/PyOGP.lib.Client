@@ -390,7 +390,8 @@ class WearablesIndex(object):
     WT_UNDERSHIRT = 10
     WT_UNDERPANTS = 11
     WT_SKIRT      = 12
-
+    WT_COUNT      = 13
+    
 class WearableMap(object):
     def __init__(self):
         self.map = {}

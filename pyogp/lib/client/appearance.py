@@ -131,19 +131,19 @@ class AppearanceManager(DataManager):
         if isSuccess:
             base_asset = self.agent.asset_manager.get_asset(assetID)
             asset = AssetWearable(base_asset.assetID, base_asset.assetType, base_asset.data)
-            logger.debug("Received wearable data for %s\n" % asset.Name)
+            asset.parse_data()
+            logger.debug("Received wearable data for %s" % (asset.Name))
             for paramID in asset.params.keys():
                 self.visualParams[paramID].value = asset.params[paramID]
-
-        if len(self.requests) == 0:
-            #logger.info("YAY!! Got all requested assets")
+            if len(self.requests) == 0:
+                logger.info("YAY!! Got all requested assets")
             self.send_AgentCachedTexture(self.agent.agent_id,
                                          self.agent.session_id,
                                          self.bakedTextures,
                                          self.wearables)
-            self.send_AgentIsNowWearing(self.agent.agent_id,
-                                    self.agent.session_id,
-                                    self.wearables)
+            #self.send_AgentIsNowWearing(self.agent.agent_id,
+            #                        self.agent.session_id,
+            #                        self.wearables)
 
     def onAgentWearablesUpdate(self, packet):
         """
@@ -158,13 +158,26 @@ class AppearanceManager(DataManager):
 
         #self.verifyAgentData(packet)
         #logger.debug("AgentWearablesUpdate: %s" % packet)
+        shape = packet['WearableData'][0]
+        if shape['WearableType'] != WearablesIndex.WT_SHAPE:
+            raise TypeError("Wrong wearable types")
+        if str(shape['AssetID']) == '00000000-0000-0000-0000-000000000000':
+            #sim has no wearable data on this avatar set defaults
+            #self.create_default_wearables()
+
+            #send avatar is now wearing
+            #self.send_AgentIsNowWearing(self.agent.agent_id,
+            #                        self.agent.session_id,
+            #                        self.wearables)
+            return
+        
         for wearableData in packet['WearableData']:
             wearableType = wearableData['WearableType']
             itemID = wearableData['ItemID']
             assetID = wearableData['AssetID']
             wearable = self.wearables[wearableType]
             wearable.ItemID = itemID
-            wearable.AssetID = assetID
+            wearable.AssetID = assetID                
             if str(assetID) != '00000000-0000-0000-0000-000000000000':
                 self.agent.asset_manager.request_asset(assetID, wearable.getAssetType(),
                                                        True, self.wearableArrived)
@@ -281,13 +294,21 @@ class AppearanceManager(DataManager):
         paramkeys.sort()
         args += [Block('VisualParam',
                        ParamValue = visualParams[key].floatToByte()) \
-                 for key in paramkeys]
+                 for key in paramkeys if visualParams[key].group is 0]
 
         packet =  Message('AgentSetAppearance', *args)
 
         self.AgentSetSerialNum += 1
         self.agent.region.enqueue_message(packet)
 
+    def create_default_wearables(self):
+        create = [True, True, True, True, True, True, True, True, False, False, \
+                  True, True, False]
+        for i in range(WearablesIndex.WT_COUNT):
+            if create[i]:
+                asset_id == UUID()
+                asset_id.random()
+                self.wearables[i] = Wearable(i, AssetID=asset_id)
 
 
 class Wearable(object):
