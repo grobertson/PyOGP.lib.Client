@@ -341,7 +341,7 @@ class Agent(object):
                     self._enable_child_region(region_params)
                     self._pending_child_regions.remove(region_params)
 
-            api.sleep(0)
+            api.sleep(10)
 
     def _start_EQ_on_neighboring_region(self, message):
         """ enables the event queue on an agent's neighboring region """
@@ -362,7 +362,7 @@ class Agent(object):
         if self.settings.ENABLE_INVENTORY_MANAGEMENT:
             while self.region.capabilities == {}:
 
-                api.sleep(0)
+                api.sleep(5)
 
             inventory_caps = ['FetchInventory', 'WebFetchInventoryDescendents', 'FetchLib', 'FetchLibDescendents']
 
