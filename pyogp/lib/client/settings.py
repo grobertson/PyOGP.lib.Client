@@ -55,9 +55,6 @@ class Settings(BaseSettings):
         # enable communications monitoring
         self.ENABLE_COMMUNICATIONS_TRACKING = True
 
-        # toggle parsing all/handled packets
-        self.ENABLE_DEFERRED_PACKET_PARSING = True
-
         # toggle group chat handling
         self.ENABLE_GROUP_CHAT = True
 
