@@ -23,7 +23,7 @@ import re
 import sys
 
 # related
-from indra.base import llsd
+from llbase import llsd
 
 # pyogp
 from pyogp.lib.base.exc import LoginError, ParseStartLocError, HTTPError, ResourceError, ResourceNotFound

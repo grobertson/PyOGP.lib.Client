@@ -21,7 +21,7 @@ from logging import getLogger
 import time
 
 # related
-from indra.base import llsd
+from llbase import llsd
 
 # pyogp
 from pyogp.lib.base.caps import Capability

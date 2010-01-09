@@ -21,7 +21,7 @@ import urllib2
 from logging import getLogger
 
 # related
-from indra.base import llsd
+from llbase import llsd
 
 # pyogp
 from pyogp.lib.base.network.stdlib_client import StdLibClient, HTTPError

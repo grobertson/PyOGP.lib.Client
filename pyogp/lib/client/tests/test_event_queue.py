@@ -20,7 +20,7 @@ $/LicenseInfo$
 import unittest
 
 # related
-from indra.base import llsd
+from llbase import llsd
 from eventlet import api, coros
 
 # pyogp
