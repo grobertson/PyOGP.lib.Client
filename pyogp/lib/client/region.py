@@ -72,6 +72,8 @@ class Region(object):
 
     """
 
+    WIDTH = 256
+
     def __init__(self, global_x = 0, global_y = 0, seed_capability_url = None,
                  udp_blacklist = None, sim_ip = None, sim_port = None,
                  circuit_code = None, agent = None, settings = None,
@@ -105,8 +107,8 @@ class Region(object):
         # initialize the init params
         self.global_x = int(global_x)
         self.global_y = int(global_y)
-        self.grid_x = self.global_x/256
-        self.grid_y = self.global_y/256
+        self.grid_x = self.global_x/Region.WIDTH
+        self.grid_y = self.global_y/Region.WIDTH
         self.seed_capability_url = seed_capability_url
         self.udp_blacklist = udp_blacklist
         self.sim_ip = sim_ip
@@ -473,7 +475,7 @@ class Region(object):
     @staticmethod
     def xy_to_handle(x, y):
         """Convert an x, y region location into a 64-bit handle"""
-        return (int(x)*256 << 32) + int(y)*256
+        return (int(x)*Region.WIDTH << 32) + int(y)*Region.WIDTH
 
     @staticmethod
     def handle_to_xy(handle):
@@ -482,8 +484,8 @@ class Region(object):
         if isinstance(handle, str):
             handle =  struct.unpack('Q', handle)[0]
 
-        x = int((handle >> 32)/256)
-        y = int((handle & 0xffffffff)/256)
+        x = int((handle >> 32)/Region.WIDTH)
+        y = int((handle & 0xffffffff)/Region.WIDTH)
         return x, y
 
 

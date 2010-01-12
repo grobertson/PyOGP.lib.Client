@@ -37,6 +37,7 @@ from pyogp.lib.client.groups import GroupManager, Group
 from pyogp.lib.client.event_system import AppEventsHandler, AppEvent
 from pyogp.lib.client.appearance import AppearanceManager
 from pyogp.lib.client.assets import AssetManager
+from pyogp.lib.client.map import MapService
 
 # pyogp messaging
 from pyogp.lib.base.message.message import Message, Block
@@ -115,6 +116,7 @@ class Agent(object):
         self.start_location = None
         self.group_manager = GroupManager(self, self.settings)
         self.asset_manager = AssetManager(self, self.settings)
+        self.map_service = MapService(self, self.settings)
 
         # additional attributes
         self.login_response = None
@@ -149,9 +151,6 @@ class Agent(object):
 
         # init AppearanceManager()
         self.appearance = AppearanceManager(self, self.settings)
-
-        # Cache of region name->handle; per-agent to prevent information leaks
-        self.region_name_map = {}
 
         # Cache of agent_id->(first_name, last_name); per agent to prevent info leaks
         self.agent_id_map = {}
@@ -808,10 +807,6 @@ class Agent(object):
         if not region_id and region_name and region_name.lower() == self.region.SimName.lower():
             region_id = self.region.RegionID
 
-        if not region_id and not region_handle and region_name and \
-               region_name.lower() in self.region_name_map:
-            region_handle = self.region_name_map[region_name.lower()]
-
         if region_id:
 
             logger.info('sending TP request packet')
@@ -845,60 +840,10 @@ class Agent(object):
         else:
             logger.info("Target region's handle not known, sending map name request")
             # do a region_name to region_id lookup and then request the teleport
-            self.send_MapNameRequest(
+            self.map_service.request_handle(
                 region_name,
                 lambda handle: self.teleport(region_handle=handle, position=position, look_at=look_at))
 
-
-        
-    def send_MapNameRequest(self, region_name, callback):
-        """ sends a MapNameRequest message to the host simulator """
-
-        handler = self.region.message_handler.register('MapBlockReply')
-
-        def onMapBlockReplyPacket(packet):
-            """ handles the MapBlockReply message from a simulator """
-
-            logger.info('MapBlockReplyPacket received')
-
-            for block in packet['Data']:
-
-                if block['Name'].lower() == region_name.lower():
-
-                    handler.unsubscribe(onMapBlockReplyPacket)
-
-                    x = block['X']
-                    y = block['Y']
-                    region_handle = Region.xy_to_handle(x, y)
-
-                    if region_handle:
-                        self.region_name_map[region_name.lower()] = region_handle
-                        callback(region_handle)
-                    else:
-                        # *TODO: May get a region_handle of 0 if region
-                        # is offline/unknown. Should callback handle it?
-                        logger.warning('Got null region_handle for %s', region_name)
-                    return
-
-            # Leave it registered, as the event may come later
-
-        # Register a handler for the response        
-        handler.subscribe(onMapBlockReplyPacket)
-
-        # ...and make the request
-        logger.info('sending MapNameRequestPacket')
-
-        packet = Message('MapNameRequest', 
-                        Block('AgentData', 
-                            AgentID = self.agent_id, 
-                            SessionID = self.session_id,
-                            Flags = 0,
-                            EstateID = 0,
-                            Godlike = False),
-                        Block('NameData',
-                            Name = region_name.lower()))
-
-        self.region.enqueue_message(packet) 
 
     def onTeleportFinish(self, packet):
         """Handle the end of a successful teleport"""

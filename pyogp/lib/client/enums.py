@@ -484,3 +484,15 @@ class DeRezDestination(object):
     ReturnToOwner           = 9
     ReturnToLastOwner       = 10
 
+class MapItem(object):
+    Telehub = 0x01
+    PGEvent = 0x02
+    MatureEvent = 0x03
+    #Popular = 0x04
+    #AgentCount = 0x05
+    AgentLocations = 0x06
+    LandForSale = 0x07
+    Classified = 0x08
+    AdultEvent = 0x09
+    LandForSaleAdult = 0x0a
+
