@@ -65,7 +65,8 @@ class MapService(DataManager):
     def request_handle(self, region_name, callback):
         """Given a region name, will call a callback function when the handle
         (which encodes the x/y location of the region) is looked up. A null handle
-        (0, 0) denotes failure to find the region."""
+        (0, 0) denotes failure to find the region. Results are cached for
+        subsequent calls."""
         region_name = region_name.lower()
 
         if region_name in self.name_to_handle:
@@ -102,9 +103,54 @@ class MapService(DataManager):
                             EstateID = 0, # filled in on server
                             Godlike = False), # filled in on server
                         Block('NameData',
-                            Name = region_name.lower()))
+                            Name = region_name))
 
         self.agent.region.enqueue_message(packet) 
+
+
+    def search(self, query, callback):
+        """Search for region info by region name. Returns a list of dicts.
+        Results are NOT cached for subsequent calls."""
+        handler = self.agent.region.message_handler.register('MapBlockReply')
+
+        results = []
+
+        # This is sent as the "Access" field to indicate the end of the
+        # search results.
+        END_OF_RESULTS = 255
+
+        def onMapBlockReply(packet):
+            """ handles the MapBlockReply message from a simulator """
+
+            for data in packet['Data']:
+
+                if data['Access'] == END_OF_RESULTS:
+                    handler.unsubscribe(onMapBlockReply)
+                    callback(results)
+                    return
+
+                else:
+                    results.append({
+                        'x': data['X'],
+                        'y': data['Y'],
+                        'name': data['Name']
+                        })
+
+        # Register a handler for the response        
+        handler.subscribe(onMapBlockReply)
+
+        packet = Message('MapNameRequest', 
+                        Block('AgentData', 
+                            AgentID = self.agent.agent_id, 
+                            SessionID = self.agent.session_id,
+                            Flags = 0,
+                            EstateID = 0, # filled in on server
+                            Godlike = False), # filled in on server
+                        Block('NameData',
+                            Name = query))
+
+        self.agent.region.enqueue_message(packet) 
+
 
 
     def request_agent_locations(self, region_handle, callback):
