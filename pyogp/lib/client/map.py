@@ -152,6 +152,62 @@ class MapService(DataManager):
         self.agent.region.enqueue_message(packet) 
 
 
+    def request_block(self, min_x, max_x, min_y, max_y, callback):
+        """
+        Return region info for a rectangular chunk of the map. Coordinates
+        are in region-widths (convert from global coords by dividing by
+        Region.WIDTH). Results are NOT cached for subsequent calls.
+
+        The protocol does not have any indication of completion status.
+        Therefore callbacks could occur at any time. Additionally, the same
+        protocol replies are used for other queries, so spurrious calls could
+        come through as a result of unrelated activity.
+        """
+
+        handler = self.agent.region.message_handler.register('MapBlockReply')
+
+        # This is sent as the Access to indicate that there is no region at
+        # the specified coordinates
+        NO_REGION = 255
+
+        # Maximum number of blocks returned per packet
+        MAX_BLOCKS = 20
+
+        def onMapBlockReply(packet):
+            """ handles the MapBlockReply message from a simulator """
+
+            for data in packet['Data']:
+                if data['Access'] != NO_REGION:
+                    region = {
+                        'x': data['X'],
+                        'y': data['Y'],
+                        'name': data['Name']
+                        }
+                    callback(region)
+
+            # NOTE: Cannot detect end-of-results if we get a "full" packet
+            if len(packet['Data']) < MAX_BLOCKS:
+                handler.unsubscribe(onMapBlockReply)
+
+        # Register a handler for the response        
+        handler.subscribe(onMapBlockReply)
+
+        packet = Message('MapBlockRequest', 
+                        Block('AgentData', 
+                            AgentID = self.agent.agent_id, 
+                            SessionID = self.agent.session_id,
+                            Flags = 0,
+                            EstateID = 0, # filled in on server
+                            Godlike = False), # filled in on server
+                        Block('PositionData',
+                              MinX = min_x,
+                              MaxX = max_x,
+                              MinY = min_y,
+                              MaxY = max_y))
+
+        self.agent.region.enqueue_message(packet) 
+
+
 
     def request_agent_locations(self, region_handle, callback):
         """For a given region (identified by handle), calls the callback
