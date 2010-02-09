@@ -128,7 +128,7 @@ class AgentManager(object):
 
         return ids
 
-    def login(self, key, loginuri, start_location):
+    def login(self, key, loginuri, start_location=None):
         """ spawns a new agent via an eventlet coroutine """
 
         if self.settings.LOG_COROUTINE_SPAWNS: 
