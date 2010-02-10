@@ -164,13 +164,15 @@ class AgentManager(object):
         logger.info("Caught signal... %d. Stopping" % sigint)
 
         for agent in self.get_active_agents():
-            agent.logout()
+            agent.region.message_manager._is_running = False
+            agent.running = False
+            #agent.logout()
 
-        Wait(10)
+        #Wait(10)
 
-        if self.has_agents_running():
-            logger.warning("These agents have not yet shut down. Killing the process hard.\n\t\t%s" % (self.get_active_agents()))
-            sys.exit(1)
+        #if self.has_agents_running():
+        #    logger.warning("These agents have not yet shut down. Killing the process hard.\n\t\t%s" % (self.get_active_agents()))
+        #    sys.exit(1)
 
 
 
