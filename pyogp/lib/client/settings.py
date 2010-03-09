@@ -91,9 +91,6 @@ class Settings(BaseSettings):
         # Simulator specific
         #~~~~~~~~~~~~~~~~~~~
 
-        # toggle handling a region's event queue
-        self.ENABLE_REGION_EVENT_QUEUE = True
-
         # shall we handle the eq data?
         self.HANDLE_EVENT_QUEUE_DATA = True
 
