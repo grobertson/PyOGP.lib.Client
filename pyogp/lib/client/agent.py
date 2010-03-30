@@ -44,7 +44,7 @@ from pyogp.lib.base.message.message import Message, Block
 
 # pyogp utilities
 from pyogp.lib.base.helpers import Helpers
-from pyogp.lib.client.enums import ImprovedIMDialogue, MoneyTransactionType, TransactionFlags, AgentState, AgentUpdateFlags, AgentControlFlags
+from pyogp.lib.client.enums import ImprovedIMDialogue, MoneyTransactionType, TransactionFlags, AgentState, AgentUpdateFlags, AgentControlFlags, AgentAnimations
 
 # initialize logging
 logger = getLogger('pyogp.lib.client.agent')
@@ -429,6 +429,9 @@ class Agent(object):
         if self.settings.ENABLE_COMMUNICATIONS_TRACKING:
             onChatFromSimulator_received = self.region.message_handler.register('ChatFromSimulator')
             onChatFromSimulator_received.subscribe(self.onChatFromSimulator)
+
+        onAvatarAnimation_received = self.region.message_handler.register('AvatarAnimation')
+        onAvatarAnimation_received.subscribe(self.onAvatarAnimation)
 
 
     def simple_callback(self, blockname):
@@ -1052,6 +1055,25 @@ class Agent(object):
             CameraUpAxis = self.settings.DEFAULT_CAMERA_UP_AXIS,
             Far = self.settings.DEFAULT_CAMERA_DRAW_DISTANCE
             )
+
+        
+    def onAvatarAnimation(self, packet):
+        """Ensure auto-triggered animations are stopped."""
+        # See newview/llagent.cpp
+        
+        if packet['Sender'][0]['ID'] == self.agent_id:
+
+            for anim in packet['AnimationList']:
+
+                if anim['AnimID'] in (AgentAnimations.STANDUP,
+                                      AgentAnimations.PRE_JUMP,
+                                      AgentAnimations.LAND,
+                                      AgentAnimations.MEDIUM_LAND):
+
+                    self.control_flags |= AgentControlFlags.FinishAnim
+                    self._send_update()
+                    self.control_flags &= ~AgentControlFlags.FinishAnim
+        
 
 
 class Home(object):

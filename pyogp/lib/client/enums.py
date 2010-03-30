@@ -16,6 +16,8 @@ or in
 $/LicenseInfo$
 """
 
+from uuid import UUID
+
 class ImprovedIMDialogue(object):
     """ mappings for the values sent in an ImprovedInstantMessage packet """
 
@@ -496,3 +498,9 @@ class MapItem(object):
     AdultEvent = 0x09
     LandForSaleAdult = 0x0a
 
+class AgentAnimations(object):
+    STANDUP             = UUID("3da1d753-028a-5446-24f3-9c9b856d9422")
+    PRE_JUMP            = UUID("7a4e87fe-de39-6fcb-6223-024b00893244")
+    LAND                = UUID("7a17b059-12b2-41b1-570a-186368b6aa6f")
+    MEDIUM_LAND         = UUID("f4f00d6e-b9fe-9292-f4cb-0ae06ea58d57")
+     
