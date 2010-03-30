@@ -210,7 +210,10 @@ class Region(object):
     def enqueue_message(self, packet, reliable = False):
         """ queues packets for the messaging system to send """
 
-        self.message_manager.outgoing_queue.append((packet, reliable))
+        if self.message_manager:
+            self.message_manager.outgoing_queue.append((packet, reliable))
+        else:
+            logger.warn("Failed to enqueue a message - no message manager!")
 
     def _set_seed_capability(self, url = None):
         """ sets the seed_cap attribute as a RegionSeedCapability instance """
