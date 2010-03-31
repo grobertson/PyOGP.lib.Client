@@ -858,7 +858,7 @@ class Agent(object):
 
         # packed binary U64 to integral x, y
         region_handle = packet['Info'][0]['RegionHandle']        
-        region_x, region_y = Region.handle_to_xy(region_handle) 
+        region_x, region_y = Region.handle_to_globalxy(region_handle)
 
         # packed binary to dotted-octet
         sim_ip = packet['Info'][0]['SimIP']
