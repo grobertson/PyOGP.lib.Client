@@ -1056,7 +1056,7 @@ class Agent(object):
     def touch(self, objectID):
         """ Touches an inworld rezz'ed object """
         self.grab(objectID)
-        self.deGrab(objectID)
+        self.degrab(objectID)
       
    
     def grab(self, objectID, grabOffset = Vector3(), 
@@ -1069,14 +1069,14 @@ class Agent(object):
                             SessionID = self.session_id),
                         Block('ObjectData',
                             LocalID = objectID,
-                            Graboffset = grabOffset),
-                        Block('SurfaceInfo',
+                            GrabOffset = grabOffset),
+                        [Block('SurfaceInfo',
                               UVCoord = uvCoord,
                               STCoord = stCoord,
                               FaceIndex = faceIndex,
                               Position = position,
                               Normal = normal,
-                              Binormal = binormal))
+                              Binormal = binormal)])
 
         self.region.enqueue_message(packet) 
             
@@ -1090,13 +1090,13 @@ class Agent(object):
                             SessionID = self.session_id),
                         Block('ObjectData',
                             LocalID = objectID),
-                        Block('SurfaceInfo',
+                        [Block('SurfaceInfo',
                               UVCoord = uvCoord,
                               STCoord = stCoord,
                               FaceIndex = faceIndex,
                               Position = position,
                               Normal = normal,
-                              Binormal = binormal))
+                              Binormal = binormal)])
 
         self.region.enqueue_message(packet)      
 
@@ -1111,15 +1111,14 @@ class Agent(object):
                         Block('ObjectData',
                             LocalID = objectID,
                             GrabOffsetInitial = grabOffset,
-                            GrabPostion = grabPosition,
-                            TimeSinceLast = 0),
-                        Block('SurfaceInfo',
+                            GrabPostion = grabPosition),
+                         [Block('SurfaceInfo',
                               UVCoord = uvCoord,
                               STCoord = stCoord,
                               FaceIndex = faceIndex,
                               Position = position,
                               Normal = normal,
-                              Binormal = binormal))
+                              Binormal = binormal)])
 
         self.region.enqueue_message(packet) 
 

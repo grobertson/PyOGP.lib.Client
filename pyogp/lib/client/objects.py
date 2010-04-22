@@ -22,6 +22,7 @@ import uuid
 import re
 import struct
 import math
+import time
 from eventlet import api
 
 # related
@@ -219,7 +220,7 @@ class ObjectManager(DataManager):
         for item in self.object_store:
             object_ids.append(item.LocalID)
             
-        self.req_object_properties(object_ids)
+        self.request_objects_properties(object_ids)
         
         pattern = re.compile(Name)
 
@@ -227,24 +228,32 @@ class ObjectManager(DataManager):
 
         return matches
     
-    def req_object_properties(self, object_ids):
+    def request_objects_properties(self, object_ids, deselect=True):
+        localIds = object_ids[:]
         """get properties for all requested objects"""
-        #obj_FullIds = [_item.FullID for _item in object_ids]
         obj_props_handler = self.agent.events_handler.register("ObjectSelected")
         def object_selected(obj_info):
-            #need till all the requested objects properties are received
+            #need to wait till all the requested objects properties are received
             prim = obj_info.payload['object']
-            if prim.LocalID in object_ids:
-                object_ids.remove(prim.LocalID)
+            if prim.LocalID in localIds:
+                localIds.remove(prim.LocalID)
                 
         obj_props_handler.subscribe(object_selected)    
         self.send_ObjectSelect(self.agent, self.agent.agent_id, self.agent.session_id, object_ids)
-        while object_ids != []:
+        while localIds != []:
             api.sleep(1)
             
+        print 'got all object properties'
+        """Deselect the objects"""
+        if (deselect):
+            self.send_ObjectDeselect(self.agent, self.agent.agent_id, self.agent.session_id, object_ids)
+            
     def dump_objects(self):
+        """just dump the names for now """
+        #print 'Object Count: ', self.object_store.len()
+        
         for item in self.object_store:
-            print 'Object Name: ', item.__dict__['Name']
+            print 'Object Name: ', item.__dict__['Name'], ' LocalID: ', item.__dict__['LocalID']
     
         
     def send_ObjectSelect(self, agent, AgentID, SessionID, ObjectLocalIDs):
@@ -261,7 +270,20 @@ class ObjectManager(DataManager):
 
         agent.region.enqueue_message(packet)
 
+    def send_ObjectDeselect(self, agent, AgentID, SessionID, ObjectLocalIDs):
+        """ send an ObjectDeSelect message to the agent's host simulator
 
+        expects a list of ObjectLocalIDs """
+
+        packet = Message('ObjectDeselect',
+                        Block('AgentData',
+                                AgentID = AgentID,
+                                SessionID = SessionID),
+                        *[Block('ObjectData',
+                                ObjectLocalID = ObjectLocalID) for ObjectLocalID in ObjectLocalIDs])
+
+        agent.region.enqueue_message(packet)
+        
     def find_objects_within_radius(self, radius):
         """ returns objects nearby. returns a list of objects """
 
@@ -1415,5 +1437,52 @@ class Object(object):
             setattr(self, attribute, properties[attribute])
 
 
+    def click(self, agent):
+        """ Touches an inworld rezz'ed object """
+        self.grab(agent)
+        #api.sleep(5)
+        self.degrab(agent)
+      
+   
+    def grab(self, agent, grabOffset = Vector3(), 
+             uvCoord = Vector3(), stCoord = Vector3(), faceIndex=0,
+             position=Vector3(), normal=Vector3(), binormal=Vector3()):
+             
+        packet = Message('ObjectGrab',
+                        Block('AgentData',
+                            AgentID = agent.agent_id,
+                            SessionID = agent.session_id),
+                        Block('ObjectData',
+                            LocalID = self.LocalID,
+                            GrabOffset = grabOffset),
+                        [Block('SurfaceInfo',
+                              UVCoord = uvCoord,
+                              STCoord = stCoord,
+                              FaceIndex = faceIndex,
+                              Position = position,
+                              Normal = normal,
+                              Binormal = binormal)])
+
+        agent.region.enqueue_message(packet) 
+            
+    def degrab(self, agent,  
+             uvCoord = Vector3(), stCoord = Vector3(), faceIndex=0,
+             position=Vector3(), normal=Vector3(), binormal=Vector3()):
+            
+        packet = Message('ObjectDeGrab',
+                        Block('AgentData',
+                            AgentID = agent.agent_id,
+                            SessionID = agent.session_id),
+                        Block('ObjectData',
+                            LocalID = self.LocalID),
+                        [Block('SurfaceInfo',
+                              UVCoord = uvCoord,
+                              STCoord = stCoord,
+                              FaceIndex = faceIndex,
+                              Position = position,
+                              Normal = normal,
+                              Binormal = binormal)])
+
+        agent.region.enqueue_message(packet)      
 
 
