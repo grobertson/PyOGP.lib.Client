@@ -85,7 +85,7 @@ class MapService(DataManager):
                     # Stop listening once we have the data we asked for
                     handler.unsubscribe(onMapBlockReply)
 
-                    region_handle = Region.xy_to_handle(data['X'], data['Y'])
+                    region_handle = Region.gridxy_to_handle(data['X'], data['Y'])
 
                     callback(region_handle)
                     return
@@ -216,8 +216,6 @@ class MapService(DataManager):
 
         handler = self.agent.region.message_handler.register('MapItemReply')
 
-        region_x, region_y = Region.handle_to_xy(region_handle)
-
         BLOCK_COUNT_PER_PACKET = 21
 
         cluster_list = []
@@ -230,7 +228,7 @@ class MapService(DataManager):
                     x = data['X']
                     y = data['Y']
 
-                    if count and region_x == int(x/Region.WIDTH) and region_y == int(y/Region.WIDTH):
+                    if count and Region.globalxy_to_handle(x, y) == region_handle:
                         cluster_list.append((count, x % Region.WIDTH, y % Region.WIDTH))
 
             # This end condition is unreliable, and determined by inspecting

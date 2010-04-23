@@ -107,8 +107,8 @@ class Region(object):
         # initialize the init params
         self.global_x = int(global_x)
         self.global_y = int(global_y)
-        self.grid_x = self.global_x/Region.WIDTH
-        self.grid_y = self.global_y/Region.WIDTH
+        self.grid_x = int(self.global_x/Region.WIDTH)
+        self.grid_y = int(self.global_y/Region.WIDTH)
         self.seed_capability_url = seed_capability_url
         self.udp_blacklist = udp_blacklist
         self.sim_ip = sim_ip
@@ -210,7 +210,10 @@ class Region(object):
     def enqueue_message(self, packet, reliable = False):
         """ queues packets for the messaging system to send """
 
-        self.message_manager.outgoing_queue.append((packet, reliable))
+        if self.message_manager:
+            self.message_manager.outgoing_queue.append((packet, reliable))
+        else:
+            logger.warn("Failed to enqueue a message - no message manager!")
 
     def _set_seed_capability(self, url = None):
         """ sets the seed_cap attribute as a RegionSeedCapability instance """
@@ -473,20 +476,39 @@ class Region(object):
         self.sendCompletePingCheck(self.last_ping)
 
     @staticmethod
-    def xy_to_handle(x, y):
-        """Convert an x, y region location into a 64-bit handle"""
-        return (int(x)*Region.WIDTH << 32) + int(y)*Region.WIDTH
+    def globalxy_to_handle(x, y):
+        """Convert a global x, y location into a 64-bit region handle"""
+        x, y = int(x), int(y)
+        x -= x % 256
+        y -= y % 256
+        handle = x << 32 | y
+        return handle
 
     @staticmethod
-    def handle_to_xy(handle):
-        """Convert a handle into an x,y region location. Handle can be an int or binary string."""
+    def handle_to_globalxy(handle):
+        """Convert a region handle into a global x,y location. Handle can be an int or binary string."""
         import struct
         if isinstance(handle, str):
-            handle =  struct.unpack('Q', handle)[0]
+            handle =  struct.unpack('>Q', handle)[0]
 
-        x = int((handle >> 32)/Region.WIDTH)
-        y = int((handle & 0xffffffff)/Region.WIDTH)
+        x = handle >> 32
+        y = handle & 0xffffffff
+
         return x, y
+
+    @staticmethod
+    def gridxy_to_handle(x, y):
+        """Convert an x, y region grid location into a 64-bit handle"""
+
+        return Region.globalxy_to_handle(x * Region.WIDTH, y * Region.WIDTH)
+
+    @staticmethod
+    def handle_to_gridxy(handle):
+        """Convert a handle into an x,y region grid location. Handle can be an int or binary string."""
+
+        x, y = Region.handle_to_globalxy(handle)
+
+        return x / Region.WIDTH, y / Region.WIDTH
 
 
 class RegionSeedCapability(Capability):
