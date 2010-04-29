@@ -868,9 +868,6 @@ class UDP_Inventory(InventoryManager):
 class InventoryFolder(object):
     """ represents an Inventory folder 
 
-    Initialize the event queue client class
-    >>> inventoryfolder = InventoryFolder()
-
     Sample implementations: inventory.py
     Tests: tests/test_inventory.py
     """
@@ -956,9 +953,6 @@ class InventoryFolder(object):
 
 class InventoryItem(object):
     """ represents an Inventory item 
-
-    Initialize the InventoryItem class
-    >>> inventoryitem = InventoryItem()
 
     Sample implementations: inventory.py
     Tests: tests/test_inventory.py

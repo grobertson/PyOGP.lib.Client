@@ -52,12 +52,6 @@ logger = getLogger('pyogp.lib.client.agent')
 class Agent(object):
     """ The Agent class is a container for agent specific data.
 
-    Example, of login via the agent class:
-    Initialize the login class
-
-    >>> client = Agent()
-    >>> client.login('https://login.agni.lindenlab.com/cgi-bin/login.cgi', 'firstname', 'lastname', 'secret', start_location = 'last')
-
     Sample implementations: examples/sample_agent_login.py
     Tests: tests/login.txt, tests/test_agent.py
 

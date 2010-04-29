@@ -52,21 +52,6 @@ class Region(object):
     The Region class is a container for region specific data.
     It is also a nice place for convenience code.
 
-    Example, of initializing a region class:
-
-    Initialize the login class
-
-    >>> region = Region(256, 256, 'https://somesim.cap/uuid',
-                        'EnableSimulator,TeleportFinish,CrossedRegion',
-                        '127.0.0.1', 13000, 650000000,
-                        {'agent_id':'00000000-0000-0000-0000-000000000000',
-                         'session_id':'00000000-0000-0000-0000-000000000000',
-                         'secure_session_id:'00000000-0000-0000-0000-000000000000'})
-
-    Start the udp and event queue connections to the region
-
-    >>> region.connect()
-
     Sample implementations: examples/sample_region_connect.py
     Tests: tests/region.txt, tests/test_region.py        
 

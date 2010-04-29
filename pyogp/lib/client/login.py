@@ -41,26 +41,6 @@ class Login(object):
         Legacy = standard Second Life/OpenSim login
         OGP = Open Grid Protocol enabled grid, where one logs into an agent domain
 
-    Example (legacy oriented):
-
-    The login type is determined by parsing the login uri
-    'legacy' = login.cgi
-    'ogp' = auth.cgi
-
-    Initialize the login class
-    >>> login = Login()
-
-    Setup some login parameters.
-    >>> login_params = LegacyLoginParams('firstname', 'lastname', 'password')
-    >>> login_params = login_params.serialize()
-
-    login stores & returns the response from the loginuri (in our example a mock response)
-    >>> login.login('http://localhost:12345/login.cgi', login_params, 'region')
-    {'login': 'true', 'seed_capability': 'http://127.0.0.1:12345/seed_cap'}
-
-    >>> login.response['login']
-    true
-
     Sample implementations: examples/sample_login.py
     Tests: tests/login.txt, tests/test_legacy_login.py, tests/test_ogp_login.py
     """
