@@ -21,7 +21,7 @@ from logging import getLogger
 import re
 
 # related
-from eventlet import api
+import eventlet
 
 # for MockChatInterface (disabled to allow pyogp to work on windows)
 #import sys
@@ -522,7 +522,7 @@ class MockChatInterface(object):
                         #break
                     #else:
                         #self.message += c
-                api.sleep()
+                eventlet.sleep()
         except:
             termios.tcsetattr(sys.stdin, termios.TCSADRAIN, self.old_settings)
         #finally:

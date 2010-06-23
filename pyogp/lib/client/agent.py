@@ -25,7 +25,7 @@ import sets
 import struct
 
 #related
-from eventlet import api
+import eventlet
 
 # pyogp
 from pyogp.lib.client.login import Login, LegacyLoginParams, OGPLoginParams
@@ -203,11 +203,11 @@ class Agent(object):
         # ToDo: what to do with self.login_response['look_at']?
 
         if self.settings.MULTIPLE_SIM_CONNECTIONS:
-            api.spawn(self._monitor_for_new_regions)
+            eventlet.spawn(self._monitor_for_new_regions)
 
         if connect_region:
             self._enable_current_region()
-            api.spawn(self.agent_updater)
+            eventlet.spawn(self.agent_updater)
         
 
     def logout(self):
@@ -320,7 +320,7 @@ class Agent(object):
         if self.settings.LOG_COROUTINE_SPAWNS: 
             logger.info("Spawning a coroutine for connecting to a neighboring region.")
 
-        api.spawn(child_region.connect_child)
+        eventlet.spawn(child_region.connect_child)
 
     def _monitor_for_new_regions(self):
         """ enable connections to neighboring regions found in the pending queue """
@@ -334,7 +334,7 @@ class Agent(object):
                     self._enable_child_region(region_params)
                     self._pending_child_regions.remove(region_params)
 
-            api.sleep(10)
+            eventlet.sleep(10)
 
     def _start_EQ_on_neighboring_region(self, message):
         """ enables the event queue on an agent's neighboring region """
@@ -355,7 +355,7 @@ class Agent(object):
         if self.settings.ENABLE_INVENTORY_MANAGEMENT:
             while self.region.capabilities == {}:
 
-                api.sleep(5)
+                eventlet.sleep(5)
 
             inventory_caps = ['FetchInventory', 'WebFetchInventoryDescendents', 'FetchLib', 'FetchLibDescendents']
 
@@ -992,7 +992,7 @@ class Agent(object):
         """
         while self.connected:
             self._send_update()
-            api.sleep(1.0/self.settings.AGENT_UPDATES_PER_SECOND)
+            eventlet.sleep(1.0/self.settings.AGENT_UPDATES_PER_SECOND)
             
     def sit_on_ground(self):
         """Sit on the ground at the agent's current location"""

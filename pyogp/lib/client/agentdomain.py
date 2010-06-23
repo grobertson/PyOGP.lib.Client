@@ -156,7 +156,7 @@ class AgentDomain(object):
 
                 # need to be able to pull data from a queue somewhere
                 data = {}
-                api.sleep(self.settings.agentdomain_event_queue_interval)
+                eventlet.sleep(self.settings.agentdomain_event_queue_interval)
 
                 #if self.last_id != -1:
                     #data = {'ack':self.last_id, 'done':False}

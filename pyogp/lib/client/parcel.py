@@ -20,7 +20,7 @@ $/LicenseInfo$
 from logging import getLogger
 
 # related
-from eventlet import api
+import eventlet
 
 # pyogp
 from pyogp.lib.base.datatypes import UUID
@@ -459,7 +459,7 @@ class ParcelManager(DataManager):
         """ request the properties of all of the parcels on the current region. The delay parameter is a sleep between the send of each packet request; if refresh, current data will be discarded before requesting. If refresh is not True, data will not be re-requested for region locations already queried. """
 
         # spawn a coroutine so this is non blocking
-        api.spawn(self.__request_all_parcel_properties, delay, refresh)
+        eventlet.spawn(self.__request_all_parcel_properties, delay, refresh)
 
     def __request_all_parcel_properties(self, delay = 1, refresh = False):
         """ request the properties of all of the parcels on the current region """
@@ -479,7 +479,7 @@ class ParcelManager(DataManager):
                     ty = y * 4 + 2
                     self.sendParcelPropertiesRequest(self.agent.agent_id, self.agent.session_id, -50000, tx, ty, tx, ty, False)
 
-                    api.sleep(delay)
+                    eventlet.sleep(delay)
 
     def return_parcel_objects(self, ):
         """ return the specified objects for the specified parcel """

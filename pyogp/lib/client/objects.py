@@ -23,7 +23,7 @@ import re
 import struct
 import math
 import time
-from eventlet import api
+import eventlet
 
 # related
 
@@ -241,7 +241,7 @@ class ObjectManager(DataManager):
         obj_props_handler.subscribe(object_selected)    
         self.send_ObjectSelect(self.agent, self.agent.agent_id, self.agent.session_id, object_ids)
         while localIds != []:
-            api.sleep(1)
+            eventlet.sleep(1)
             
         print 'got all object properties'
         """Deselect the objects"""
@@ -1440,7 +1440,7 @@ class Object(object):
     def click(self, agent):
         """ Touches an inworld rezz'ed object """
         self.grab(agent)
-        #api.sleep(5)
+        #eventlet.sleep(5)
         self.degrab(agent)
       
    

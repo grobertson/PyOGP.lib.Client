@@ -22,7 +22,7 @@ import signal
 import sys
 
 # related
-from eventlet import api
+import eventlet
 
 # pyogp
 from pyogp.lib.base.datatypes import UUID
@@ -135,7 +135,7 @@ class AgentManager(object):
             logger.info("Spawning a coroutine for agent login for %s." % (self.agents[key].Name()))
 
         try:
-            api.spawn(self.agents[key].login, loginuri = loginuri, start_location = start_location)
+            eventlet.spawn(self.agents[key].login, loginuri = loginuri, start_location = start_location)
         except LoginError, error:
             logger.error("Skipping agent with failed login: %s due to %s." % (self.agents[key].Name(), error))
 

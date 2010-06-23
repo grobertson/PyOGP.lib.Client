@@ -21,7 +21,7 @@ from logging import getLogger
 import uuid
 
 #related
-from eventlet import api
+import eventlet
 
 # pyogp
 from pyogp.lib.client.datamanager import DataManager

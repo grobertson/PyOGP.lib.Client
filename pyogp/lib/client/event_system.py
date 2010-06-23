@@ -21,7 +21,7 @@ from logging import getLogger
 import time
 
 # related
-from eventlet import api
+import eventlet
 
 # pyogp
 from pyogp.lib.base.events import Event
@@ -130,7 +130,7 @@ class AppEventNotifier(object):
         # spawn an empty coroutine for the duration of the timeout
         while now - start < self.timeout:
 
-            api.sleep()
+            eventlet.sleep()
             now = time.time()
 
         # once the timeout has expired...
