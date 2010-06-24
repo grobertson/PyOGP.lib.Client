@@ -42,7 +42,7 @@ def main():
         import pyogp.lib.base
         print "pyogp.lib.base is in the path, continuing..."
         base_dir = None
-    except ImportError:
+    except ImportError, DeprecationWarning:
         print "pyogp.lib.base is required and is not in the path, checking for the package in buildout"
 
         base_dir = os.path.abspath(os.path.join(lib_dir, '../pyogp.lib.base'))
