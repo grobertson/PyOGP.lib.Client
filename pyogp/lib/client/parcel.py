@@ -20,7 +20,10 @@ $/LicenseInfo$
 from logging import getLogger
 
 # related
-import eventlet
+try:
+    from eventlet import api as eventlet
+except ImportError:
+    import eventlet
 
 # pyogp
 from pyogp.lib.base.datatypes import UUID

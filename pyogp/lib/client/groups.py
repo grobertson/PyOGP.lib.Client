@@ -21,7 +21,10 @@ from logging import getLogger
 import re
 
 # related
-import eventlet
+try:
+    from eventlet import api as eventlet
+except ImportError:
+    import eventlet
 
 # for MockChatInterface (disabled to allow pyogp to work on windows)
 #import sys

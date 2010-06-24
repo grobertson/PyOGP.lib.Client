@@ -23,10 +23,12 @@ import re
 import struct
 import math
 import time
-import eventlet
 
 # related
-
+try:
+    from eventlet import api as eventlet
+except ImportError:
+    import eventlet
 
 # pyogp
 from pyogp.lib.client.datamanager import DataManager

@@ -25,7 +25,10 @@ import sets
 import struct
 
 #related
-import eventlet
+try:
+    from eventlet import api as eventlet
+except ImportError:
+    import eventlet
 
 # pyogp
 from pyogp.lib.client.login import Login, LegacyLoginParams, OGPLoginParams

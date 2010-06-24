@@ -22,6 +22,10 @@ from logging import getLogger
 
 # related
 from llbase import llsd
+try:
+    from eventlet import api as eventlet
+except ImportError:
+    import eventlet
 
 # pyogp
 from pyogp.lib.base.network.stdlib_client import StdLibClient, HTTPError

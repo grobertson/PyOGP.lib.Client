@@ -22,7 +22,10 @@ import signal
 import sys
 
 # related
-import eventlet
+try:
+    from eventlet import api as eventlet
+except ImportError:
+    import eventlet
 
 # pyogp
 from pyogp.lib.base.datatypes import UUID
