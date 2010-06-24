@@ -27,7 +27,7 @@ import time
 # related
 try:
     from eventlet import api as eventlet
-except ImportError, DeprecationWarning:
+except ImportError:
     import eventlet
 
 # pyogp

@@ -23,7 +23,7 @@ import re
 # related
 try:
     from eventlet import api as eventlet
-except ImportError, DeprecationWarning:
+except ImportError:
     import eventlet
 
 # for MockChatInterface (disabled to allow pyogp to work on windows)

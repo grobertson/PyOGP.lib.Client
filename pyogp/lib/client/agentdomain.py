@@ -24,7 +24,7 @@ from logging import getLogger
 from llbase import llsd
 try:
     from eventlet import api as eventlet
-except ImportError, DeprecationWarning:
+except ImportError:
     import eventlet
 
 # pyogp
