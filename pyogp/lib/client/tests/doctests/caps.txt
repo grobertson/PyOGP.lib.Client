@@ -24,7 +24,7 @@ and a SeedCapability.
 
 We can instantiate a SeedCapability like this:
 
-    >>> from pyogp.lib.base.tests.mockup_client import MockupClient
+    >>> from pyogp.lib.base.mockup_client import MockupClient
     >>> from pyogp.lib.base.caps import SeedCapability, Capability
     >>> from pyogp.lib.base.tests.base import MockAgentDomain
     >>> client = MockupClient(MockAgentDomain())

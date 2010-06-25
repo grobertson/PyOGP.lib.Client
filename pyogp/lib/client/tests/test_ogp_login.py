@@ -25,7 +25,7 @@ from pyogp.lib.base.exc import *
 
 # pyogp tests
 from pyogp.lib.base.tests.base import MockAgentDomainLogin
-from pyogp.lib.base.network.tests.mockup_client import MockupClient
+from pyogp.lib.base.tests.mockup_client import MockupClient
 import pyogp.lib.base.tests.config 
 
 class TestOGPLogin(unittest.TestCase):

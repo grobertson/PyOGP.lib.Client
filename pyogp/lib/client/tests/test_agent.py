@@ -27,7 +27,7 @@ from pyogp.lib.client.exc import LoginError
 # pyogp tests
 from pyogp.lib.base.tests.mock_xmlrpc import MockXMLRPC
 from pyogp.lib.base.tests.base import MockXMLRPCLogin, MockAgentDomainLogin
-from pyogp.lib.base.network.tests.mockup_client import MockupClient
+from pyogp.lib.base.tests.mockup_client import MockupClient
 import pyogp.lib.base.tests.config 
 
 class TestAgent(unittest.TestCase):

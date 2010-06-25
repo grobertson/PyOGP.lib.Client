@@ -76,7 +76,7 @@ First, initialize login and the loginuri
 
 Setup test: import of the mock network client handler
 
-    >>> from pyogp.lib.base.network.tests.mockup_client import MockupClient
+    >>> from pyogp.lib.base.tests.mockup_client import MockupClient
     >>> from pyogp.lib.base.tests.base import MockAgentDomainLogin
     >>> loginhandler = MockupClient(MockAgentDomainLogin())
 
